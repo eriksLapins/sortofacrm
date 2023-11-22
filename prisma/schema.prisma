@@ -1,0 +1,302 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model TImage {
+  clientCompanyId String
+  id              String          @id @default(uuid())
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  title           String
+  extension       EImageExtension
+  url             String
+  size            Float
+  caption         String?
+  alt_text        String?
+  description     String?
+  isTop           Boolean         @default(false)
+  userId          String
+  scope           EScope          @default(local)
+
+  @@index([clientCompanyId])
+  @@index([userId])
+  @@index([createdAt])
+  @@index([title])
+  @@index([isTop])
+  @@index([scope])
+  @@map("images")
+}
+
+model TCategory {
+  id      Int         @id @default(autoincrement())
+  name    ECategories
+  imageId String
+
+  @@unique([name, imageId])
+  @@index([name, imageId])
+  @@map("categories")
+}
+
+model Account {
+  clientCompanyId   String
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  @@unique([provider, providerAccountId])
+  @@index([clientCompanyId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  @@map("sessions")
+}
+
+model User {
+  clientCompanyId String
+  id              String    @id @default(cuid())
+  role            ERole     @default(USER)
+  name            String
+  lastname        String
+  initials        String
+  email           String    @unique
+  emailVerified   DateTime?
+  username        String    @unique
+  password        String?
+  phoneExtension  String?
+  phoneNumber     String?
+  image           String?
+  position        String?
+  departmentId    String
+
+  @@index([clientCompanyId])
+  @@map("users")
+}
+
+model ClientCompany {
+  id                    String  @id @default(cuid())
+  legalName             String
+  alternateName         String
+  shortName             String
+  regNo                 String
+  taxNo                 String?
+  street                String
+  streetNo              Int
+  apartmentNo           Int?
+  city                  String
+  country               String
+  fullAddress           String
+  phoneExtension        String
+  phone                 String
+  email                 String
+  bankAccount           String
+  swift                 String
+  additionalBankAccount String?
+  additionalSwift       String?
+  webpage               String?
+  logo                  String?
+  uploadDirectory       String?
+}
+
+model Company {
+  clientCompanyId       String
+  id                    String  @id @default(cuid())
+  legalName             String
+  alternateName         String
+  regNo                 String
+  taxNo                 String?
+  street                String
+  streetNo              Int
+  apartmentNo           Int?
+  city                  String
+  country               String
+  fullAddress           String
+  phoneExtension        String?
+  phone                 String?
+  email                 String
+  bankAccount           String?
+  swift                 String?
+  additionalBankAccount String?
+  additionalSwift       String?
+  webpage               String?
+  logo                  String?
+
+  @@index([clientCompanyId])
+  @@index([alternateName])
+  @@index([legalName])
+}
+
+model Person {
+  clientCompanyId String
+  id              String  @id @default(cuid())
+  name            String
+  lastname        String
+  position        String?
+  phoneExtension  String?
+  phone           String?
+  email           String
+  department      String?
+
+  @@index([name])
+  @@index([lastname])
+  @@index([email])
+  @@index([clientCompanyId])
+}
+
+model Relations {
+  clientCompanyId String
+  id              String         @id @default(cuid())
+  relatedFromType ERelationTypes
+  relatedFromId   String
+  relatedToType   ERelationTypes
+  relatedToId     String
+
+  @@index([clientCompanyId])
+}
+
+model TPermissions {
+  clientCompanyId String
+  id              String           @id @default(cuid())
+  userId          String
+  module          String
+  can             EPermissionTypes
+
+  @@index([clientCompanyId])
+  @@index([userId])
+  @@map("permissions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verificationtokens")
+}
+
+model TTexts {
+  id       Int       @id @default(autoincrement())
+  page     String
+  type     ETextType
+  text     String    @db.Text
+  language ELanguage
+
+  @@map("texts")
+}
+
+enum EImageExtension {
+  jpg
+  jpeg
+  png
+  svg
+  webp
+}
+
+enum ERole {
+  SUPERADMIN
+  ADMIN
+  USER
+}
+
+enum ECategories {
+  Animals
+  Sports
+  People
+  Travel
+  Nature
+  Stills
+  Views
+}
+
+enum ETextType {
+  title
+  image_url
+  subtitle
+  description
+  text
+  tooltip
+}
+
+enum ELanguage {
+  lv
+  eng
+}
+
+enum EPermissionTypes {
+  CREATE_OWN
+  CREATE_ALL
+  CREATE_DEPARTMENT
+  CREATE_TAGGED
+  READ_OWN
+  READ_ALL
+  READ_DEPARTMENT
+  READ_TAGGED
+  UPDATE_OWN
+  UPDATE_ALL
+  UPDATE_DEPARTMENT
+  UPDATE_TAGGED
+  DELETE_OWN
+  DELETE_ALL
+  DELETE_DEPARTMENT
+  DELETE_TAGGED
+  EXPORT_OWN
+  EXPORT_ALL
+  EXPORT_DEPARTMENT
+  EXPORT_TAGGED
+  IMPORT_OWN
+  IMPORT_ALL
+  IMPORT_DEPARTMENT
+  IMPORT_TAGGED
+}
+
+enum EContactRelationTypes {
+  Person
+  Company
+}
+
+enum EFinancialRelationTypes {
+  Invoice
+  Quote
+  Expense
+}
+
+enum EProjectRelationTypes {
+  Project
+  Task
+}
+
+enum ERelationTypes {
+  Person
+  Company
+  Invoice
+  Quote
+  Expense
+  Project
+  Task
+}
+
+enum EScope {
+  local
+  global
+}

@@ -1,0 +1,14 @@
+{
+  "root": true,
+  "extends": ["@nuxtjs/eslint-config-typescript"],
+  "rules": {
+    "semi": ["error", "always"],
+    "quotes": ["error", "single"],
+    "indent": ["warn", 2],
+    "newline-before-return": "error",
+    "newline-per-chained-call": "error",
+    "array-element-newline":"warn",
+    "object-property-newline":"warn",
+    "no-duplicate-imports": "error"
+  }
+}
