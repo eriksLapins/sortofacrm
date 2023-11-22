@@ -8,22 +8,22 @@ datasource db {
 }
 
 model TImage {
-  clientCompanyId String
-  id              String          @id @default(uuid())
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  title           String
-  extension       EImageExtension
-  url             String
-  size            Float
-  caption         String?
-  alt_text        String?
-  description     String?
-  isTop           Boolean         @default(false)
-  userId          String
-  scope           EScope          @default(local)
+  clientId    Int
+  id          String          @id @default(uuid())
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  title       String
+  extension   EImageExtension
+  url         String
+  size        Float
+  caption     String?
+  alt_text    String?
+  description String?
+  isTop       Boolean         @default(false)
+  userId      String
+  scope       EScope          @default(local)
 
-  @@index([clientCompanyId])
+  @@index([clientId])
   @@index([userId])
   @@index([createdAt])
   @@index([title])
@@ -43,7 +43,7 @@ model TCategory {
 }
 
 model Account {
-  clientCompanyId   String
+  clientId          Int
   id                String  @id @default(cuid())
   userId            String
   type              String
@@ -58,7 +58,7 @@ model Account {
   session_state     String?
 
   @@unique([provider, providerAccountId])
-  @@index([clientCompanyId])
+  @@index([clientId])
   @@index([userId])
   @@map("accounts")
 }
@@ -73,30 +73,31 @@ model Session {
 }
 
 model User {
-  clientCompanyId String
-  id              String    @id @default(cuid())
-  role            ERole     @default(USER)
-  name            String
-  lastname        String
-  initials        String
-  email           String    @unique
-  emailVerified   DateTime?
-  username        String    @unique
-  password        String?
-  phoneExtension  String?
-  phoneNumber     String?
-  image           String?
-  position        String?
-  departmentId    String
+  clientId       Int
+  id             String    @id @default(cuid())
+  role           ERole     @default(USER)
+  name           String
+  lastname       String
+  initials       String
+  email          String    @unique
+  emailVerified  DateTime?
+  username       String    @unique
+  password       String?
+  phoneExtension String?
+  phoneNumber    String?
+  image          String?
+  position       String?
+  departmentId   String
 
-  @@index([clientCompanyId])
+  @@index([clientId])
+  @@index([departmentId])
   @@map("users")
 }
 
 model ClientCompany {
-  id                    String  @id @default(cuid())
+  id                    Int     @id @default(autoincrement())
   legalName             String
-  alternateName         String
+  alternateName         String?
   shortName             String
   regNo                 String
   taxNo                 String?
@@ -119,10 +120,10 @@ model ClientCompany {
 }
 
 model Company {
-  clientCompanyId       String
+  clientId              Int
   id                    String  @id @default(cuid())
   legalName             String
-  alternateName         String
+  alternateName         String?
   regNo                 String
   taxNo                 String?
   street                String
@@ -141,47 +142,52 @@ model Company {
   webpage               String?
   logo                  String?
 
-  @@index([clientCompanyId])
+  @@unique([clientId, regNo], map: "unique_company_client_regno_idx")
+  @@unique([clientId, legalName], map: "unique_company_client_legal_idx")
+  @@index([clientId])
   @@index([alternateName])
   @@index([legalName])
 }
 
 model Person {
-  clientCompanyId String
-  id              String  @id @default(cuid())
-  name            String
-  lastname        String
-  position        String?
-  phoneExtension  String?
-  phone           String?
-  email           String
-  department      String?
+  clientId       Int
+  id             String  @id @default(cuid())
+  name           String
+  lastname       String?
+  position       String?
+  phoneExtension String?
+  phone          String?
+  email          String?
+  department     String?
 
+  @@unique([clientId, email], map: "unique_person_client_email_idx")
   @@index([name])
   @@index([lastname])
   @@index([email])
-  @@index([clientCompanyId])
+  @@index([clientId])
 }
 
 model Relations {
-  clientCompanyId String
+  clientId        Int
   id              String         @id @default(cuid())
   relatedFromType ERelationTypes
-  relatedFromId   String
+  relatedFromId   String /// ID of the person/company/etc making the relation from
   relatedToType   ERelationTypes
-  relatedToId     String
+  relatedToId     String /// ID of the person/company/etc making the relation to
 
-  @@index([clientCompanyId])
+  @@index([clientId])
+  @@index([relatedFromType])
+  @@index([relatedToType])
 }
 
 model TPermissions {
-  clientCompanyId String
-  id              String           @id @default(cuid())
-  userId          String
-  module          String
-  can             EPermissionTypes
+  clientId Int
+  id       String           @id @default(cuid())
+  userId   String
+  module   String
+  can      EPermissionTypes
 
-  @@index([clientCompanyId])
+  @@index([clientId])
   @@index([userId])
   @@map("permissions")
 }
@@ -193,6 +199,32 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("verificationtokens")
+}
+
+model Pages {
+  clientId Int
+  userId   String
+  id       String @id @default(cuid())
+  name     String
+  title    String
+  order    Int
+
+  @@unique([clientId, name], map: "unique_pages_client_name_idx")
+  @@index([clientId, userId], map: "pages_client_user_idx")
+}
+
+model Blocks {
+  id              String  @id @default(cuid())
+  clientId        Int
+  userId          String
+  page            String  @db.VarChar(50)
+  verticalOrder   Int     @default(0)
+  horizontalOrder Int     @default(0)
+  width           Int     @default(300)
+  height          Int     @default(300)
+  contentType     String?
+
+  @@index([clientId, userId, page], map: "block_pages_client_user_idx")
 }
 
 model TTexts {

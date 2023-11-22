@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 
 export const useUserStore = defineStore('users', () => {
   const currentUser = ref<Omit<User, 'password'>>();
+  const isSuperAdmin = ref(false);
   const isAdmin = ref(false);
   const isLoggedIn = ref(false);
 
@@ -18,7 +19,8 @@ export const useUserStore = defineStore('users', () => {
     });
 
     if (verified) {
-      isAdmin.value = verified.role === ERole.ADMIN;
+      isAdmin.value = verified.role === (ERole.ADMIN || ERole.SUPERADMIN);
+      isSuperAdmin.value = verified.role === ERole.SUPERADMIN;
       isLoggedIn.value = true;
     } else {
       throw new Error('Invalid token, please log in again');
@@ -27,13 +29,15 @@ export const useUserStore = defineStore('users', () => {
 
   const setUser = (user: Omit<User, 'password'>) => {
     currentUser.value = user;
-    isAdmin.value = currentUser.value.role === ERole.ADMIN;
+    isAdmin.value = currentUser.value.role === (ERole.ADMIN || ERole.SUPERADMIN);
+    isSuperAdmin.value = currentUser.value.role === ERole.SUPERADMIN;
     isLoggedIn.value = true;
   };
 
   const destroyUser = () => {
     currentUser.value = undefined;
     isAdmin.value = false;
+    isSuperAdmin.value = false;
     isLoggedIn.value = false;
 
     const token = useCookie('auth-token');
