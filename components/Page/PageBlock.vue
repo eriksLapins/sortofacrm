@@ -3,8 +3,9 @@
     id="block"
     class="h-full box-border max-w-full border-2 border-primary rounded-lg"
     :style="{gridColumnStart: blockStartX, gridColumnEnd: `span ${blockWidth}`, gridRowStart: blockStartY, gridRowEnd: `span ${blockHeight}`}"
-    @dragstart="(e: DragEvent) => handleDragStart(e)"
-    @drag="(e: DragEvent) => handleDrag(e)"
+    draggable
+    @dragstart="(e) => handleDragStart(e)"
+    @drag="(e) => handleDrag(e)"
     @dragend="handleDragEnd"
   >
     <div class="w-full h-full p-6">
@@ -113,7 +114,7 @@ function handleDragEnd () {
 }
 
 function changeBlock (change: number, changeFactor: number) {
-  if (change < 0) {
+  if (change < -changeFactor) {
     return -1;
   } else if (change > changeFactor) {
     return 1;
@@ -123,7 +124,6 @@ function changeBlock (change: number, changeFactor: number) {
 }
 
 function handleDrag (e: DragEvent) {
-  e.preventDefault();
   // @ts-ignore
   const rect = e.target?.getBoundingClientRect();
   if (!rect) {
@@ -132,6 +132,12 @@ function handleDrag (e: DragEvent) {
   // @ts-ignore
   if (changeRight.value) {
     const change = e.clientX - (rect.x + rect.width);
+    // console.log('----');
+    // console.log(e.clientX);
+    // console.log(rect.x);
+    // console.log(rect.width);
+    // console.log('----');
+
     if (e.clientX !== 0) {
       blockWidth.value += changeBlock(change, dragSensitivity);
     }
@@ -140,7 +146,7 @@ function handleDrag (e: DragEvent) {
     const change = e.clientX - (rect.x + rect.width);
 
     if (e.clientX !== 0) {
-      if (blockStartX.value !== 1) {
+      if (blockStartX.value !== 1 && (blockWidth.value - blockStartX.value > defaultBlockSizes.width)) {
         blockWidth.value -= changeBlock(change, dragSensitivity);
       }
       blockStartX.value += changeBlock(change, dragSensitivity);
