@@ -135,23 +135,21 @@ function handleDrag (e: DragEvent) {
     if (e.clientX !== 0) {
       blockWidth.value += changeBlock(change, dragSensitivity);
     }
-    if (blockWidth.value < defaultBlockSizes.width) {
-      blockWidth.value = defaultBlockSizes.width;
-    }
-    if (blockWidth.value > 13 - blockStartX.value) {
-      blockWidth.value = 13 - blockStartX.value;
+  }
+  if (changeLeft.value) {
+    const change = e.clientX - (rect.x + rect.width);
+
+    if (e.clientX !== 0) {
+      if (blockStartX.value !== 1) {
+        blockWidth.value -= changeBlock(change, dragSensitivity);
+      }
+      blockStartX.value += changeBlock(change, dragSensitivity);
     }
   }
   if (changeBottom.value) {
     const change = e.clientY - (rect.y + rect.height);
     if (e.clientY !== 0) {
       blockHeight.value += changeBlock(change, dragSensitivity);
-    }
-    if (blockHeight.value < defaultBlockSizes.height) {
-      blockHeight.value = defaultBlockSizes.height;
-    }
-    if (blockHeight.value > 7 - blockStartY.value) {
-      blockHeight.value = 7 - blockStartY.value;
     }
   }
 
@@ -167,21 +165,37 @@ function handleDrag (e: DragEvent) {
         blockStartY.value += changeBlock(changeY, dragSensitivity);
       }
     }
-
-    if (blockStartX.value < 1) {
-      blockStartX.value = 1;
-    }
-
-    if (blockStartY.value < 1) {
-      blockStartY.value = 1;
-    }
   }
-//   if (changeTop) {
-//     blockHeight.value = e.clientY;
-//     if (blockHeight.value < defaultBlockSizes.height) {
-//       blockHeight.value = defaultBlockSizes.height;
-//     }
-//   }
+  //   if (changeTop) {
+  //     blockHeight.value = e.clientY;
+  //     if (blockHeight.value < defaultBlockSizes.height) {
+  //       blockHeight.value = defaultBlockSizes.height;
+  //     }
+  //   }
+
+  if (blockHeight.value < defaultBlockSizes.height) {
+    blockHeight.value = defaultBlockSizes.height;
+  }
+
+  if (blockHeight.value > 7 - blockStartY.value) {
+    blockHeight.value = 7 - blockStartY.value;
+  }
+
+  if (blockWidth.value < defaultBlockSizes.width) {
+    blockWidth.value = defaultBlockSizes.width;
+  }
+
+  if (blockWidth.value > 13 - blockStartX.value) {
+    blockWidth.value = 13 - blockStartX.value;
+  }
+
+  if (blockStartX.value < 1) {
+    blockStartX.value = 1;
+  }
+
+  if (blockStartY.value < 1) {
+    blockStartY.value = 1;
+  }
 }
 
 </script>
