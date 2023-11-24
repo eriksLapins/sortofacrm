@@ -6,6 +6,7 @@ export const useUserStore = defineStore('users', () => {
   const isSuperAdmin = ref(false);
   const isAdmin = ref(false);
   const isLoggedIn = ref(false);
+  const currentCompany = ref<number>();
 
   const loginUser = async (token: string | null) => {
     if (!token) {
@@ -21,6 +22,7 @@ export const useUserStore = defineStore('users', () => {
     if (verified) {
       isAdmin.value = verified.role === (ERole.ADMIN || ERole.SUPERADMIN);
       isSuperAdmin.value = verified.role === ERole.SUPERADMIN;
+      currentCompany.value = verified.companyId;
       isLoggedIn.value = true;
     } else {
       throw new Error('Invalid token, please log in again');
@@ -46,6 +48,7 @@ export const useUserStore = defineStore('users', () => {
 
   return {
     currentUser,
+    currentCompany,
     setUser,
     destroyUser,
     isAdmin,

@@ -237,6 +237,48 @@ model TTexts {
   @@map("texts")
 }
 
+model Tasks {
+  id             String    @id @default(cuid())
+  clientId       Int
+  createdById    String
+  createdOn      DateTime  @default(now())
+  updatedOn      DateTime  @updatedAt
+  dueDate        DateTime?
+  done           Boolean   @default(false)
+  doneOn         DateTime?
+  managerId      String?
+  quoteId        String?
+  invoiceId      String?
+  companyId      String?
+  personId       String?
+  projectId      String?
+  title          String    @db.VarChar(100)
+  description    String?   @db.Text
+  activityTypeId String?
+
+  @@index([clientId])
+}
+
+model TaskDoers {
+  id       String @id @default(cuid())
+  clientId Int
+  taskId   String
+  doerId   String
+
+  @@index([clientId])
+  @@index([clientId, taskId])
+  @@index([clientId, doerId])
+}
+
+model ActivityTypes {
+  id       String @id @default(cuid())
+  clientId Int
+  name     String
+
+  @@unique([clientId, name])
+  @@index([clientId])
+}
+
 enum EImageExtension {
   jpg
   jpeg

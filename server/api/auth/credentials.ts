@@ -30,7 +30,8 @@ export default defineEventHandler(async (event): Promise<{ token: string}> => {
       select: {
         username: true,
         password: true,
-        role: true
+        role: true,
+        clientId: true
       }
     });
   } catch (e) {
@@ -66,7 +67,8 @@ export default defineEventHandler(async (event): Promise<{ token: string}> => {
   const token = jwt.sign(
     {
       username: user.username,
-      role: user.role
+      role: user.role,
+      company: user.clientId
     },
     config.auth.secret,
     { expiresIn: 60 * 60 * 24 }

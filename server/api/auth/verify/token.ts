@@ -1,7 +1,7 @@
 import { ERole } from '@prisma/client';
 import jwt from 'jsonwebtoken';
 
-export default defineEventHandler(async (event): Promise<{username: string, role: ERole, iat: string, exp: string} | null> => {
+export default defineEventHandler(async (event): Promise<{username: string, role: ERole, iat: string, exp: string, companyId: number} | null> => {
   const { token } = await readBody(event);
   const config = useRuntimeConfig(event);
 
