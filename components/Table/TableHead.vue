@@ -1,6 +1,6 @@
 <template>
-  <div v-for="item in options">
-    {{ option }}
+  <div v-for="item in options" :key="item">
+    {{ item }}
   </div>
 </template>
 
@@ -11,7 +11,7 @@ defineOptions({
 
 defineProps({
   options: {
-    type: Array as PropType<String[]>,
+    type: Array as PropType<string[]>,
     required: true
   }
 });
