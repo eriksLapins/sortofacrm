@@ -42,8 +42,7 @@ export const useUserStore = defineStore('users', () => {
     isSuperAdmin.value = false;
     isLoggedIn.value = false;
 
-    const token = useCookie('auth-token');
-    token.value = null;
+    localStorage.removeItem('auth-token');
   };
 
   return {

@@ -49,8 +49,7 @@ async function handleLogin () {
   });
 
   if (response) {
-    const token = useCookie('auth-token');
-    token.value = response.token;
+    localStorage.setItem('auth-token', response.token);
     navigateTo(config.public.base_url);
   }
 }
