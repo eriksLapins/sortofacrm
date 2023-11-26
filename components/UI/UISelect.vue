@@ -17,15 +17,17 @@
     <div v-if="setValue" class=" absolute hover:cursor-pointer text-primary flex justify-center items-center h-6 right-0 mr-4 top-0 my-1" @click="clearItem">
       X
     </div>
-    <ul v-show="showItems" class="absolute bg-white border-primary border-2 border-solid rounded-lg top-7 mt-2 p-2 grid gap-2 w-full">
+    <ul v-show="showItems" class="absolute bg-white border-primary border-2 border-solid rounded-lg top-7 mt-2 p-2 grid gap-2 w-full z-10">
       <li
         v-for="item in options"
         :key="item.title"
-        class="hover:cursor-pointer hover:bg-secondary h-8 p-2 flex items-center rounded-lg border-2"
+        class="hover:cursor-pointer hover:bg-secondary h-8 p-2 flex gap-4 items-center rounded-lg border-2"
         :class="item.title === setValue ? 'border-primary' : 'border-transparent'"
         @click="handleSelectOption(item.title)"
       >
+        <NuxtImg v-if="item.prependIcon" :src="item.prependIcon" width="30px" height="30px" />
         {{ item.title }}
+        <NuxtImg v-if="item.appendIcon" :src="item.appendIcon" width="30px" height="30px" />
       </li>
     </ul>
   </div>
@@ -36,7 +38,7 @@ import { onClickOutside } from '@vueuse/core';
 import { mapKeyToValue, mapValueToKey } from '~/utils/mappings';
 
 defineOptions({
-  name: 'InputsText'
+  name: 'UISelect'
 });
 const emit = defineEmits(['update:modelValue']);
 
@@ -58,8 +60,12 @@ const props = defineProps({
     default: 'text'
   },
   items: {
-    type: Array as PropType<{key: string, title: string}[]>,
+    type: Array as PropType<{key: string, title: string, prependIcon?: string, appendIcon?: string}[]>,
     required: true
+  },
+  prependIcon: {
+    type: String,
+    default: undefined
   }
 });
 

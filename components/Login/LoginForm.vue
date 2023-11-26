@@ -1,13 +1,13 @@
 <template>
   <div class="w-full sm:max-w-[350px] flex flex-col justify-center items-center p-4">
     <form class="grid gap-6 items-start w-full" @submit.prevent="handleLogin">
-      <InputsText
+      <UiTextInput
         v-model:model-value="form.username"
         name="username"
         autocomplete="username"
         label="Username"
       />
-      <InputsText
+      <UiTextInput
         v-model:model-value="form.password"
         name="password"
         autocomplete="current-password"
