@@ -20,33 +20,27 @@ defineOptions({
 const NavItems = computed<NavItem[]>(() => [
   {
     name: 'Main',
-    path: '/',
-    context: 'session'
+    path: '/'
   },
   {
     name: 'Tasks',
-    path: '/tasks',
-    context: 'session'
+    path: '/tasks'
   },
   {
     name: 'Invoices',
-    path: '/invoices',
-    context: 'session'
+    path: '/invoices'
   },
   {
     name: 'Quotes',
-    path: '/quotes',
-    context: 'session'
+    path: '/quotes'
   },
   {
     name: 'Reports',
-    path: '/reports',
-    context: 'session'
+    path: '/reports'
   },
   {
     name: 'Settings',
-    path: '/settings',
-    context: 'session'
+    path: '/settings'
   }
 ]);
 

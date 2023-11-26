@@ -3,7 +3,7 @@
     <form ref="taskForm" class="grid gap-6 items-start w-full" @submit.prevent="handleSubmit">
       <InputsSelect
         v-model:model-value="form.activityTypeId"
-        :items="['something', 'something2', 'somethin']"
+        :items="options"
         name="activity-type"
         label="Activity Type"
       />
@@ -17,9 +17,7 @@
         name="description"
         label="Description"
       />
-      <button class="border border-primary text-primary px-2 py-1 rounded hover:bg-primary focus-within:bg-primary hover:text-white focus-within:text-white outline-none" @click.prevent="handleSubmit">
-        Login
-      </button>
+      <UiButton text="Create" class="w-full" @click.prevent="handleSubmit" />
     </form>
   </div>
 </template>
@@ -43,6 +41,23 @@ const form = ref<Omit<Tasks, 'id' | 'clientId' | 'createdById' |'createdOn' | 'u
   title: '',
   description: '',
   activityTypeId: ''
+});
+
+const options = computed(() => {
+  return [
+    {
+      title: 'something',
+      key: '1'
+    },
+    {
+      title: 'something2',
+      key: '2'
+    },
+    {
+      title: 'somethin',
+      key: '3'
+    }
+  ];
 });
 
 const handleSubmit = () => {

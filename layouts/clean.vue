@@ -1,8 +1,6 @@
 <template>
   <div class="h-[100dvh]">
-    <AppHeader
-      remove-navigation
-    />
+    <AppHeader />
     <div class="clean-layout">
       <slot />
     </div>

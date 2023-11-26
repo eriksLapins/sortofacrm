@@ -1,27 +1,31 @@
 <template>
   <div
-    class="relative"
+    ref="optionList"
+    class="relative flex flex-col"
+    @click="checkClickOutside"
   >
     <input
       :id="name"
-      v-model="value"
+      v-model="setValue"
       type="text"
       :name="name"
-      class="leweb-input h-8 py-1 px-2 rounded-lg"
+      class="leweb-input h-6 py-1 px-2 rounded-lg"
       :placeholder="label"
-      @input="handleInput(value)"
-      @click="handleInput(value)"
-      @focusin="handleInput(value)"
+      @input="handleInput(setValue)"
+      @click="handleInput(setValue)"
     >
-    <ul v-show="showItems" ref="optionList" class="w-[350px] h-[350px] absolute bg-white border-primary border-2 border-solid rounded-lg mt-2">
+    <div v-if="setValue" class=" absolute hover:cursor-pointer text-primary flex justify-center items-center h-6 right-0 mr-4 top-0 my-1" @click="clearItem">
+      X
+    </div>
+    <ul v-show="showItems" class="absolute bg-white border-primary border-2 border-solid rounded-lg top-7 mt-2 p-2 grid gap-2 w-full">
       <li
         v-for="item in options"
-        :key="item"
-        class="hover:cursor-pointer hover:bg-secondary h-8 p-2 flex items-center rounded-lg border-2 border-transparent"
-        :class="item === value ? 'border-primary border-2' : ''"
-        @click="(e) => handleSelectOption(item)"
+        :key="item.title"
+        class="hover:cursor-pointer hover:bg-secondary h-8 p-2 flex items-center rounded-lg border-2"
+        :class="item.title === setValue ? 'border-primary' : 'border-transparent'"
+        @click="handleSelectOption(item.title)"
       >
-        {{ item }}
+        {{ item.title }}
       </li>
     </ul>
   </div>
@@ -29,6 +33,7 @@
 
 <script setup lang="ts">
 import { onClickOutside } from '@vueuse/core';
+import { mapKeyToValue, mapValueToKey } from '~/utils/mappings';
 
 defineOptions({
   name: 'InputsText'
@@ -37,8 +42,8 @@ const emit = defineEmits(['update:modelValue']);
 
 const props = defineProps({
   modelValue: {
-    type: String,
-    default: undefined
+    type: String as PropType<string | null>,
+    default: null
   },
   name: {
     type: String,
@@ -53,39 +58,37 @@ const props = defineProps({
     default: 'text'
   },
   items: {
-    type: Array as PropType<string[]>,
+    type: Array as PropType<{key: string, title: string}[]>,
     required: true
   }
 });
 
-const value = computed({
-  get: () => props.modelValue,
-  set: value => emit('update:modelValue', value)
-});
+function clearItem () {
+  setValue.value = null;
+}
+
+const setValue = ref<string | null>(mapKeyToValue(props.modelValue, props.items) || null);
 
 const showItems = ref(false);
 const options = ref(props.items);
 const optionList = ref(null);
 
-const handleInput = (input: string | undefined) => {
+const handleInput = (input: string | null) => {
   const checkableInput = input || '';
-  options.value = props.items.filter(item => item.match(checkableInput));
-  if (checkableInput.length) {
-    showItems.value = true;
-  }
+  options.value = props.items.filter(item => item.title.match(checkableInput));
+  showItems.value = true;
 };
 
-const handleSelectOption = (item: string) => {
-  if (value.value === item) {
-    value.value = undefined;
-  } else {
-    value.value = item;
-  }
-  showItems.value = false;
-  onClickOutside(optionList, (e) => {
-    console.log(e);
+function checkClickOutside () {
+  onClickOutside(optionList, () => {
     showItems.value = false;
   });
+}
+
+const handleSelectOption = (item: string) => {
+  setValue.value = item;
+  emit('update:modelValue', mapValueToKey(setValue.value, props.items));
+  showItems.value = false;
 };
 
 </script>

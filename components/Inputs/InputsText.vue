@@ -2,7 +2,7 @@
   <input
     :id="name"
     v-model="value"
-    :type="type"
+    type="text"
     :name="name"
     :autocomplete="autocomplete"
     class="leweb-input h-6 py-1 px-2 rounded-lg"
@@ -19,8 +19,9 @@ const emit = defineEmits(['update:modelValue']);
 
 const props = defineProps({
   modelValue: {
-    type: String,
-    required: true
+    type: String as PropType<string | null>,
+    required: true,
+    default: null
   },
   name: {
     type: String,
@@ -33,10 +34,6 @@ const props = defineProps({
   autocomplete: {
     type: String,
     default: undefined
-  },
-  type: {
-    type: String,
-    default: 'text'
   }
 });
 
