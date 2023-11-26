@@ -2,19 +2,17 @@
   <div class="w-full sm:max-w-[350px] flex flex-col justify-center items-center p-4">
     <form class="grid gap-6 items-start w-full" @submit.prevent="handleLogin">
       <InputsText
+        v-model:model-value="form.username"
         name="username"
-        :model-value="form.username"
         autocomplete="username"
         label="Username"
-        @update:model-value="value => form.username = value"
       />
       <InputsText
+        v-model:model-value="form.password"
         name="password"
-        :model-value="form.password"
         autocomplete="current-password"
         label="Password"
         type="password"
-        @update:model-value="value => form.password = value"
       />
       <button class="border border-primary text-primary px-2 py-1 rounded hover:bg-primary focus-within:bg-primary hover:text-white focus-within:text-white outline-none" @click.prevent="handleLogin">
         Login

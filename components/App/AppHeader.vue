@@ -48,13 +48,13 @@
           </li>
         </template>
         <li class="md:w-1/4 text-center md:border-2 md:border-transparent rounded-md lg:hover:border-primary">
-          <button
+          <NuxtLink
             v-if="userStore.isLoggedIn"
             class="w-full block text-l text-primary hover:cursor-pointer"
             @click="handleLogout"
           >
             Logout
-          </button>
+          </NuxtLink>
           <NuxtLink
             v-else
             :href="'/login'"

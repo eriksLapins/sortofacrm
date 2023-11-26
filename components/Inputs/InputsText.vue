@@ -41,12 +41,8 @@ const props = defineProps({
 });
 
 const value = computed({
-  get () {
-    return props.modelValue;
-  },
-  set (value) {
-    emit('update:modelValue', value);
-  }
+  get: () => props.modelValue,
+  set: value => emit('update:modelValue', value)
 });
 </script>
 
