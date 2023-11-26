@@ -3,7 +3,7 @@
     id="block"
     class="h-full box-border max-w-full border-2 border-primary rounded-lg"
     :style="{gridColumnStart: blockStartX, gridColumnEnd: `span ${blockWidth}`, gridRowStart: blockStartY, gridRowEnd: `span ${blockHeight}`}"
-    draggable
+    draggable="true"
     @dragstart="(e) => handleDragStart(e)"
     @drag="(e) => handleDrag(e)"
     @dragend="handleDragEnd"

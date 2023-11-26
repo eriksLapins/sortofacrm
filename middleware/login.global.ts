@@ -1,6 +1,7 @@
 import { useUserStore } from '~/store/userStore';
 
 export default defineNuxtRouteMiddleware(async (to) => {
+  const router = useRouter();
   const token = ref<string | null>(null);
   if (process.client) {
     token.value = localStorage.getItem('auth-token');
@@ -11,14 +12,14 @@ export default defineNuxtRouteMiddleware(async (to) => {
       await useUserStore().loginUser(token.value);
 
       if (to.path === '/login') {
-        navigateTo('/');
+        router.push('/');
       }
     } catch {
       if (to.path !== '/login') {
-        navigateTo('/login?invalidToken');
+        router.push('/login?invalidToken');
       }
     }
   } else if (to.path !== '/login') {
-    navigateTo('/login');
+    router.push('/login');
   }
 });
