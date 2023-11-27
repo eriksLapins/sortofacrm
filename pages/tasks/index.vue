@@ -1,10 +1,36 @@
 <template>
   <div>
-    <TaskForm />
+    <a href="/create">Create Task</a>
+    <div v-for="task in tasks" :key="task.id">
+      <a :href="`/tasks/${task.id}/update`">{{ task.title }}</a>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import type { Tasks } from '@prisma/client';
+import { useUserStore } from '~/store/userStore';
+const userStore = useUserStore();
+
+const tasks = ref<Tasks[]>();
+
+async function fetchTasks () {
+  const retrievedTasks = await $fetch('/api/data/tasks/get', {
+    method: 'POST',
+    body: {
+      clientId: userStore.currentCompany,
+      createdById: userStore.currentUserId
+    }
+  });
+
+  const jsonTasks = JSON.parse(JSON.stringify(retrievedTasks.tasks));
+
+  tasks.value = jsonTasks;
+}
+
+onMounted(async () => {
+  await fetchTasks();
+});
 
 </script>
 

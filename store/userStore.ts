@@ -3,10 +3,11 @@ import { defineStore } from 'pinia';
 
 export const useUserStore = defineStore('users', () => {
   const currentUser = ref<Omit<User, 'password'>>();
+  const currentUserId = ref<String>();
   const isSuperAdmin = ref(false);
   const isAdmin = ref(false);
   const isLoggedIn = ref(false);
-  const currentCompany = ref<number>();
+  const currentCompany = ref<Number>();
 
   const loginUser = async (token: string | null) => {
     if (!token) {
@@ -23,6 +24,7 @@ export const useUserStore = defineStore('users', () => {
       isAdmin.value = verified.role === (ERole.ADMIN || ERole.SUPERADMIN);
       isSuperAdmin.value = verified.role === ERole.SUPERADMIN;
       currentCompany.value = verified.companyId;
+      currentUserId.value = verified.userId;
       isLoggedIn.value = true;
     } else {
       throw new Error('Invalid token, please log in again');
@@ -38,6 +40,8 @@ export const useUserStore = defineStore('users', () => {
 
   const destroyUser = () => {
     currentUser.value = undefined;
+    currentUserId.value = undefined;
+    currentCompany.value = undefined;
     isAdmin.value = false;
     isSuperAdmin.value = false;
     isLoggedIn.value = false;
@@ -48,6 +52,7 @@ export const useUserStore = defineStore('users', () => {
   return {
     currentUser,
     currentCompany,
+    currentUserId,
     setUser,
     destroyUser,
     isAdmin,

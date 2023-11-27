@@ -31,7 +31,8 @@ export default defineEventHandler(async (event): Promise<{ token: string}> => {
         username: true,
         password: true,
         role: true,
-        clientId: true
+        clientId: true,
+        id: true
       }
     });
   } catch (e) {
@@ -68,7 +69,8 @@ export default defineEventHandler(async (event): Promise<{ token: string}> => {
     {
       username: user.username,
       role: user.role,
-      company: user.clientId
+      companyId: user.clientId,
+      userId: user.id
     },
     config.auth.secret,
     { expiresIn: 60 * 60 * 24 }
