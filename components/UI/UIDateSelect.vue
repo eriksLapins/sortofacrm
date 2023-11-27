@@ -7,11 +7,14 @@
       type="date"
       :name="name"
       class="leweb-input h-6 py-1 px-2 rounded-lg md:w-2/3 flex items-center"
+      @input="handleInput"
     >
   </label>
 </template>
 
 <script setup lang="ts">
+import { format } from 'date-fns';
+import type { PropType } from 'vue';
 
 defineOptions({
   name: 'UIDateInput'
@@ -20,8 +23,8 @@ const emit = defineEmits(['update:modelValue']);
 
 const props = defineProps({
   modelValue: {
-    type: String as PropType<String | null>,
-    required: true
+    type: String as PropType<string | null>,
+    default: null
   },
   name: {
     type: String,
@@ -33,9 +36,20 @@ const props = defineProps({
   }
 });
 
-const value = computed({
-  get: () => props.modelValue,
-  set: value => emit('update:modelValue', value)
+const value = ref<string | null>();
+
+function handleInput () {
+  if (value.value) {
+    emit('update:modelValue', new Date(value.value).toISOString());
+  } else {
+    emit('update:modelValue', null);
+  }
+}
+
+onMounted(() => {
+  if (props.modelValue) {
+    value.value = format(new Date(props.modelValue), 'yyyy-MM-dd');
+  }
 });
 </script>
 

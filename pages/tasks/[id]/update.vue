@@ -1,6 +1,7 @@
 <template>
   <div>
-    <TaskForm :task-id="(id as string)" :task-details="task" />
+    <TaskForm v-if="task" :task-id="(id as string)" :task-details="task" />
+    <LoadingAnimation v-else />
   </div>
 </template>
 
@@ -17,7 +18,7 @@ const id = route.params.id;
 const task = ref<Tasks>();
 
 async function fetchTaskById () {
-  const response = await $fetch('/api/data/tasks/get', {
+  const { data: tasks } = await $fetch('/api/data/tasks/get', {
     method: 'POST',
     body: {
       clientId: useUserStore().currentCompany,
@@ -25,12 +26,12 @@ async function fetchTaskById () {
     }
   });
 
-  const jsonResponse = JSON.parse(JSON.stringify(response.tasks));
+  const jsonResponse = JSON.parse(JSON.stringify(tasks));
 
   task.value = jsonResponse[0];
 }
 
-onMounted(async () => {
+onBeforeMount(async () => {
   await fetchTaskById();
 });
 

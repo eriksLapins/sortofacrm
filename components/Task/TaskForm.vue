@@ -12,11 +12,10 @@
               class="w-full md:w-1/2"
             />
             <UiDateSelect
-              :model-value="(form.dueDate as unknown as string || null )"
+              v-model:model-value="form.dueDate"
               name="due-date"
               label="Due date"
               class="w-full md:w-1/2"
-              @update:model-value="value => form.dueDate = value"
             />
           </div>
           <div class="flex flex-col md:flex-row gap-6">
@@ -27,11 +26,10 @@
               class="w-full md:w-1/2"
             />
             <UiDateSelect
-              :model-value="(form.doneOn as unknown as string || null)"
+              v-model:model-value="form.doneOn"
               name="done-on"
               label="Done on"
               class="w-full md:w-1/2"
-              @update:model-value="value => form.doneOn = value"
             />
           </div>
           <UiTextInput
@@ -112,23 +110,33 @@ const props = defineProps({
 
 const userStore = useUserStore();
 
-const form = ref<Omit<Tasks, 'id' | 'clientId' | 'createdOn' | 'updatedOn'>>({
+const form = ref<Omit<Tasks, 'id' | 'clientId'>>({
+  createdOn: new Date(),
+  updatedOn: new Date(),
+  createdById: '',
+  updatedById: '',
   // @ts-ignore
-  createdById: props.taskDetails?.createdById,
+  dueDate: null,
+  done: false,
   // @ts-ignore
-  dueDate: formatDate(props.taskDetails?.dueDate) || null,
-  done: props.taskDetails?.done || false,
-  // @ts-ignore
-  doneOn: formatDate(props.taskDetails?.doneOn) || null,
-  managerId: props.taskDetails?.managerId || '',
-  quoteId: props.taskDetails?.quoteId || '',
-  invoiceId: props.taskDetails?.invoiceId || '',
-  companyId: props.taskDetails?.companyId || '',
-  personId: props.taskDetails?.personId || '',
-  projectId: props.taskDetails?.projectId || '',
-  title: props.taskDetails?.title || '',
-  description: props.taskDetails?.description || '',
-  activityTypeId: props.taskDetails?.activityTypeId || ''
+  doneOn: null,
+  managerId: null,
+  quoteId: null,
+  invoiceId: null,
+  companyId: null,
+  personId: null,
+  projectId: null,
+  title: '',
+  description: '',
+  activityTypeId: null
+});
+
+onBeforeMount(() => {
+  if (props.taskDetails) {
+    form.value = {
+      ...props.taskDetails
+    };
+  }
 });
 
 const options = computed(() => {
@@ -148,47 +156,37 @@ const options = computed(() => {
   ];
 });
 
-function formatDate (date: Date | undefined | null) {
-  if (!date) {
-    return null;
-  }
-
-  const dateFormatted = new Date(date);
-
-  return (`${dateFormatted.getFullYear()}-${dateFormatted.getMonth() + 1}-${dateFormatted.getDate()}`);
-}
-
 watch(form.value, (newValue) => {
   if (newValue.done && newValue.doneOn === null) {
     const date = new Date();
-    const dateFormatted = formatDate(date);
-    form.value.doneOn = dateFormatted;
+    form.value.doneOn = date;
   }
 }, { deep: true });
 
 async function createTask () {
   if (props.taskId) {
-    const data = await $fetch('/api/data/tasks/update', {
+    const { data } = await $fetch('/api/data/tasks/update', {
       method: 'POST',
       body: {
+        ...form.value,
         id: props.taskId,
         clientId: userStore.currentCompany,
-        userId: userStore.currentUserId,
-        ...form.value
+        updatedById: userStore.currentUserId,
+        updatedOn: new Date().toISOString()
       }
     });
-    console.log(data);
+    form.value = data as unknown as Tasks;
   } else {
     const data = await $fetch('/api/data/tasks/create', {
       method: 'POST',
       body: {
+        ...form.value,
         clientId: userStore.currentCompany,
-        userId: userStore.currentUserId,
-        ...form.value
+        createdById: userStore.currentUserId,
+        updatedById: userStore.currentUserId
       }
     });
-
-    console.log(data);
+    form.value = data as unknown as Tasks;
   }
 }
 

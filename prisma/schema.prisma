@@ -241,6 +241,7 @@ model Tasks {
   id             String    @id @default(cuid())
   clientId       Int
   createdById    String
+  updatedById    String
   createdOn      DateTime  @default(now())
   updatedOn      DateTime  @updatedAt
   dueDate        DateTime?

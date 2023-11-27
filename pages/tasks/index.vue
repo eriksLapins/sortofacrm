@@ -15,7 +15,7 @@ const userStore = useUserStore();
 const tasks = ref<Tasks[]>();
 
 async function fetchTasks () {
-  const retrievedTasks = await $fetch('/api/data/tasks/get', {
+  const { data } = await $fetch('/api/data/tasks/get', {
     method: 'POST',
     body: {
       clientId: userStore.currentCompany,
@@ -23,7 +23,7 @@ async function fetchTasks () {
     }
   });
 
-  const jsonTasks = JSON.parse(JSON.stringify(retrievedTasks.tasks));
+  const jsonTasks = JSON.parse(JSON.stringify(data));
 
   tasks.value = jsonTasks;
 }

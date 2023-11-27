@@ -71,6 +71,7 @@ const props = defineProps({
 
 function clearItem () {
   setValue.value = null;
+  emit('update:modelValue', setValue.value);
 }
 
 const setValue = ref<string | null>(mapKeyToValue(props.modelValue, props.items) || null);

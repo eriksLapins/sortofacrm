@@ -8,5 +8,5 @@ export default defineEventHandler(async (event) => {
     }
   });
 
-  return { tasks };
+  return { data: tasks };
 });
