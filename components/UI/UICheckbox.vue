@@ -5,7 +5,12 @@
       v-model="value"
       type="checkbox"
       :name="name"
-      class="w-4 h-4 border-solid border-primary border-2 rounded-md checked:bg-primary hover:cursor-pointer"
+      class="w-4 h-4 border-solid border-primary border-2 rounded-md checked:bg-primary hover:cursor-pointer hover:bg-primary hover:bg-opacity-30 text-white flex justify-center items-center text-base leading-none"
+      :class="{
+        'checkbox--checked' : symbol === 'check',
+        'checkbox--question' : symbol === 'question',
+        'checkbox--cross' : symbol === 'cross',
+      }"
     >
     <label :for="name">{{ label }}</label>
   </div>
@@ -31,6 +36,10 @@ const props = defineProps({
   label: {
     type: String,
     default: undefined
+  },
+  symbol: {
+    type: String as PropType<'check' | 'cross' | 'question'>,
+    default: 'check'
   }
 });
 
@@ -48,5 +57,35 @@ const value = computed({
     &:focus {
         box-shadow: 0 0 0 2px $color-primary;
     }
+}
+
+.checkbox {
+  &--checked:checked:before {
+      content: '✓'
+  }
+  &--question{
+    border-color: $color-accent;
+    &:hover {
+      background-color: lighten($color-accent, 70%);
+    }
+    &:checked {
+      background-color: $color-accent;
+      &:before {
+          content: '?'
+      }
+    }
+  }
+  &--cross{
+    border-color: $color-error-border;
+    &:hover {
+      background-color: $color-error-background;
+    }
+    &:checked {
+      background-color: $color-error-border;
+      &:before {
+          content: 'X'
+      }
+    }
+  }
 }
 </style>

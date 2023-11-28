@@ -2,11 +2,11 @@
   <NuxtLink
     v-if="asLinkButton"
     :href="href"
-    class="border-2 px-2 py-1 rounded hover:text-white focus-within:text-white outline-none text-center"
+    class="border-2 px-2 py-1 rounded outline-none text-center"
     :class="{
-      'border-primary text-primary hover:bg-primary focus-within:bg-primary' : !secondary && !errorVariant,
-      'border-error-border text-error-border bg-error-background hover:bg-error-border focus-within:bg-error-border': errorVariant,
-      'border-primary text-primary hover:bg-primary hover:bg-opacity-50 focus-within:bg-primary' : secondary,
+      'border-primary bg-primary hover:bg-opacity-90 focus-within:bg-opacity-90 text-white' : !secondary && !errorVariant,
+      'border-error-border text-error-border bg-error-background hover:bg-error-border focus-within:bg-error-border hover:text-white focus-within:text-white': errorVariant,
+      'border-primary text-primary hover:bg-primary hover:bg-opacity-30 focus-within:bg-primary focus-within:bg-opacity-30' : secondary,
     }"
   >
     {{ text }}
@@ -24,11 +24,11 @@
   </NuxtLink>
   <button
     v-else
-    class="border-2 px-2 py-1 rounded hover:text-white focus-within:text-white outline-none text-center"
+    class="border-2 px-2 py-1 rounded outline-none text-center"
     :class="{
-      'border-primary text-primary hover:bg-primary focus-within:bg-primary' : !secondary && !errorVariant,
-      'border-error-border text-error-border bg-error-background hover:bg-error-border focus-within:bg-error-border': errorVariant,
-      'border-primary text-primary hover:bg-primary hover:bg-opacity-50 focus-within:bg-primary' : secondary,
+      'border-primary bg-primary hover:bg-opacity-90 focus-within:bg-opacity-90 text-white' : !secondary && !errorVariant,
+      'border-error-border text-error-border bg-error-background hover:bg-error-border focus-within:bg-error-border hover:text-white focus-within:text-white': errorVariant,
+      'border-primary text-primary hover:bg-primary hover:bg-opacity-30 focus-within:bg-primary focus-within:bg-opacity-30' : secondary,
     }"
   >
     {{ text }}
