@@ -92,7 +92,9 @@ function handleLogout () {
 }
 
 const isActive = (path: string) => {
-  return path === route.path;
+  const actualPath = '/' + route.path.split('/')[1];
+
+  return path === actualPath;
 };
 
 watch(() => route.path, () => {
