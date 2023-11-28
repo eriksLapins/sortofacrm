@@ -1,6 +1,6 @@
 <template>
-  <div className="loading-animation h-9">
-    <div className="lds-dual-ring" />
+  <div class="loading-animation w-full flex justify-center items-center" :class="largeSize ? 'h-32' : 'h-28 sm:h-10'">
+    <div class="lds-dual-ring inline-block" :class="largeSize ? 'h-32 w-32 after:h-32 after:w-32 after:border-8' : 'h-9 w-9 after:h-9 after:w-9 after:border-4'" />
   </div>
 </template>
 
@@ -8,45 +8,33 @@
 defineOptions({
   name: 'LoadingAnimation'
 });
+
+defineProps({
+  largeSize: {
+    type: Boolean
+  }
+});
 </script>
 
 <style lang="scss">
   @import "~/scss/theme/variables";
 
-.loading-animation {
-    display: flex;
-    width: 100%;
-    height: 104px;
-    justify-content: center;
-    align-items: center;
-
-    @media (min-width: 420px)  {
-      height: 44px;
-    }
+.lds-dual-ring:after {
+  content: " ";
+  display: block;
+  border-radius: 50%;
+  border-style: solid;
+  border-color: $color-primary;
+  border-color: $color-primary transparent $color-primary transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
 }
-
-.lds-dual-ring {
-    display: inline-block;
-    width: 44px;
-    height: 44px;
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
   }
-  .lds-dual-ring:after {
-    content: " ";
-    display: block;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    border: 6px solid $color-primary;
-    border-color: $color-primary transparent $color-primary transparent;
-    animation: lds-dual-ring 1.2s linear infinite;
+  100% {
+    transform: rotate(360deg);
   }
-  @keyframes lds-dual-ring {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
+}
 
 </style>

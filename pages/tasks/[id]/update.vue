@@ -1,7 +1,9 @@
 <template>
   <div>
     <TaskForm v-if="task" :task-id="(id as string)" :task-details="task" />
-    <LoadingAnimation v-else />
+    <div v-else class="pt-48 mx-auto">
+      <LoadingAnimation large-size />
+    </div>
   </div>
 </template>
 
