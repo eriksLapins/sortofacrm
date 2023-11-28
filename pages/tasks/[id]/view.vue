@@ -1,12 +1,12 @@
 <template>
-  <div>
-    <a :href="`/tasks/${id}/update`">Update</a>
-    <button class="border-2 border-error-border p-2" @click.prevent="deleteTask">
-      Delete task
-    </button>
-    <div>
-      {{ task }}
-    </div>
+  <div v-if="loading" class="pt-48 mx-auto">
+    <LoadingAnimation large-size />
+  </div>
+  <div v-else-if="task" class="container mx-auto pt-8">
+    <ItemHeader
+      module-name="tasks"
+      :item="headerItem!"
+    />
   </div>
 </template>
 
@@ -23,6 +23,7 @@ const id = route.params.id;
 
 const userStore = useUserStore();
 const task = ref<Tasks>();
+const loading = ref(true);
 
 async function fetchTaskById () {
   try {
@@ -37,22 +38,25 @@ async function fetchTaskById () {
 
     const jsonTask = JSON.parse(JSON.stringify(data));
 
-    task.value = jsonTask;
+    task.value = jsonTask[0];
+    loading.value = false;
   } catch {
     throw new Error('Sorry, something went wrong');
   }
 }
 
-async function deleteTask () {
-  await $fetch('/api/data/tasks/delete', {
-    method: 'POST',
-    body: {
-      clientId: userStore.currentCompany,
-      id
-    }
-  });
-  navigateTo('/tasks');
-}
+const headerItem = computed(() => {
+  if (task.value) {
+    return {
+      id: task.value.id,
+      updatedOn: task.value.updatedOn,
+      createdBy: task.value.createdById,
+      updatedBy: task.value.updatedById
+    };
+  }
+
+  return undefined;
+});
 
 onBeforeMount(async () => {
   await fetchTaskById();

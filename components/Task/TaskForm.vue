@@ -86,6 +86,14 @@
         </div>
       </div>
       <UiButton text="Save" class="w-full md:max-w-[350px]" @click.prevent="createTask" />
+      <UiButton
+        v-if="props.taskId"
+        text="Back"
+        class="w-full md:max-w-[350px]"
+        as-link-button
+        secondary
+        :href="`/tasks/${props.taskId}/view`"
+      />
     </form>
   </div>
 </template>
@@ -182,7 +190,7 @@ async function createTask () {
         }
       });
       form.value = data as unknown as Tasks;
-    } catch (e) {
+    } catch (e: any) {
       errors.value = e.data.data.errors;
     }
   } else {
@@ -197,7 +205,7 @@ async function createTask () {
         }
       });
       form.value = data as unknown as Tasks;
-    } catch (e) {
+    } catch (e: any) {
       errors.value = e.data.data.errors;
     }
   }
