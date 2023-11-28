@@ -1,15 +1,13 @@
 import { prisma } from '../../db';
-import { useUserStore } from '~/store/userStore';
 
 export default defineEventHandler(async (event) => {
-  const clientId = useUserStore().companyId;
-  const taskId = getRouterParam(event, 'id');
+  const body = await readBody(event);
 
   try {
     await prisma.tasks.delete({
       where: {
-        clientId,
-        id: taskId
+        clientId: body.clientId,
+        id: body.id
       }
     });
   } catch (e) {

@@ -1,8 +1,8 @@
 <template>
   <div>
-    <a href="/create">Create Task</a>
+    <a href="/tasks/create">Create Task</a>
     <div v-for="task in tasks" :key="task.id">
-      <a :href="`/tasks/${task.id}/update`">{{ task.title }}</a>
+      <a :href="`/tasks/${task.id}/view`">{{ task.title }}</a>
     </div>
   </div>
 </template>

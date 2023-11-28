@@ -17,6 +17,21 @@ export default defineEventHandler(async (event) => {
     });
   }
 
+  const errors: Record<string, Record<string, string>> = {};
+
+  if (!body.title) {
+    errors.form = { title: 'Title is required' };
+  }
+
+  if (Object.keys(errors).length) {
+    throw createError({
+      status: 400,
+      data: {
+        errors
+      }
+    });
+  }
+
   try {
     const data = await prisma.tasks.update({
       where: {

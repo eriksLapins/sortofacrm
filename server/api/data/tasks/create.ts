@@ -2,31 +2,31 @@ import { prisma } from '../../db';
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
-  console.log(body.clientId);
+
+  const errors: Record<string, Record<string, string>> = {};
+
+  if (!body.title) {
+    errors.form = { title: 'Title is required' };
+  }
+
+  if (errors) {
+    throw createError({
+      status: 400,
+      data: {
+        errors
+      }
+    });
+  }
 
   try {
     const created = await prisma.tasks.create({
       data: {
-        clientId: body.clientId,
-        createdById: body.userId,
-        title: body.title,
-        dueDate: new Date(body.dueDate),
-        done: body.done,
-        doneOn: new Date(body.doneOn),
-        managerId: body.managerId,
-        quoteId: body.quoteId,
-        invoiceId: body.invoiceId,
-        companyId: body.companyId,
-        personId: body.personId,
-        projectId: body.projectId,
-        description: body.description,
-        activityTypeId: body.activityTypeId
+        ...body
       }
     });
 
     return { created };
   } catch (e) {
-    console.log(e);
     throw createError({
       status: 500,
       statusMessage: 'Something went wrong, please try again later'

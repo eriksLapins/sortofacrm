@@ -36,6 +36,7 @@
             v-model:model-value="form.title"
             name="title"
             label="Title"
+            :errors="errors.form.title"
           />
           <UiTextInputArea
             :model-value="(form.description as string || undefined)"
@@ -108,6 +109,10 @@ const props = defineProps({
   }
 });
 
+const errors = ref<Record<string, any>>({
+  form: {}
+});
+
 const userStore = useUserStore();
 
 const form = ref<Omit<Tasks, 'id' | 'clientId'>>({
@@ -165,28 +170,36 @@ watch(form.value, (newValue) => {
 
 async function createTask () {
   if (props.taskId) {
-    const { data } = await $fetch('/api/data/tasks/update', {
-      method: 'POST',
-      body: {
-        ...form.value,
-        id: props.taskId,
-        clientId: userStore.currentCompany,
-        updatedById: userStore.currentUserId,
-        updatedOn: new Date().toISOString()
-      }
-    });
-    form.value = data as unknown as Tasks;
+    try {
+      const { data } = await $fetch('/api/data/tasks/update', {
+        method: 'POST',
+        body: {
+          ...form.value,
+          id: props.taskId,
+          clientId: userStore.currentCompany,
+          updatedById: userStore.currentUserId,
+          updatedOn: new Date().toISOString()
+        }
+      });
+      form.value = data as unknown as Tasks;
+    } catch (e) {
+      errors.value = e.data.data.errors;
+    }
   } else {
-    const data = await $fetch('/api/data/tasks/create', {
-      method: 'POST',
-      body: {
-        ...form.value,
-        clientId: userStore.currentCompany,
-        createdById: userStore.currentUserId,
-        updatedById: userStore.currentUserId
-      }
-    });
-    form.value = data as unknown as Tasks;
+    try {
+      const data = await $fetch('/api/data/tasks/create', {
+        method: 'POST',
+        body: {
+          ...form.value,
+          clientId: userStore.currentCompany,
+          createdById: userStore.currentUserId,
+          updatedById: userStore.currentUserId
+        }
+      });
+      form.value = data as unknown as Tasks;
+    } catch (e) {
+      errors.value = e.data.data.errors;
+    }
   }
 }
 
