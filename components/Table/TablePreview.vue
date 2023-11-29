@@ -1,10 +1,6 @@
 <template>
   <table>
-    <thead>
-      <div v-for="item in tableHeadOptions" :key="item">
-        {{ item }}
-      </div>
-    </thead>
+    <TableHead :options="tableHeadOptions" />
     <tbody>
       <TableRow />
     </tbody>
@@ -14,10 +10,10 @@
 <script setup lang="ts">
 
 defineOptions({
-  name: 'TableComponent'
+  name: 'TablePreview'
 });
 
-defineProps({
+const props = defineProps({
   dataJson: {
     type: Array as PropType<Record<string, any>[]>,
     required: true
@@ -25,7 +21,7 @@ defineProps({
 });
 
 const tableHeadOptions = computed(() => {
-  return Object.keys(dataJson);
+  return Object.keys(props.dataJson);
 });
 
 </script>

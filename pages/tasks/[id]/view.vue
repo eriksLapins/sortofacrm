@@ -7,6 +7,15 @@
       module-name="tasks"
       :item="headerItem!"
     />
+    <PageContent
+      :title="task.title"
+      :subtitle="task.description || undefined"
+      :title-append="task.done ? 'Done' : undefined"
+    >
+      <div>
+        {{ task }}
+      </div>
+    </PageContent>
   </div>
 </template>
 

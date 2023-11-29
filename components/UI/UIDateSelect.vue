@@ -51,6 +51,14 @@ onMounted(() => {
     value.value = format(new Date(props.modelValue), 'yyyy-MM-dd');
   }
 });
+
+watch(() => props.modelValue, (newValue) => {
+  if (newValue) {
+    value.value = format(new Date(newValue), 'yyyy-MM-dd');
+  } else {
+    value.value = null;
+  }
+});
 </script>
 
 <style lang="scss">

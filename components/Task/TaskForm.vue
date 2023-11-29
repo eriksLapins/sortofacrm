@@ -169,12 +169,14 @@ const options = computed(() => {
   ];
 });
 
-watch(form.value, (newValue) => {
-  if (newValue.done && newValue.doneOn === null) {
-    const date = new Date();
-    form.value.doneOn = date;
+watch(() => form.value, (newValue) => {
+  if (!newValue.done) {
+    newValue.doneOn = null;
+  } else if (newValue.doneOn === null) {
+    // @ts-ignore
+    form.value.doneOn = new Date().toISOString();
   }
-}, { deep: true });
+}, { deep: true, immediate: true });
 
 async function createTask () {
   if (props.taskId) {
