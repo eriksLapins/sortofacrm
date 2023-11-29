@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="grid gap-4">
     <div>
       <h2 v-if="title" class="text-l font-bold inline-block">
         {{ title }}

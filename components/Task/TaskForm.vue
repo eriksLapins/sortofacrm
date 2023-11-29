@@ -3,7 +3,7 @@
     <form ref="taskForm" class="grid gap-6 items-start w-full" @submit.prevent="createTask">
       <div class="flex flex-col md:flex-row gap-6">
         <div class="w-full md:w-2/3 flex flex-col gap-6">
-          <div class="flex flex-col md:flex-row gap-6">
+          <div class="flex flex-col gap-6">
             <UiSelect
               v-model:model-value="form.activityTypeId"
               :items="options"
@@ -11,12 +11,20 @@
               label="Activity Type"
               class="w-full md:w-1/2"
             />
-            <UiDateSelect
-              v-model:model-value="form.dueDate"
-              name="due-date"
-              label="Due date"
-              class="w-full md:w-1/2"
-            />
+            <div class="flex flex-col md:flex-row gap-6">
+              <UiDateSelect
+                v-model:model-value="form.startDate"
+                name="start-date"
+                label="Start date"
+                class="w-full md:w-1/2"
+              />
+              <UiDateSelect
+                v-model:model-value="form.dueDate"
+                name="due-date"
+                label="Due date"
+                class="w-full md:w-1/2"
+              />
+            </div>
           </div>
           <div class="flex flex-col md:flex-row gap-6">
             <UiCheckbox
@@ -129,6 +137,7 @@ const form = ref<Omit<Tasks, 'id' | 'clientId'>>({
   createdById: '',
   updatedById: '',
   // @ts-ignore
+  startDate: null,
   dueDate: null,
   done: false,
   // @ts-ignore
@@ -191,6 +200,7 @@ async function createTask () {
           updatedOn: new Date().toISOString()
         }
       });
+
       form.value = data as unknown as Tasks;
     } catch (e: any) {
       errors.value = e.data.data.errors;

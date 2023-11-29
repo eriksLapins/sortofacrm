@@ -33,7 +33,7 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const data = await prisma.tasks.update({
+    const task = await prisma.tasks.update({
       where: {
         clientId: body.clientId,
         id: body.id
@@ -43,7 +43,7 @@ export default defineEventHandler(async (event) => {
       }
     });
 
-    return { data };
+    return { data: task };
   } catch (e) {
     console.log(e);
     throw createError({

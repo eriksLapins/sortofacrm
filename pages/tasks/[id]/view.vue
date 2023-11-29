@@ -2,25 +2,36 @@
   <div v-if="loading" class="pt-48 mx-auto">
     <LoadingAnimation large-size />
   </div>
-  <div v-else-if="task" class="container mx-auto pt-8">
+  <div v-else-if="task" class="lg:container mx-auto pt-8 px-6 md:px-8">
     <ItemHeader
       module-name="tasks"
       :item="headerItem!"
     />
     <PageContent
       :title="task.title"
-      :subtitle="task.description || undefined"
       :title-append="task.done ? 'Done' : undefined"
     >
-      <div>
-        {{ task }}
-      </div>
+      <PageBlockStatic>
+        <div>
+          Starting date: {{ task.startDate ? format(new Date(task.startDate), 'yyyy-MM-dd') : 'not defined' }}
+        </div>
+        <div>
+          To do until: {{ task.dueDate ? format(new Date(task.dueDate), 'yyyy-MM-dd') : 'not defined' }}
+        </div>
+        <div class="text-gray">
+          {{ task.description }}
+        </div>
+        <pre>
+          {{ task }}
+        </pre>
+      </PageBlockStatic>
     </PageContent>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { Tasks } from '@prisma/client';
+import format from 'date-fns/format';
 import { useUserStore } from '~/store/userStore';
 
 defineOptions({

@@ -244,6 +244,7 @@ model Tasks {
   updatedById    String
   createdOn      DateTime  @default(now())
   updatedOn      DateTime  @updatedAt
+  startDate      DateTime?
   dueDate        DateTime?
   done           Boolean   @default(false)
   doneOn         DateTime?

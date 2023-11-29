@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full border-2 border-primary border-solid rounded-3xl md:border-none">
+  <div class="sm:shadow-sm shadow-primary">
     <slot />
   </div>
 </template>
