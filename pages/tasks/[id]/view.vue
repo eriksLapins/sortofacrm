@@ -2,7 +2,7 @@
   <div v-if="loading" class="pt-48 mx-auto">
     <LoadingAnimation large-size />
   </div>
-  <div v-else-if="task" class="lg:container mx-auto pt-8 px-6 md:px-8">
+  <div v-else-if="task" class="lg:container mx-auto py-8 px-6 md:px-8">
     <ItemHeader
       module-name="tasks"
       :item="headerItem!"
@@ -11,20 +11,36 @@
       :title="task.title"
       :title-append="task.done ? 'Done' : undefined"
     >
-      <PageBlockStatic>
-        <div>
-          Starting date: {{ task.startDate ? format(new Date(task.startDate), 'yyyy-MM-dd') : 'not defined' }}
-        </div>
-        <div>
-          To do until: {{ task.dueDate ? format(new Date(task.dueDate), 'yyyy-MM-dd') : 'not defined' }}
+      <PageBlockStatic class="flex flex-col gap-4 lg:w-1/2 lg:border border-solid border-primary p-4">
+        <div class="flex flex-col gap-4">
+          <div class="flex flex-col">
+            <div class="flex flex-col gap-2 md:flex-row md:gap-4 md:items-center">
+              <div>Manager: {{ task.managerId || 'unspecified' }}</div>
+              <div class="flex gap-2">
+                Task doers:
+                <ul class="flex gap-2 items-center">
+                  <li>doer 1</li>
+                  <li>doer 2</li>
+                </ul>
+              </div>
+            </div>
+            <div>{{ task.activityTypeId }}</div>
+            <div class="text-sm">
+              Starting date: {{ task.startDate ? format(new Date(task.startDate), 'yyyy-MM-dd') : 'not defined' }}
+            </div>
+            <div class="text-sm">
+              To do until: {{ task.dueDate ? format(new Date(task.dueDate), 'yyyy-MM-dd') : 'not defined' }}
+            </div>
+          </div>
         </div>
         <div class="text-gray">
           {{ task.description }}
         </div>
-        <pre>
+      </PageBlockStatic>
+
+      <pre>
           {{ task }}
         </pre>
-      </PageBlockStatic>
     </PageContent>
   </div>
 </template>
