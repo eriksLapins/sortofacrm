@@ -19,18 +19,18 @@ export default defineEventHandler(async (event) => {
       }
     });
 
-    //   userData.forEach(async (user) => {
-    //     if (user.departmentId) {
-    //       user.department = await prisma.department.findFirst({
-    //         where: {
-    //           clientId: body.clientId,
-    //           id: user.departmentId
-    //         }
-    //       });
-    //     } else {
-    //       user.department = '';
-    //     }
-    //   });
+    // userData.forEach(async (user) => {
+    //   if (user.departmentId) {
+    //     user.department = await prisma.department.findFirst({
+    //       where: {
+    //         clientId: body.clientId,
+    //         id: user.departmentId
+    //       }
+    //     });
+    //   } else {
+    //     user.department = '';
+    //   }
+    // });
 
     return { data: userData };
   } catch (e) {

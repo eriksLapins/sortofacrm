@@ -10,7 +10,11 @@ export default defineEventHandler(async (event) => {
       }
     });
 
-    return { data: tasks };
+    return {
+      data: {
+        tasks
+      }
+    };
   } catch (e) {
     throw createError({
       status: 500,

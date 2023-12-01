@@ -1,5 +1,6 @@
 import { ERole, type User } from '@prisma/client';
 import { defineStore } from 'pinia';
+import type { UserData } from '~/types';
 
 export const useUserStore = defineStore('users', () => {
   const currentUser = ref<Omit<User, 'password'>>();
@@ -8,6 +9,20 @@ export const useUserStore = defineStore('users', () => {
   const isAdmin = ref(false);
   const isLoggedIn = ref(false);
   const currentCompany = ref<Number>();
+  const availableUsers = ref<UserData[]>([]);
+
+  const fetchUsers = async () => {
+    const data = await $fetch('/api/data/users/get', {
+      method: 'POST',
+      body: {
+        clientId: currentCompany.value
+      }
+    });
+
+    const jsonData = JSON.parse(JSON.stringify(data));
+
+    availableUsers.value = jsonData.data;
+  };
 
   const loginUser = async (token: string | null) => {
     if (!token) {
@@ -57,6 +72,8 @@ export const useUserStore = defineStore('users', () => {
     destroyUser,
     isAdmin,
     isLoggedIn,
-    loginUser
+    loginUser,
+    fetchUsers,
+    availableUsers
   };
 });

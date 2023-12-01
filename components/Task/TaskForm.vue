@@ -57,7 +57,7 @@
         <div class="w-full md:w-1/3 flex flex-col gap-6">
           <UiSelect
             v-model:model-value="form.managerId"
-            :items="options"
+            :items="userOptions"
             name="manager-id"
             label="Manager"
           />
@@ -161,6 +161,8 @@ onBeforeMount(() => {
   }
 });
 
+const userOptions = ref<{key: string, title: string}[]>([]);
+
 const options = computed(() => {
   return [
     {
@@ -203,6 +205,7 @@ async function createTask () {
 
       form.value = data as unknown as Tasks;
     } catch (e: any) {
+      console.log(e);
       errors.value = e.data.data.errors;
     }
   } else {
@@ -222,6 +225,18 @@ async function createTask () {
     }
   }
 }
+
+onBeforeMount(async () => {
+  if (!userStore.availableUsers.length) {
+    await userStore.fetchUsers();
+  }
+  userOptions.value = userStore.availableUsers?.map((user) => {
+    return {
+      key: user.id,
+      title: `${user.name} ${user.lastname}`
+    };
+  });
+});
 
 </script>
 

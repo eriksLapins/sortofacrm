@@ -15,7 +15,7 @@
         <div class="flex flex-col gap-4">
           <div class="flex flex-col">
             <div class="flex flex-col gap-2 md:flex-row md:gap-4 md:items-center">
-              <div>Manager: {{ task.managerId || 'unspecified' }}</div>
+              <div>Manager: {{ matchUserById(task.managerId) || 'unspecified' }}</div>
               <div class="flex gap-2">
                 Task doers:
                 <ul class="flex gap-2 items-center">
@@ -24,7 +24,7 @@
                 </ul>
               </div>
             </div>
-            <div>{{ task.activityTypeId }}</div>
+            <div>Activity type: {{ task.activityTypeId }}</div>
             <div class="text-sm">
               Starting date: {{ task.startDate ? format(new Date(task.startDate), 'yyyy-MM-dd') : 'not defined' }}
             </div>
@@ -74,9 +74,10 @@ async function fetchTaskById () {
 
     const jsonTask = JSON.parse(JSON.stringify(data));
 
-    task.value = jsonTask[0];
+    task.value = jsonTask.tasks[0];
     loading.value = false;
-  } catch {
+  } catch (e) {
+    console.log(e);
     throw new Error('Sorry, something went wrong');
   }
 }
@@ -96,6 +97,9 @@ const headerItem = computed(() => {
 
 onBeforeMount(async () => {
   await fetchTaskById();
+  if (!userStore.availableUsers.length) {
+    await userStore.fetchUsers();
+  }
 });
 
 </script>

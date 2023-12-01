@@ -98,6 +98,12 @@ const handleSelectOption = (item: string) => {
   showItems.value = false;
 };
 
+watch(() => props.items, (newValue) => {
+  if (!setValue.value) {
+    setValue.value = mapKeyToValue(props.modelValue, newValue) || null;
+  }
+});
+
 </script>
 
 <style lang="scss">

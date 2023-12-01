@@ -2,6 +2,7 @@ import { prisma } from '../../db';
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
+  console.log(body);
 
   if (!body.clientId) {
     throw createError({
@@ -45,6 +46,7 @@ export default defineEventHandler(async (event) => {
 
     return { data: task };
   } catch (e) {
+    console.log(e);
     throw createError({
       status: 500,
       statusText: 'Something went wrong, please try again later',

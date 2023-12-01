@@ -3,10 +3,10 @@
     <div class="flex flex-col gap-2">
       <div class="flex gap-2">
         <p class="text-gray-text">
-          created by: {{ item.createdBy }}
+          created by: {{ matchUserById(item.createdBy.toString()) }}
         </p>
         <p class="text-gray-text">
-          last updated by: {{ item.updatedBy }}
+          last updated by: {{ matchUserById(item.updatedBy.toString()) }}
         </p>
       </div>
 

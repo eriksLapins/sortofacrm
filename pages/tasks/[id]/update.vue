@@ -30,7 +30,7 @@ async function fetchTaskById () {
 
   const jsonResponse = JSON.parse(JSON.stringify(tasks));
 
-  task.value = jsonResponse[0];
+  task.value = jsonResponse.tasks[0];
 }
 
 onBeforeMount(async () => {

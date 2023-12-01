@@ -25,7 +25,7 @@ async function fetchTasks () {
 
   const jsonTasks = JSON.parse(JSON.stringify(data));
 
-  tasks.value = jsonTasks;
+  tasks.value = jsonTasks.tasks;
 }
 
 onMounted(async () => {
