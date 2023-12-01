@@ -37,8 +37,9 @@ export default defineEventHandler(async (event): Promise<{ token: string}> => {
     });
   } catch (e) {
     throw createError({
-      statusCode: 500,
-      statusText: 'Somethingg went wrong, please try again'
+      status: 500,
+      statusText: 'Something went wrong, please try again later',
+      message: 'unhandled error at users get one'
     });
   }
 

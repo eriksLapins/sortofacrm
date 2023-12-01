@@ -149,6 +149,12 @@ model Company {
   @@index([legalName])
 }
 
+model Department {
+  clientId Int
+  id       String @id @default(cuid())
+  name     String
+}
+
 model Person {
   clientId       Int
   id             String  @id @default(cuid())

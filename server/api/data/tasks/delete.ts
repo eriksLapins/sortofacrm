@@ -13,7 +13,8 @@ export default defineEventHandler(async (event) => {
   } catch (e) {
     throw createError({
       status: 500,
-      statusText: 'Something went wrong, please try again later'
+      statusText: 'Something went wrong, please try again later',
+      message: 'unhandled error at tasks delete'
     });
   }
 });

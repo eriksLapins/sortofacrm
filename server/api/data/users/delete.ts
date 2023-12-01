@@ -13,42 +13,25 @@ export default defineEventHandler(async (event) => {
   if (!body.id) {
     throw createError({
       status: 400,
-      statusMessage: 'Please provide a task id'
-    });
-  }
-
-  const errors: Record<string, Record<string, string>> = {};
-
-  if (!body.title) {
-    errors.form = { title: 'Title is required' };
-  }
-
-  if (Object.keys(errors).length) {
-    throw createError({
-      status: 400,
+      statusMessage: 'Please provide a user',
       data: {
-        errors
+        user: { text: 'user id is missing' }
       }
     });
   }
 
   try {
-    const task = await prisma.tasks.update({
+    await prisma.user.delete({
       where: {
         clientId: body.clientId,
         id: body.id
-      },
-      data: {
-        ...body
       }
     });
-
-    return { data: task };
   } catch (e) {
     throw createError({
       status: 500,
       statusText: 'Something went wrong, please try again later',
-      message: 'unhandled error at tasks update'
+      message: 'unhandled error at users delete'
     });
   }
 });
