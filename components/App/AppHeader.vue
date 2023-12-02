@@ -5,7 +5,7 @@
   >
     <div class="md:w-1/4 flex md:m-0 justify-center items-center self-stretch">
       <NuxtLink href="/">
-        <img src="./svg/el_logo.svg" alt="ĒL Logo" class="w-10 h-10 md:w-12 md:h-12">
+        <ElLogo class="w-10 h-10 md:w-12 md:h-12" />
       </NuxtLink>
     </div>
     <template v-if="navItems.length">
@@ -14,14 +14,14 @@
         :class="{hidden: !activeMenu}"
         @click.prevent="handleMenuOpenClose"
       >
-        <img src="./svg/menu-close-icon.svg" class="w-8 h-8" alt="menu icon close">
+        <MenuClose class="w-8 h-8 text-primary" />
       </a>
       <a
         class="w-10 h-full items-center md:hidden flex justify-center"
         :class="{hidden: activeMenu}"
         @click.prevent="handleMenuOpenClose"
       >
-        <img src="./svg/menu-icon.svg" class="w-8 h-8" alt="menu icon">
+        <MenuOpen class="w-8 h-8 text-primary" />
       </a>
     </template>
     <ClientOnly>
@@ -62,8 +62,11 @@
 
 <script setup lang="ts">
 import type { PropType } from 'vue';
-import { useUserStore } from '~/store/userStore';
+import ElLogo from './svg/el_logo.svg';
+import MenuClose from './svg/menu-close-icon.svg';
+import MenuOpen from './svg/menu-icon.svg';
 import type { NavItem } from '~/types';
+import { useUserStore } from '~/store/userStore';
 
 defineOptions({
   name: 'NavBar'

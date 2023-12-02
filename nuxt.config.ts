@@ -35,7 +35,8 @@ export default defineNuxtConfig({
   modules: [
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt',
-    '@pinia-plugin-persistedstate/nuxt'
+    '@pinia-plugin-persistedstate/nuxt',
+    'nuxt-svgo'
   ],
   piniaPersistedstate: {
     cookieOptions: {
@@ -50,5 +51,11 @@ export default defineNuxtConfig({
         '.prisma/client/index-browser': './node_modules/.prisma/client/index-browser.js'
       }
     }
+  },
+  svgo: {
+    autoImportPath: './assets/svg/',
+    defaultImport: 'component',
+    global: false,
+    componentPrefix: 'i'
   }
 });

@@ -22,6 +22,13 @@
                   <li>doer 1</li>
                   <li>doer 2</li>
                 </ul>
+                <UiMultiSelect
+                  v-model:model-value="taskDoerIds"
+                  :items="userOptions"
+                  name="task-doer-ids"
+                  label="Search doers"
+                  as-button
+                />
               </div>
             </div>
             <div>Activity type: {{ task.activityTypeId }}</div>
@@ -60,6 +67,7 @@ const id = route.params.id;
 const userStore = useUserStore();
 const task = ref<Tasks>();
 const loading = ref(true);
+const userOptions = ref<{key: string, title: string, displayTitle: string}[]>([]);
 
 async function fetchTaskById () {
   try {
@@ -82,6 +90,8 @@ async function fetchTaskById () {
   }
 }
 
+const taskDoerIds = ref<Array<string>>([]);
+
 const headerItem = computed(() => {
   if (task.value) {
     return {
@@ -100,6 +110,13 @@ onBeforeMount(async () => {
   if (!userStore.availableUsers.length) {
     await userStore.fetchUsers();
   }
+  userOptions.value = userStore.availableUsers?.map((user) => {
+    return {
+      key: user.id,
+      title: `${user.name} ${user.lastname}`,
+      displayTitle: user.initials
+    };
+  });
 });
 
 </script>
