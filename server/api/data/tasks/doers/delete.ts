@@ -1,9 +1,7 @@
-import { prisma } from '../../db';
+import { prisma } from '~/server/api/db';
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
-
-  const errors: Record<string, Record<string, string>> = {};
 
   if (!body.clientId) {
     throw createError({
@@ -12,32 +10,28 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  if (!body.title) {
-    errors.form = { title: 'Title is required' };
-  }
-
-  if (errors) {
+  if (!body.taskId) {
     throw createError({
       status: 400,
-      data: {
-        errors
-      }
+      statusMessage: 'Please provide a task id'
     });
   }
 
-  try {
-    const created = await prisma.tasks.create({
-      data: {
-        ...body
+  const doers = await prisma.taskDoers.deleteMany({
+    where: {
+      clientId: body.clientId,
+      taskId: body.taskId,
+      doerId: {
+        in: body.doerId
       }
-    });
-
-    return { created };
-  } catch (e) {
+    }
+  }).catch(() => {
     throw createError({
       status: 500,
       statusText: 'Something went wrong, please try again later',
-      message: 'unhandled error at tasks create'
+      message: 'unhandled error at taskdoers create'
     });
-  }
+  });
+
+  return { data: doers };
 });
