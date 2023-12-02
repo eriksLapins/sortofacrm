@@ -16,19 +16,24 @@
           <div class="flex flex-col">
             <div class="flex flex-col gap-2 md:flex-row md:gap-4 md:items-center">
               <div>Manager: {{ matchUserById(task.managerId) || 'unspecified' }}</div>
-              <div class="flex gap-2">
+              <div class="flex gap-2 items-center">
                 Task doers:
-                <ul class="flex gap-2 items-center">
-                  <li>doer 1</li>
-                  <li>doer 2</li>
-                </ul>
                 <UiMultiSelect
                   v-model:model-value="taskDoerIds"
                   :items="userOptions"
                   name="task-doer-ids"
                   label="Search doers"
                   as-button
-                />
+                  class="flex flex-row gap-2"
+                >
+                  <template #prepend>
+                    <ul class="flex gap-2 items-center">
+                      <li v-for="item in taskDoerIds" :key="item" class="leading-none rounded-full w-8 h-8 border-solid border-primary border-2 flex justify-center items-center">
+                        {{ findUserById(item)?.initials }}
+                      </li>
+                    </ul>
+                  </template>
+                </UiMultiSelect>
               </div>
             </div>
             <div>Activity type: {{ task.activityTypeId }}</div>
@@ -67,7 +72,7 @@ const id = route.params.id;
 const userStore = useUserStore();
 const task = ref<Tasks>();
 const loading = ref(true);
-const userOptions = ref<{key: string, title: string, displayTitle: string}[]>([]);
+const userOptions = ref<{key: string, title: string}[]>([]);
 
 async function fetchTaskById () {
   try {
@@ -105,6 +110,10 @@ const headerItem = computed(() => {
   return undefined;
 });
 
+function findUserById (id: string) {
+  return userStore.availableUsers.find(user => user.id === id);
+}
+
 onBeforeMount(async () => {
   await fetchTaskById();
   if (!userStore.availableUsers.length) {
@@ -113,8 +122,7 @@ onBeforeMount(async () => {
   userOptions.value = userStore.availableUsers?.map((user) => {
     return {
       key: user.id,
-      title: `${user.name} ${user.lastname}`,
-      displayTitle: user.initials
+      title: `${user.name} ${user.lastname}`
     };
   });
 });
