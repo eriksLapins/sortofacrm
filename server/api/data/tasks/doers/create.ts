@@ -27,10 +27,9 @@ export default defineEventHandler(async (event) => {
   });
 
   const doers = await prisma.taskDoers.createMany({
-    data: {
-      ...bodies
-    }
-  }).catch(() => {
+    data: bodies
+  }).catch((e) => {
+    console.log(e);
     throw createError({
       status: 500,
       statusText: 'Something went wrong, please try again later',

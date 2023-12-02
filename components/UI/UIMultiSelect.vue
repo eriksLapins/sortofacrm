@@ -61,6 +61,7 @@
         </ul>
       </div>
     </div>
+    <slot name="append" />
   </div>
 </template>
 

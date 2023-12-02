@@ -18,22 +18,29 @@
               <div>Manager: {{ matchUserById(task.managerId) || 'unspecified' }}</div>
               <div class="flex gap-2 items-center">
                 Task doers:
-                <UiMultiSelect
-                  v-model:model-value="taskDoerIds"
-                  :items="userOptions"
-                  name="task-doer-ids"
-                  label="Search doers"
-                  as-button
-                  class="flex flex-row gap-2"
-                >
-                  <template #prepend>
-                    <ul class="flex gap-2 items-center">
-                      <li v-for="item in taskDoerIds" :key="item" class="leading-none rounded-full w-8 h-8 border-solid border-primary border-2 flex justify-center items-center">
-                        {{ findUserById(item)?.initials }}
-                      </li>
-                    </ul>
-                  </template>
-                </UiMultiSelect>
+                <div class="flex flex-row gap-2">
+                  <ul v-if="taskDoerIds.length" class="flex gap-2 items-center">
+                    <li v-for="item in taskDoerIds" :key="item" class="leading-none rounded-full w-8 h-8 border-solid border-primary border-2 flex justify-center items-center">
+                      {{ findUserById(item)?.initials }}
+                    </li>
+                  </ul>
+                  <p v-else class="flex items-center">
+                    undefined
+                  </p>
+                  <UiMultiSelect
+                    v-model:model-value="taskDoerIds"
+                    :items="userOptions"
+                    name="task-doer-ids"
+                    label="Search doers"
+                    as-button
+                    @update:model-value="usersUpdated = true"
+                  />
+                  <UiButton
+                    v-if="usersUpdated"
+                    text="Update"
+                    @click="updateTaskDoers"
+                  />
+                </div>
               </div>
             </div>
             <div>Activity type: {{ task.activityTypeId }}</div>
@@ -58,7 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Tasks } from '@prisma/client';
+import type { TaskDoers, Tasks } from '@prisma/client';
 import format from 'date-fns/format';
 import { useUserStore } from '~/store/userStore';
 
@@ -73,6 +80,8 @@ const userStore = useUserStore();
 const task = ref<Tasks>();
 const loading = ref(true);
 const userOptions = ref<{key: string, title: string}[]>([]);
+const usersUpdated = ref(false);
+const initialDoersList = ref<string[]>([]);
 
 async function fetchTaskById () {
   try {
@@ -114,8 +123,65 @@ function findUserById (id: string) {
   return userStore.availableUsers.find(user => user.id === id);
 }
 
+async function updateTaskDoers () {
+  const doersToAdd = taskDoerIds.value.filter(doer => !initialDoersList.value?.includes(doer));
+  const doersToDelete = initialDoersList.value?.filter(doer => !taskDoerIds.value.includes(doer));
+  if (doersToAdd.length) {
+    await $fetch('/api/data/tasks/doers/create', {
+      method: 'POST',
+      body: {
+        clientId: userStore.currentCompany,
+        taskId: id,
+        doerId: doersToAdd
+      }
+    }).catch(() => {
+      throw createError({
+        statusCode: 500,
+        statusMessage: 'Sorry, something went wrong when adding users'
+      });
+    }); ;
+  }
+
+  if (doersToDelete.length) {
+    await $fetch('/api/data/tasks/doers/delete', {
+      method: 'POST',
+      body: {
+        clientId: userStore.currentCompany,
+        taskId: id,
+        doerId: doersToDelete
+      }
+    }).catch(() => {
+      throw createError({
+        statusCode: 500,
+        statusMessage: 'Sorry, something went wrong when removing users'
+      });
+    });
+  }
+}
+
+async function fetchTaskDoers () {
+  const { data } = await $fetch('/api/data/tasks/doers/get', {
+    method: 'POST',
+    body: {
+      clientId: userStore.currentCompany,
+      taskId: id
+    }
+  }).catch(() => {
+    throw createError({
+      statusCode: 500,
+      message: 'Sorry, something went wrong, please try again later'
+    });
+  });
+
+  const jsonData = JSON.parse(JSON.stringify(data)) as TaskDoers[];
+
+  taskDoerIds.value = jsonData.map(item => item.doerId);
+  initialDoersList.value = jsonData.map(item => item.doerId);
+}
+
 onBeforeMount(async () => {
   await fetchTaskById();
+  await fetchTaskDoers();
   if (!userStore.availableUsers.length) {
     await userStore.fetchUsers();
   }
