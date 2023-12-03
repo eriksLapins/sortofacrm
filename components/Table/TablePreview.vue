@@ -55,7 +55,6 @@ function findItemId (item: typeof table.value[0]) {
 
 const tableHeadOptions = computed(() => {
   if (table.value) {
-    console.log('sorting computed');
     table.value.forEach((row) => {
       row.sort((a, b) => {
         if (a.position === undefined || b.position === undefined) {
