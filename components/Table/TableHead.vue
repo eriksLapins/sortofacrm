@@ -1,6 +1,8 @@
 <template>
-  <div v-for="item in options" :key="item">
-    {{ item }}
+  <div class="flex">
+    <div v-for="item in options" :key="item">
+      {{ item }}
+    </div>
   </div>
 </template>
 

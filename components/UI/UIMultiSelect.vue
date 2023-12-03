@@ -22,7 +22,7 @@
           v-model="setValue"
           type="text"
           :name="name"
-          class="leweb-input h-6 py-1 px-2 rounded-lg"
+          class="leweb-input h-6 py-1 px-2 rounded-lg w-40"
           :placeholder="label"
           @input="handleInput(setValue)"
           @click="handleInput(setValue)"
@@ -30,9 +30,27 @@
         <div v-if="setValue" class=" absolute hover:cursor-pointer text-primary flex justify-center items-center h-6 right-0 mr-4 top-0 my-1" @click="clearInput">
           X
         </div>
-        <ul v-show="showItems" class="absolute bg-white border-primary border-2 border-solid rounded-lg top-7 mt-2 p-2 grid gap-2 w-full z-10">
-          <li v-if="options.length" class="text-sm hover:cursor-pointer hover:underline p-2" @click="clearAllItems()">
-            Clear all
+        <ol
+          v-show="showItems"
+          class="bg-white border-primary border-2 border-solid rounded-lg top-7 mt-2 p-2 grid gap-2 w-full md:w-max md:min-w-[175px] z-10 md:max-h-80 overflow-y-scroll"
+          :class="{
+            absolute: !asButton
+          }"
+          @dragover.prevent="!!sortingMode"
+        >
+          <li v-if="options.length" class="flex justify-between">
+            <p v-if="!sortingMode" class="text-sm hover:cursor-pointer hover:underline p-2" @click="clearAllItems()">
+              Clear all
+            </p>
+            <p v-if="!sortingMode" class="text-sm hover:cursor-pointer hover:underline p-2" @click="selectAllItems()">
+              Select all visible
+            </p>
+            <p v-if="draggable && !sortingMode" class="text-sm hover:cursor-pointer hover:underline p-2" @click="sortingMode = true">
+              Reorder
+            </p>
+            <p v-if="draggable && sortingMode" class="text-sm hover:cursor-pointer hover:underline p-2" @click="sortingMode = false">
+              Save
+            </p>
           </li>
           <li
             v-if="!currentArray.length && !setValue"
@@ -46,7 +64,12 @@
             :key="item.title"
             class="hover:cursor-pointer hover:bg-secondary h-8 p-2 flex gap-4 items-center rounded-lg border-2"
             :class="currentArray.includes(item.title) ? 'border-primary' : 'border-transparent'"
-            @click="handleSelectOption(item.title)"
+            :draggable="draggable && sortingMode"
+            @click="sortingMode ? '' : handleSelectOption(item.title)"
+            @dragstart="sortingMode ? startDrag($event, item) : null"
+            @drag="sortingMode ? currentDragged = item : null"
+            @dragenter.prevent="!!sortingMode"
+            @dragover.prevent="sortingMode ? handleDragOver($event, item) : null"
           >
             <NuxtImg v-if="item.prependIcon" :src="item.prependIcon" width="30px" height="30px" />
             {{ item.title }}
@@ -58,7 +81,7 @@
           >
             No matching values found
           </li>
-        </ul>
+        </ol>
       </div>
     </div>
     <slot name="append" />
@@ -67,11 +90,15 @@
 
 <script setup lang="ts">
 import { onClickOutside } from '@vueuse/core';
+import type { MultiSelect } from '~/types/MultiSelect';
 
 defineOptions({
   name: 'UIMultiSelect'
 });
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits([
+  'update:modelValue',
+  'update:columnOrder'
+]);
 
 const props = defineProps({
   modelValue: {
@@ -91,13 +118,7 @@ const props = defineProps({
     default: 'text'
   },
   items: {
-    type: Array as PropType<{
-      key: string,
-      title: string,
-      prependIcon?:
-      string,
-      appendIcon?: string
-    }[]>,
+    type: Array as PropType<MultiSelect[]>,
     required: true
   },
   prependIcon: {
@@ -106,8 +127,22 @@ const props = defineProps({
   },
   asButton: {
     type: Boolean
+  },
+  draggable: {
+    type: Boolean
   }
 });
+
+const currentArray = ref<string[]>(mapArrayKeyToValue(props.modelValue, props.items));
+
+const setValue = ref<string | null>(null);
+
+const showItems = ref(props.asButton);
+const showInput = ref(false);
+const options = ref(props.items);
+const optionList = ref(null);
+const sortingMode = ref(false);
+const currentDragged = ref<MultiSelect | null>(null);
 
 function clearInput () {
   setValue.value = null;
@@ -119,19 +154,17 @@ function clearAllItems () {
   emit('update:modelValue', currentArray.value);
 }
 
+function selectAllItems () {
+  currentArray.value = options.value.map((item) => {
+    return item.title;
+  });
+  emit('update:modelValue', currentArray.value);
+}
+
 function clearItem (item: string) {
   currentArray.value = currentArray.value.filter(value => value !== item);
   emit('update:modelValue', currentArray.value);
 }
-
-const currentArray = ref<string[]>(mapArrayKeyToValue(props.modelValue, props.items));
-
-const setValue = ref<string | null>(null);
-
-const showItems = ref(props.asButton);
-const showInput = ref(false);
-const options = ref(props.items);
-const optionList = ref(null);
 
 const handleInput = (input: string | null) => {
   const checkableInput = input || '';
@@ -158,6 +191,39 @@ const handleSelectOption = (item: string) => {
     currentArray.value.push(item);
   }
   emit('update:modelValue', mapArrayValueToKey(currentArray.value, props.items));
+};
+
+const startDrag = (event: DragEvent, item: MultiSelect) => {
+  if (!event.dataTransfer) {
+    return;
+  }
+  currentDragged.value = item;
+  event.dataTransfer.dropEffect = 'move';
+  event.dataTransfer.effectAllowed = 'move';
+};
+
+const handleDragOver = (event: DragEvent, item: MultiSelect) => {
+  const currentDraggedPosition = currentDragged.value?.position;
+  const itemPosition = item.position;
+  if (itemPosition === undefined || currentDraggedPosition === undefined) {
+    return;
+  }
+
+  const y = event.clientY;
+  // @ts-ignore
+  const box = event.target?.getBoundingClientRect();
+
+  const offset = y - box.top - box.height / 2;
+
+  if (offset > -8 && offset < 8) {
+    // @ts-ignore
+    options.value.find(object => object === item).position = currentDragged.value.position;
+    // @ts-ignore
+    options.value.find(object => object === currentDragged.value).position = itemPosition;
+  }
+  // @ts-ignore
+  options.value.sort((a, b) => a.position - b.position);
+  emit('update:columnOrder', options.value);
 };
 
 watch(() => props.items, (newValue) => {

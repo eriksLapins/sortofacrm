@@ -45,15 +45,16 @@ module.exports = {
       'gray-secondary': '#dedede',
       'gray-accent': '#5b5b5b'
     },
-    minHeight: {
-      pictures: '220px',
-      'pictures-large': '350px'
-    },
-    maxHeight: {
-      pictures: '500px',
-      'pictures-large': '700px'
-    },
-    extend: {}
+    extend: {
+      minHeight: {
+        pictures: '220px',
+        'pictures-large': '350px'
+      },
+      maxHeight: {
+        pictures: '500px',
+        'pictures-large': '700px'
+      }
+    }
   },
   plugins: []
 };
