@@ -55,8 +55,15 @@ function findItemId (item: typeof table.value[0]) {
 
 const tableHeadOptions = computed(() => {
   if (table.value) {
+    console.log('sorting computed');
     table.value.forEach((row) => {
-      row.sort((a, b) => a.position - b.position);
+      row.sort((a, b) => {
+        if (a.position === undefined || b.position === undefined) {
+          return -1;
+        }
+
+        return a.position - b.position;
+      });
     });
 
     const headOptions = table.value[0].map(item => item.title);
@@ -69,7 +76,6 @@ const tableHeadOptions = computed(() => {
 
 watch(() => props.dataJson, (newData) => {
   table.value = newData;
-  table.value.sort((a, b) => a.position - b.position);
 });
 
 </script>
