@@ -39,7 +39,7 @@ export default defineCachedEventHandler(async (event) => {
 
   if (existsEmail) {
     if (!errors.email.text) {
-      errors.email = { text: 'A user with such an email already exists' };
+      errors.email = { text: 'Please enter a valid email' };
     }
   }
 

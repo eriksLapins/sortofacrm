@@ -130,6 +130,10 @@ const props = defineProps({
   },
   draggable: {
     type: Boolean
+  },
+  offsetSensitivity: {
+    type: Number,
+    default: 8
   }
 });
 
@@ -215,9 +219,42 @@ const handleDragOver = (event: DragEvent, item: MultiSelect) => {
 
   const offset = y - box.top - box.height / 2;
 
-  if (offset > -8 && offset < 8) {
-    // @ts-ignore
-    options.value.find(object => object === item).position = currentDragged.value.position;
+  if (offset > -props.offsetSensitivity && offset < props.offsetSensitivity && item.position !== currentDragged.value?.position) {
+    if (offset > -props.offsetSensitivity && offset < 0) {
+      options.value = options.value.map((listItem) => {
+        if (!listItem.position) {
+          return listItem;
+        }
+        if (listItem?.position > itemPosition) {
+          listItem.position = listItem.position + 1;
+
+          return listItem;
+        }
+
+        return listItem;
+      });
+
+      // @ts-ignore
+      options.value.find(object => object === item).position += 1;
+    }
+
+    if (offset < props.offsetSensitivity && offset > 0) {
+      options.value = options.value.map((listItem) => {
+        if (!listItem.position) {
+          return listItem;
+        }
+        if (listItem?.position < itemPosition) {
+          listItem.position = listItem.position - 1;
+
+          return listItem;
+        }
+
+        return listItem;
+      });
+
+      // @ts-ignore
+      options.value.find(object => object === item).position -= 1;
+    }
     // @ts-ignore
     options.value.find(object => object === currentDragged.value).position = itemPosition;
   }
