@@ -16,6 +16,7 @@
         name="task-columns"
         draggable
         @update:column-order="handleColumnOrderUpdate"
+        @update:save-column-order="handleSaveColumnOrder"
       />
       <TablePreview
         v-if="tableTasks.length"
@@ -77,6 +78,10 @@ function handleColumnOrderUpdate (items: typeof columnList.value) {
     columnList.value[columnList.value.findIndex(column => item.key === column.key)].position = item.position;
   });
   columnList.value.sort((a, b) => a.position - b.position);
+}
+
+function handleSaveColumnOrder (items: typeof columnList.value) {
+  console.log(items);
 }
 
 onBeforeMount(async () => {

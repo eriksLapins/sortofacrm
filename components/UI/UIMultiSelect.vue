@@ -1,6 +1,7 @@
 <template>
   <div
     ref="optionList"
+    class="w-max"
     @click="checkClickOutside"
   >
     <slot name="prepend" />
@@ -48,7 +49,7 @@
             <p v-if="draggable && !sortingMode" class="text-sm hover:cursor-pointer hover:underline p-2" @click="sortingMode = true">
               Reorder
             </p>
-            <p v-if="draggable && sortingMode" class="text-sm hover:cursor-pointer hover:underline p-2" @click="sortingMode = false">
+            <p v-if="draggable && sortingMode" class="text-sm hover:cursor-pointer hover:underline p-2" @click="handleDraggerSave()">
               Save
             </p>
           </li>
@@ -97,7 +98,8 @@ defineOptions({
 });
 const emit = defineEmits([
   'update:modelValue',
-  'update:columnOrder'
+  'update:columnOrder',
+  'update:saveColumnOrder'
 ]);
 
 const props = defineProps({
@@ -147,6 +149,7 @@ const options = ref(props.items);
 const optionList = ref(null);
 const sortingMode = ref(false);
 const currentDragged = ref<MultiSelect | null>(null);
+const currentDraggedStartPosition = ref<number>(0);
 
 function clearInput () {
   setValue.value = null;
@@ -198,9 +201,10 @@ const handleSelectOption = (item: string) => {
 };
 
 const startDrag = (event: DragEvent, item: MultiSelect) => {
-  if (!event.dataTransfer) {
+  if (!event.dataTransfer || !item.position) {
     return;
   }
+  currentDraggedStartPosition.value = item.position;
   currentDragged.value = item;
   event.dataTransfer.dropEffect = 'move';
   event.dataTransfer.effectAllowed = 'move';
@@ -208,8 +212,11 @@ const startDrag = (event: DragEvent, item: MultiSelect) => {
 
 const handleDragOver = (event: DragEvent, item: MultiSelect) => {
   const currentDraggedPosition = currentDragged.value?.position;
-  const itemPosition = item.position;
-  if (itemPosition === undefined || currentDraggedPosition === undefined) {
+  if (item.position === undefined || currentDraggedPosition === undefined) {
+    return;
+  }
+
+  if (item.position === currentDraggedPosition) {
     return;
   }
 
@@ -219,49 +226,62 @@ const handleDragOver = (event: DragEvent, item: MultiSelect) => {
 
   const offset = y - box.top - box.height / 2;
 
-  if (offset > -props.offsetSensitivity && offset < props.offsetSensitivity && item.position !== currentDragged.value?.position) {
-    if (offset > -props.offsetSensitivity && offset < 0) {
-      options.value = options.value.map((listItem) => {
-        if (!listItem.position) {
-          return listItem;
-        }
-        if (listItem?.position > itemPosition) {
-          listItem.position = listItem.position + 1;
-
-          return listItem;
-        }
+  if (offset < 0) {
+    options.value = options.value.map((listItem) => {
+      if (!listItem.position || !item.position) {
+        return listItem;
+      }
+      if (listItem?.position > item.position) {
+        listItem.position = listItem.position + 1;
 
         return listItem;
-      });
-
-      // @ts-ignore
-      options.value.find(object => object === item).position += 1;
-    }
-
-    if (offset < props.offsetSensitivity && offset > 0) {
-      options.value = options.value.map((listItem) => {
-        if (!listItem.position) {
-          return listItem;
-        }
-        if (listItem?.position < itemPosition) {
-          listItem.position = listItem.position - 1;
-
-          return listItem;
-        }
-
+      } else if (listItem.position >= currentDraggedStartPosition.value) {
         return listItem;
-      });
+      }
 
-      // @ts-ignore
-      options.value.find(object => object === item).position -= 1;
-    }
+      return listItem;
+    });
+
     // @ts-ignore
-    options.value.find(object => object === currentDragged.value).position = itemPosition;
+    options.value.find(object => object === currentDragged.value).position = item.position;
+
+    item.position += 1;
   }
+
+  if (offset > 0) {
+    options.value = options.value.map((listItem) => {
+      if (!listItem.position || !item.position) {
+        return listItem;
+      }
+      if (listItem?.position < item.position) {
+        listItem.position = listItem.position - 1;
+
+        return listItem;
+      }
+
+      return listItem;
+    });
+
+    // @ts-ignore
+    options.value.find(object => object === currentDragged.value).position = item.position;
+
+    item.position -= 1;
+  }
+
   // @ts-ignore
   options.value.sort((a, b) => a.position - b.position);
+
+  options.value.forEach((value, i) => {
+    value.position = i;
+  });
+
   emit('update:columnOrder', options.value);
 };
+
+function handleDraggerSave () {
+  sortingMode.value = false;
+  emit('update:saveColumnOrder', options.value);
+}
 
 watch(() => props.items, (newValue) => {
   if (!setValue.value) {
