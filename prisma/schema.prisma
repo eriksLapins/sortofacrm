@@ -94,6 +94,18 @@ model User {
   @@map("users")
 }
 
+model UserPreferences {
+  clientId       Int
+  id             String           @id @default(cuid())
+  userId         String
+  module         String
+  preferenceType EPreferenceTypes
+  preferences    Json?
+
+  @@index([clientId, userId])
+  @@map("user_preferences")
+}
+
 model ClientCompany {
   id                    Int     @id @default(autoincrement())
   legalName             String
@@ -376,6 +388,14 @@ enum ERelationTypes {
   Expense
   Project
   Task
+}
+
+enum EPreferenceTypes {
+  Layout
+  Columns
+  PushNotifications
+  EmailNotifications
+  MarketingEmails
 }
 
 enum EScope {

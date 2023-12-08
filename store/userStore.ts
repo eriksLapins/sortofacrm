@@ -1,4 +1,4 @@
-import { ERole, type User } from '@prisma/client';
+import { ERole, type User, type UserPreferences } from '@prisma/client';
 import { defineStore } from 'pinia';
 import type { UserData } from '~/types';
 
@@ -10,6 +10,7 @@ export const useUserStore = defineStore('users', () => {
   const isLoggedIn = ref(false);
   const currentCompany = ref<Number>();
   const availableUsers = ref<UserData[]>([]);
+  const userPreferences = ref<UserPreferences[]>([]);
 
   const fetchUsers = async () => {
     const data = await $fetch('/api/data/users/get', {
@@ -64,6 +65,26 @@ export const useUserStore = defineStore('users', () => {
     localStorage.removeItem('auth-token');
   };
 
+  const fetchUserPreferences = async () => {
+    if (currentUser.value) {
+      try {
+        const data = await $fetch('/api/data/users/preferences/get', {
+          method: 'POST',
+          body: {
+            clientId: currentCompany.value,
+            userId: currentUserId.value
+          }
+        });
+
+        const jsonData = JSON.parse(JSON.stringify(data));
+
+        userPreferences.value = jsonData;
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  };
+
   return {
     currentUser,
     currentCompany,
@@ -74,6 +95,8 @@ export const useUserStore = defineStore('users', () => {
     isLoggedIn,
     loginUser,
     fetchUsers,
-    availableUsers
+    availableUsers,
+    userPreferences,
+    fetchUserPreferences
   };
 });

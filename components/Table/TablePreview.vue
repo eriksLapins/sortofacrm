@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full overflow-x-scroll">
+  <div class="table-preview w-full overflow-x-scroll">
     <table>
       <thead>
         <td v-for="(title, i) in tableHeadOptions" :key="i" class="font-semibold p-2">
@@ -10,13 +10,13 @@
         <tr
           v-for="(item, i) in table"
           :key="i"
-          class="py-2 hover:bg-secondary hover:cursor-pointer"
+          class="py-2 hover:bg-gray-background hover:cursor-pointer"
           @click.prevent="navigateTo(`/${module}/${findItemId(item)}/view`)"
         >
           <td
             v-for="(key, z) in item"
             :key="z"
-            class="min-w-[100px]"
+            class="min-w-[100px] p-2"
           >
             {{ key.data }}
           </td>
@@ -78,3 +78,22 @@ watch(() => props.dataJson, (newData) => {
 });
 
 </script>
+
+<style lang="scss">
+@import "~/scss/theme/variables";
+
+  ::-webkit-scrollbar {
+    height: 0.5rem;
+  }
+
+  ::-webkit-scrollbar-track {
+    height: 0.5rem;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    height: 0.5rem;
+    background-color: $color-gray-primary;
+    border-radius: 0.25rem;
+  }
+
+</style>
