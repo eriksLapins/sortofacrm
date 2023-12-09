@@ -1,6 +1,6 @@
-import { ERole, type User, type UserPreferences } from '@prisma/client';
+import { EPreferenceTypes, ERole, type User, type UserPreferences } from '@prisma/client';
 import { defineStore } from 'pinia';
-import type { Preferences, UserData } from '~/types';
+import type { PreferenceWrapper, Preferences, UserData } from '~/types';
 
 export const useUserStore = defineStore('users', () => {
   const currentUser = ref<Omit<User, 'password'>>();
@@ -10,7 +10,7 @@ export const useUserStore = defineStore('users', () => {
   const isLoggedIn = ref(false);
   const currentCompany = ref<Number>();
   const availableUsers = ref<UserData[]>([]);
-  const userPreferences = ref<Record<string, Preferences[]>>({});
+  const userPreferences = ref<PreferenceWrapper>({});
 
   const fetchUsers = async () => {
     const data = await $fetch('/api/data/users/get', {
@@ -78,11 +78,27 @@ export const useUserStore = defineStore('users', () => {
         });
 
         const jsonData = JSON.parse(JSON.stringify(data.data)) as UserPreferences[];
-        const preferences = jsonData.map(preference => preference.preferences) as unknown as Preferences[];
 
-        preferences.sort((a, b) => a.position - b.position);
+        const fullPreferences: PreferenceWrapper = {} as PreferenceWrapper;
 
-        userPreferences.value[moduleName] = preferences;
+        // @ts-ignore
+        fullPreferences[moduleName] = {};
+        Object.values(EPreferenceTypes).forEach((value) => {
+          fullPreferences[moduleName][value] = [];
+        });
+
+        jsonData.forEach((value) => {
+          const preferences = value.preferences as unknown as Preferences;
+          fullPreferences[moduleName][value.preferenceType].push(preferences);
+        });
+
+        Object.values(EPreferenceTypes).forEach((value) => {
+          if (fullPreferences[moduleName][value].length) {
+            fullPreferences[moduleName][value].sort((a, b) => a.position - b.position);
+          }
+        });
+
+        userPreferences.value[moduleName] = fullPreferences[moduleName];
       } catch (e) {
         console.log(e);
       }

@@ -4,6 +4,11 @@
     class="w-max"
     @click="checkClickOutside"
   >
+    <div>
+      <div>{{ initialColumnOrder }}</div>
+      <div>{{ options }}</div>
+      <div>{{ items }}</div>
+    </div>
     <slot name="prepend" />
     <div class="relative flex flex-col">
       <button v-if="asButton" class="w-8 h-8 rounded-full border-solid border-primary border-2 flex items-center justify-center hover:bg-primary hover:bg-opacity-30" @click.prevent="showInput = !showInput">
@@ -49,8 +54,11 @@
             <p v-if="draggable && !sortingMode" class="text-sm hover:cursor-pointer hover:underline p-2" @click="sortingMode = true">
               Reorder
             </p>
-            <p v-if="draggable && sortingMode" class="text-sm hover:cursor-pointer hover:underline p-2" @click="handleDraggerSave()">
+            <p v-if="(draggable && sortingMode) || visibilityChanges" class="text-sm hover:cursor-pointer hover:underline p-2" @click="handleSaveClick()">
               Save
+            </p>
+            <p v-if="draggable && sortingMode" class="text-sm hover:cursor-pointer hover:underline p-2" @click="handleReturnClick">
+              Return
             </p>
           </li>
           <li
@@ -91,6 +99,7 @@
 
 <script setup lang="ts">
 import { onClickOutside } from '@vueuse/core';
+import type { PropType } from 'vue';
 import type { MultiSelect } from '~/types/MultiSelect';
 
 defineOptions({
@@ -99,7 +108,7 @@ defineOptions({
 const emit = defineEmits([
   'update:modelValue',
   'update:columnOrder',
-  'update:saveColumnOrder'
+  'update:saveColumns'
 ]);
 
 const props = defineProps({
@@ -133,9 +142,9 @@ const props = defineProps({
   draggable: {
     type: Boolean
   },
-  offsetSensitivity: {
-    type: Number,
-    default: 8
+  initialItems: {
+    type: Array as PropType<MultiSelect[]>,
+    required: true
   }
 });
 
@@ -150,6 +159,9 @@ const optionList = ref(null);
 const sortingMode = ref(false);
 const currentDragged = ref<MultiSelect | null>(null);
 const currentDraggedStartPosition = ref<number>(0);
+const initiallyVisibleColumns = ref<string[]>([]);
+const initialColumnOrder = ref<MultiSelect[]>(props.initialItems);
+const visibilityChanges = ref(false);
 
 function clearInput () {
   setValue.value = null;
@@ -197,6 +209,8 @@ const handleSelectOption = (item: string) => {
   } else {
     currentArray.value.push(item);
   }
+
+  visibilityChanges.value = checkVisibilityChanges();
   emit('update:modelValue', mapArrayValueToKey(currentArray.value, props.items));
 };
 
@@ -278,10 +292,52 @@ const handleDragOver = (event: DragEvent, item: MultiSelect) => {
   emit('update:columnOrder', options.value);
 };
 
-function handleDraggerSave () {
+function handleSaveClick () {
   sortingMode.value = false;
-  emit('update:saveColumnOrder', options.value);
+  // initialColumnOrder.value = options.value;
+  initiallyVisibleColumns.value = currentArray.value;
+  emit('update:saveColumns', options.value);
 }
+
+function handleReturnClick () {
+  console.log(checkOrderChanges());
+}
+
+function checkVisibilityChanges () {
+  let result = false;
+
+  initiallyVisibleColumns.value.forEach((item) => {
+    if (!currentArray.value.includes(item)) {
+      result = true;
+    }
+  });
+
+  currentArray.value.forEach((item) => {
+    if (!initiallyVisibleColumns.value.includes(item)) {
+      result = true;
+    }
+  });
+
+  return result;
+};
+
+function checkOrderChanges () {
+  let result = false;
+
+  initialColumnOrder.value.forEach((item, i) => {
+    if (options.value[i] !== item) {
+      result = true;
+    }
+  });
+
+  options.value.forEach((item, i) => {
+    if (initialColumnOrder.value[i] !== item) {
+      result = true;
+    }
+  });
+
+  return result;
+};
 
 watch(() => props.items, (newValue) => {
   if (!setValue.value) {
@@ -289,6 +345,12 @@ watch(() => props.items, (newValue) => {
     currentArray.value = mapArrayKeyToValue(props.modelValue, newValue) || null;
   }
 });
+
+onMounted(() => {
+  initiallyVisibleColumns.value = props.modelValue;
+  initialColumnOrder.value = props.items;
+});
+
 </script>
 
 <style lang="scss">

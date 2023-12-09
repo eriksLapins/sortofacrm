@@ -10,13 +10,15 @@
       title="Tasks"
     >
       <UiMultiSelect
+        v-if="columns.length"
         v-model:model-value="columns"
         :items="columnList"
+        :initial-items="columnList"
         label="Columns"
         name="task-columns"
         draggable
         @update:column-order="handleColumnOrderUpdate"
-        @update:save-column-order="handleSaveColumns"
+        @update:save-columns="handleSaveColumns"
       />
       <TablePreview
         v-if="tableTasks.length"
@@ -131,8 +133,9 @@ onBeforeMount(async () => {
       });
     }
   }
-  if (userStore.userPreferences.tasks) {
-    columnList.value = userStore.userPreferences.tasks;
+  console.log(userStore.userPreferences);
+  if (userStore.userPreferences.tasks?.Columns?.length) {
+    columnList.value = userStore.userPreferences.tasks.Columns;
     columns.value = columnList.value.filter((item: Preferences) => item.visible).map(item => item.title);
   }
 });
