@@ -1,6 +1,6 @@
 import { ERole, type User, type UserPreferences } from '@prisma/client';
 import { defineStore } from 'pinia';
-import type { UserData } from '~/types';
+import type { Preferences, UserData } from '~/types';
 
 export const useUserStore = defineStore('users', () => {
   const currentUser = ref<Omit<User, 'password'>>();
@@ -10,7 +10,7 @@ export const useUserStore = defineStore('users', () => {
   const isLoggedIn = ref(false);
   const currentCompany = ref<Number>();
   const availableUsers = ref<UserData[]>([]);
-  const userPreferences = ref<UserPreferences[]>([]);
+  const userPreferences = ref<Record<string, Preferences[]>>({});
 
   const fetchUsers = async () => {
     const data = await $fetch('/api/data/users/get', {
@@ -65,20 +65,24 @@ export const useUserStore = defineStore('users', () => {
     localStorage.removeItem('auth-token');
   };
 
-  const fetchUserPreferences = async () => {
-    if (currentUser.value) {
+  const fetchUserPreferences = async (moduleName: string) => {
+    if (currentUserId.value) {
       try {
         const data = await $fetch('/api/data/users/preferences/get', {
           method: 'POST',
           body: {
             clientId: currentCompany.value,
-            userId: currentUserId.value
+            userId: currentUserId.value,
+            module: moduleName
           }
         });
 
-        const jsonData = JSON.parse(JSON.stringify(data));
+        const jsonData = JSON.parse(JSON.stringify(data.data)) as UserPreferences[];
+        const preferences = jsonData.map(preference => preference.preferences) as unknown as Preferences[];
 
-        userPreferences.value = jsonData;
+        preferences.sort((a, b) => a.position - b.position);
+
+        userPreferences.value[moduleName] = preferences;
       } catch (e) {
         console.log(e);
       }

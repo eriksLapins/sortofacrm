@@ -31,11 +31,29 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
+    const existingPreferences = await prisma.userPreferences.findMany({
+      where: {
+        clientId: body.clientId as number,
+        userId: body.userId as string,
+        module: body.module
+      }
+    });
+  } catch (e) {
+    console.log(e);
+    throw createError({
+      status: 500,
+      statusText: 'Something went wrong, please try again later',
+      message: 'unhandled error at preferences get in preferences update'
+    });
+  }
+
+  try {
     const data = await prisma.userPreferences.update({
       where: {
         id: body.id as string,
         clientId: body.clientId as number,
-        userId: body.userId as string
+        userId: body.userId as string,
+        module: body.module
       },
       data: {
         ...body

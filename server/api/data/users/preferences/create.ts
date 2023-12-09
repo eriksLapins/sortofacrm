@@ -18,6 +18,24 @@ export default defineEventHandler(async (event) => {
     });
   }
 
+  try {
+    await prisma.userPreferences.deleteMany({
+      where: {
+        clientId: body.clientId as number,
+        userId: body.userId as string,
+        module: body.module as string,
+        preferenceType: body.preferenceType as EPreferenceTypes
+      }
+    });
+  } catch (e) {
+    console.log(e);
+    throw createError({
+      status: 500,
+      statusText: 'Something went wrong, please try again later',
+      message: 'unhandled error at clearing preferences'
+    });
+  }
+
   const bodies: UserPreferences[] = body.preferences.map((preference: Prisma.JsonObject) => {
     return {
       clientId: body.clientId as number,
@@ -28,7 +46,7 @@ export default defineEventHandler(async (event) => {
     };
   });
 
-  const preferences = await prisma.userPreferences.createMany({
+  await prisma.userPreferences.createMany({
     // @ts-ignore
     data: bodies
   }).catch((e) => {
@@ -40,5 +58,5 @@ export default defineEventHandler(async (event) => {
     });
   });
 
-  return { data: preferences };
+  return { success: true };
 });

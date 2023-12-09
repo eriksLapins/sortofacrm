@@ -103,7 +103,6 @@ model UserPreferences {
   preferences    Json?
 
   @@index([clientId, userId])
-  @@map("user_preferences")
 }
 
 model ClientCompany {
