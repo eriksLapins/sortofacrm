@@ -2,13 +2,11 @@
   <div
     ref="optionList"
     class="w-max"
+    :class="{
+      'pointer-events-none multiselect--disabled': disabled
+    }"
     @click="checkClickOutside"
   >
-    <div>
-      <div>{{ initialColumnOrder }}</div>
-      <div>{{ options }}</div>
-      <div>{{ items }}</div>
-    </div>
     <slot name="prepend" />
     <div class="relative flex flex-col">
       <button v-if="asButton" class="w-8 h-8 rounded-full border-solid border-primary border-2 flex items-center justify-center hover:bg-primary hover:bg-opacity-30" @click.prevent="showInput = !showInput">
@@ -49,7 +47,7 @@
               Clear all
             </p>
             <p v-if="!sortingMode" class="text-sm hover:cursor-pointer hover:underline p-2" @click="selectAllItems()">
-              Select all visible
+              Select all
             </p>
             <p v-if="draggable && !sortingMode" class="text-sm hover:cursor-pointer hover:underline p-2" @click="sortingMode = true">
               Reorder
@@ -57,8 +55,11 @@
             <p v-if="(draggable && sortingMode) || visibilityChanges" class="text-sm hover:cursor-pointer hover:underline p-2" @click="handleSaveClick()">
               Save
             </p>
-            <p v-if="draggable && sortingMode" class="text-sm hover:cursor-pointer hover:underline p-2" @click="handleReturnClick">
+            <p v-if="draggable && sortingMode" class="text-sm hover:cursor-pointer hover:underline p-2" @click="handleReturn">
               Return
+            </p>
+            <p v-if="(draggable && sortingMode) || visibilityChanges" class="text-sm hover:cursor-pointer hover:underline p-2" @click="handleReset">
+              Reset
             </p>
           </li>
           <li
@@ -108,7 +109,9 @@ defineOptions({
 const emit = defineEmits([
   'update:modelValue',
   'update:columnOrder',
-  'update:saveColumns'
+  'update:saveColumns',
+  'return',
+  'reset'
 ]);
 
 const props = defineProps({
@@ -132,6 +135,10 @@ const props = defineProps({
     type: Array as PropType<MultiSelect[]>,
     required: true
   },
+  initialItems: {
+    type: Array as PropType<MultiSelect[]>,
+    required: true
+  },
   prependIcon: {
     type: String,
     default: undefined
@@ -142,9 +149,8 @@ const props = defineProps({
   draggable: {
     type: Boolean
   },
-  initialItems: {
-    type: Array as PropType<MultiSelect[]>,
-    required: true
+  disabled: {
+    type: Boolean
   }
 });
 
@@ -159,8 +165,6 @@ const optionList = ref(null);
 const sortingMode = ref(false);
 const currentDragged = ref<MultiSelect | null>(null);
 const currentDraggedStartPosition = ref<number>(0);
-const initiallyVisibleColumns = ref<string[]>([]);
-const initialColumnOrder = ref<MultiSelect[]>(props.initialItems);
 const visibilityChanges = ref(false);
 
 function clearInput () {
@@ -203,19 +207,32 @@ function checkClickOutside () {
   });
 }
 
+function handleReturn () {
+  sortingMode.value = false;
+  emit('return');
+}
+
+function handleReset () {
+  sortingMode.value = false;
+  visibilityChanges.value = false;
+  options.value = [...props.initialItems];
+  currentArray.value = props.initialItems.filter(item => item.visible === true).map(item => item.title);
+  emit('update:modelValue', mapArrayValueToKey(currentArray.value, props.initialItems));
+}
+
 const handleSelectOption = (item: string) => {
+  visibilityChanges.value = true;
   if (currentArray.value.includes(item)) {
     clearItem(item);
   } else {
     currentArray.value.push(item);
   }
 
-  visibilityChanges.value = checkVisibilityChanges();
   emit('update:modelValue', mapArrayValueToKey(currentArray.value, props.items));
 };
 
 const startDrag = (event: DragEvent, item: MultiSelect) => {
-  if (!event.dataTransfer || !item.position) {
+  if (!event.dataTransfer) {
     return;
   }
   currentDraggedStartPosition.value = item.position;
@@ -226,7 +243,7 @@ const startDrag = (event: DragEvent, item: MultiSelect) => {
 
 const handleDragOver = (event: DragEvent, item: MultiSelect) => {
   const currentDraggedPosition = currentDragged.value?.position;
-  if (item.position === undefined || currentDraggedPosition === undefined) {
+  if (currentDraggedPosition === undefined) {
     return;
   }
 
@@ -242,7 +259,7 @@ const handleDragOver = (event: DragEvent, item: MultiSelect) => {
 
   if (offset < 0) {
     options.value = options.value.map((listItem) => {
-      if (!listItem.position || !item.position) {
+      if (!listItem.position) {
         return listItem;
       }
       if (listItem?.position > item.position) {
@@ -264,7 +281,7 @@ const handleDragOver = (event: DragEvent, item: MultiSelect) => {
 
   if (offset > 0) {
     options.value = options.value.map((listItem) => {
-      if (!listItem.position || !item.position) {
+      if (!listItem.position) {
         return listItem;
       }
       if (listItem?.position < item.position) {
@@ -294,61 +311,15 @@ const handleDragOver = (event: DragEvent, item: MultiSelect) => {
 
 function handleSaveClick () {
   sortingMode.value = false;
-  // initialColumnOrder.value = options.value;
-  initiallyVisibleColumns.value = currentArray.value;
   emit('update:saveColumns', options.value);
+  visibilityChanges.value = false;
 }
-
-function handleReturnClick () {
-  console.log(checkOrderChanges());
-}
-
-function checkVisibilityChanges () {
-  let result = false;
-
-  initiallyVisibleColumns.value.forEach((item) => {
-    if (!currentArray.value.includes(item)) {
-      result = true;
-    }
-  });
-
-  currentArray.value.forEach((item) => {
-    if (!initiallyVisibleColumns.value.includes(item)) {
-      result = true;
-    }
-  });
-
-  return result;
-};
-
-function checkOrderChanges () {
-  let result = false;
-
-  initialColumnOrder.value.forEach((item, i) => {
-    if (options.value[i] !== item) {
-      result = true;
-    }
-  });
-
-  options.value.forEach((item, i) => {
-    if (initialColumnOrder.value[i] !== item) {
-      result = true;
-    }
-  });
-
-  return result;
-};
 
 watch(() => props.items, (newValue) => {
   if (!setValue.value) {
     options.value = newValue;
     currentArray.value = mapArrayKeyToValue(props.modelValue, newValue) || null;
   }
-});
-
-onMounted(() => {
-  initiallyVisibleColumns.value = props.modelValue;
-  initialColumnOrder.value = props.items;
 });
 
 </script>
@@ -361,5 +332,12 @@ onMounted(() => {
     &:focus {
         box-shadow: 0 0 0 2px $color-primary;
     }
+}
+
+.multiselect--disabled {
+  background: white;
+  & > * {
+    opacity: 0.8;
+  }
 }
 </style>

@@ -9,17 +9,20 @@
     <PageContent
       title="Tasks"
     >
-      <UiMultiSelect
-        v-if="columns.length"
-        v-model:model-value="columns"
-        :items="columnList"
-        :initial-items="columnList"
-        label="Columns"
-        name="task-columns"
-        draggable
-        @update:column-order="handleColumnOrderUpdate"
-        @update:save-columns="handleSaveColumns"
-      />
+      <ClientOnly>
+        <UiMultiSelect
+          v-if="columns.length"
+          v-model:model-value="columns"
+          :items="columnList"
+          :initial-items="initialColumns"
+          label="Columns"
+          name="task-columns"
+          :disabled="columnsSaving"
+          draggable
+          @update:column-order="handleColumnOrderUpdate"
+          @update:save-columns="handleSaveColumns"
+        />
+      </ClientOnly>
       <TablePreview
         v-if="tableTasks.length"
         :data-json="tableTasks"
@@ -32,10 +35,12 @@
 <script setup lang="ts">
 import { type Tasks } from '@prisma/client';
 import { useUserStore } from '~/store/userStore';
-import type { Preferences } from '~/types';
+import type { MultiSelect, Preferences, TableTasks } from '~/types';
 const userStore = useUserStore();
 
 const tasks = ref<Tasks[]>();
+const columnsSaving = ref(false);
+const initialColumns = ref<MultiSelect[]>([]);
 
 async function fetchTasks () {
   const { data } = await $fetch('/api/data/tasks/get', {
@@ -53,14 +58,16 @@ async function fetchTasks () {
 
 const columns = ref<string[]>([]);
 
-const columnList = ref<{key:string, title: string, position: number, visible: boolean}[]>([]);
+const columnList = ref<MultiSelect[]>([]);
 
 const tableTasks = computed(() => {
   if (tasks.value?.length) {
     const newTasks = tasks.value?.map((task: Record<string, any>) => {
-      const object: {title: string, data: string, position: number | undefined}[] = [];
+      const id = task.id;
+      const object: TableTasks[] = [];
       columns.value.forEach((value) => {
         object.push({
+          ref_id: id,
           title: value,
           data: task[value],
           position: columnList.value.find(item => item.title === value)?.position
@@ -84,6 +91,9 @@ function handleColumnOrderUpdate (items: typeof columnList.value) {
 }
 
 async function handleSaveColumns (items: typeof columnList.value) {
+  columnsSaving.value = true;
+  initialColumns.value = [...items];
+  columnList.value = [...items];
   const mappedItems = items.map((column) => {
     if (columns.value.includes(column.title)) {
       return {
@@ -111,6 +121,7 @@ async function handleSaveColumns (items: typeof columnList.value) {
   } catch (e) {
     console.log(e);
   }
+  columnsSaving.value = false;
 }
 
 onBeforeMount(async () => {
@@ -131,12 +142,13 @@ onBeforeMount(async () => {
           visible: columns.value.includes(item)
         };
       });
+      initialColumns.value = columnList.value.map(item => item);
     }
   }
-  console.log(userStore.userPreferences);
   if (userStore.userPreferences.tasks?.Columns?.length) {
     columnList.value = userStore.userPreferences.tasks.Columns;
     columns.value = columnList.value.filter((item: Preferences) => item.visible).map(item => item.title);
+    initialColumns.value = columnList.value.map(item => item);
   }
 });
 

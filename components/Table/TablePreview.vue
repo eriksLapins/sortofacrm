@@ -11,7 +11,7 @@
           v-for="(item, i) in table"
           :key="i"
           class="py-2 hover:bg-gray-background hover:cursor-pointer"
-          @click.prevent="navigateTo(`/${module}/${findItemId(item)}/view`)"
+          @click.prevent="navigateTo(`/${module}/${item[0].ref_id}/view`)"
         >
           <td
             v-for="(key, z) in item"
@@ -27,6 +27,7 @@
 </template>
 
 <script setup lang="ts">
+import type { TableTasks } from '~/types';
 
 defineOptions({
   name: 'TablePreview'
@@ -34,11 +35,7 @@ defineOptions({
 
 const props = defineProps({
   dataJson: {
-    type: Array as PropType<{
-      title: string,
-      data: any;
-      position: number | undefined;
-    }[][]>,
+    type: Array as PropType<TableTasks[][]>,
     required: true
   },
   module: {
@@ -48,10 +45,6 @@ const props = defineProps({
 });
 
 const table = ref(props.dataJson);
-
-function findItemId (item: typeof table.value[0]) {
-  return item.find(object => object.title === 'id')?.data;
-}
 
 const tableHeadOptions = computed(() => {
   if (table.value) {

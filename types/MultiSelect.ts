@@ -4,6 +4,6 @@ export type MultiSelect = {
     prependIcon?:
     string,
     appendIcon?: string,
-    position?: number,
+    position: number,
     visible: boolean
 }
