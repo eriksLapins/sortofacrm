@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!tasks?.length">
+  <div v-if="loading">
     <LoadingAnimation />
   </div>
   <div v-else class="lg:container mx-auto py-8 px-6 md:px-8">
@@ -9,20 +9,29 @@
     <PageContent
       title="Tasks"
     >
-      <ClientOnly>
-        <UiMultiSelect
-          v-if="columns.length"
-          v-model:model-value="columns"
-          :items="columnList"
-          :initial-items="initialColumns"
-          label="Columns"
-          name="task-columns"
-          :disabled="columnsSaving"
-          draggable
-          @update:column-order="handleColumnOrderUpdate"
-          @update:save-columns="handleSaveColumns"
+      <div class="flex flex-col md:flex-row justify-between">
+        <ClientOnly>
+          <UiMultiSelect
+            v-if="columns.length"
+            v-model:model-value="columns"
+            :items="columnList"
+            :initial-items="initialColumns"
+            label="Columns"
+            name="task-columns"
+            :disabled="columnsSaving"
+            draggable
+            @update:column-order="handleColumnOrderUpdate"
+            @update:save-columns="handleSaveColumns"
+          />
+        </ClientOnly>
+        <UiTextInput
+          v-model="searchText"
+          name="search-text-field"
+          label="Search by title/description"
+          class="md:max-w-xs"
+          @update:model-value="fetchTasksByText"
         />
-      </ClientOnly>
+      </div>
       <TablePreview
         v-if="tableTasks.length"
         :data-json="tableTasks"
@@ -39,8 +48,11 @@ import type { MultiSelect, Preferences, TableTasks } from '~/types';
 const userStore = useUserStore();
 
 const tasks = ref<Tasks[]>();
+const loading = ref(false);
 const columnsSaving = ref(false);
 const initialColumns = ref<MultiSelect[]>([]);
+const searchText = ref('');
+const previousQuery = ref('');
 
 async function fetchTasks () {
   const { data } = await $fetch('/api/data/tasks/get', {
@@ -54,6 +66,32 @@ async function fetchTasks () {
   const jsonTasks = JSON.parse(JSON.stringify(data));
 
   tasks.value = jsonTasks.tasks;
+}
+
+async function fetchTasksByText (searchQuery: string) {
+  if (searchQuery.length === 0) {
+    await fetchTasks();
+
+    return;
+  }
+  if (searchQuery.length < 3 && previousQuery.value.length < searchQuery.length) { return; }
+  if (!tasks.value?.length && previousQuery.value.length < searchQuery.length) { return; }
+
+  previousQuery.value = searchQuery;
+
+  const { data } = await $fetch('/api/data/tasks/search/text', {
+    method: 'POST',
+    body: {
+      clientId: userStore.currentCompany
+    },
+    params: {
+      searchQuery
+    }
+  });
+
+  const jsonTasks = JSON.parse(JSON.stringify(data));
+
+  tasks.value = jsonTasks;
 }
 
 const columns = ref<string[]>([]);
@@ -83,14 +121,14 @@ const tableTasks = computed(() => {
   return [];
 });
 
-function handleColumnOrderUpdate (items: typeof columnList.value) {
+function handleColumnOrderUpdate (items: MultiSelect[]) {
   items.forEach((item) => {
     columnList.value[columnList.value.findIndex(column => item.key === column.key)].position = item.position;
   });
   columnList.value.sort((a, b) => a.position - b.position);
 }
 
-async function handleSaveColumns (items: typeof columnList.value) {
+async function handleSaveColumns (items: MultiSelect[]) {
   columnsSaving.value = true;
   initialColumns.value = [...items];
   columnList.value = [...items];
@@ -125,6 +163,7 @@ async function handleSaveColumns (items: typeof columnList.value) {
 }
 
 onBeforeMount(async () => {
+  loading.value = true;
   await fetchTasks();
   await userStore.fetchUserPreferences('tasks');
   if (tasks.value) {
@@ -150,6 +189,7 @@ onBeforeMount(async () => {
     columns.value = columnList.value.filter((item: Preferences) => item.visible).map(item => item.title);
     initialColumns.value = columnList.value.map(item => item);
   }
+  loading.value = false;
 });
 
 </script>
