@@ -36,9 +36,11 @@ yarn dev
 ```
 
 ## Environment variables for running
+```
 DATABASE_URL: a link for prisma - check [Prisma documentation](https://www.prisma.io/docs) should be good with postgresql or mysql (made initially with mysql) - but there are no relations defined specifically
-NUXTAUTH_SECRET: a random secret string - considerably long - for password encription (there is a plan to add some OAuth authentication later)
 
+NUXTAUTH_SECRET: a random secret string - considerably long - for password encription (there is a plan to add some OAuth authentication later)
+```
 ## Production
 
 Build the application for production (haven't tested as of December 2023):
