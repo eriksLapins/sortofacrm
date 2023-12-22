@@ -1,7 +1,7 @@
 <template>
   <div
     ref="optionList"
-    class="w-max"
+    class="w-full md:w-max"
     :class="{
       'pointer-events-none multiselect--disabled': disabled
     }"
@@ -21,22 +21,24 @@
           'absolute mt-9': asButton
         }"
       >
-        <input
-          :id="name"
-          v-model="setValue"
-          type="text"
-          :name="name"
-          class="leweb-input h-6 py-1 px-2 rounded-lg w-40"
-          :placeholder="label"
-          @input="handleInput(setValue)"
-          @click="handleInput(setValue)"
-        >
+        <div class="leweb-input h-8 py-1 px-2 rounded-lg w-full md:w-40">
+          <input
+            :id="name"
+            v-model="setValue"
+            type="text"
+            class="h-full"
+            :name="name"
+            :placeholder="label"
+            @input="handleInput(setValue)"
+            @click="handleInput(setValue)"
+          >
+        </div>
         <div v-if="setValue" class=" absolute hover:cursor-pointer text-primary flex justify-center items-center h-6 right-0 mr-4 top-0 my-1" @click="clearInput">
           X
         </div>
         <ol
           v-show="showItems"
-          class="bg-white border-primary border-2 border-solid rounded-lg top-7 mt-2 p-2 grid gap-2 w-full md:w-max md:min-w-[175px] z-10 md:max-h-80 overflow-y-scroll"
+          class="bg-white border-primary border-2 border-solid rounded-lg top-7 mt-2 p-2 grid gap-2 w-full md:w-max md:min-w-[175px] z-10 max-h-80 overflow-y-scroll"
           :class="{
             absolute: !asButton
           }"

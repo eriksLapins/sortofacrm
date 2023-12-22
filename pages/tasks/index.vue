@@ -9,7 +9,7 @@
     <PageContent
       title="Tasks"
     >
-      <div class="flex flex-col md:flex-row justify-between">
+      <div class="flex gap-4 flex-col md:flex-row justify-between">
         <ClientOnly>
           <UiMultiSelect
             v-if="columns.length"
@@ -37,6 +37,9 @@
         :data-json="tableTasks"
         module="tasks"
       />
+      <div v-else>
+        No tasks matching the criteria
+      </div>
     </PageContent>
   </div>
 </template>
