@@ -44,7 +44,7 @@
           }"
           @dragover.prevent="!!sortingMode"
         >
-          <li v-if="options.length" class="flex justify-between">
+          <li v-if="options.length" class="flex justify-between border-b border-b-primary">
             <p v-if="!sortingMode" class="text-sm hover:cursor-pointer hover:underline p-2" @click="clearAllItems()">
               Clear all
             </p>
