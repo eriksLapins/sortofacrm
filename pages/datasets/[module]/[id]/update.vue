@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TaskForm v-if="task" :task-id="(id as string)" :task-details="task" />
+    <ModuleForm v-if="task" :item-id="(id as string)" :item-details="task" />
     <div v-else class="pt-48 mx-auto">
       <LoadingAnimation large-size />
     </div>
@@ -12,7 +12,7 @@ import type { Tasks } from '@prisma/client';
 import { useUserStore } from '~/store/userStore';
 
 defineOptions({
-  name: 'UpdateTasksIndex'
+  name: 'UpdateModuleIndex'
 });
 
 const route = useRoute();
@@ -20,7 +20,7 @@ const id = route.params.id;
 const task = ref<Tasks>();
 
 async function fetchTaskById () {
-  const { data: tasks } = await $fetch('/api/data/tasks/get', {
+  const { data } = await $fetch('/api/data/tasks/get', {
     method: 'POST',
     body: {
       clientId: useUserStore().currentCompany,
@@ -28,7 +28,7 @@ async function fetchTaskById () {
     }
   });
 
-  const jsonResponse = JSON.parse(JSON.stringify(tasks));
+  const jsonResponse = JSON.parse(JSON.stringify(data));
 
   task.value = jsonResponse.tasks[0];
 }

@@ -1,6 +1,6 @@
 <template>
   <div class="w-full flex flex-col justify-center items-center p-4">
-    <form ref="taskForm" class="grid gap-6 items-start w-full" @submit.prevent="createTask">
+    <form ref="taskForm" class="grid gap-6 items-start w-full" @submit.prevent="createModuleItem">
       <div class="flex flex-col md:flex-row gap-6">
         <div class="w-full md:w-2/3 flex flex-col gap-6">
           <div class="flex flex-col gap-6">
@@ -93,14 +93,14 @@
           />
         </div>
       </div>
-      <UiButton text="Save" class="w-full md:max-w-[350px]" @click.prevent="createTask" />
+      <UiButton text="Save" class="w-full md:max-w-[350px]" @click.prevent="createModuleItem" />
       <UiButton
-        v-if="props.taskId"
+        v-if="props.itemId"
         text="Back"
         class="w-full md:max-w-[350px]"
         as-link-button
         secondary
-        :href="`/datasets/tasks/${props.taskId}/view`"
+        :href="`/datasets/tasks/${props.itemId}/view`"
       />
     </form>
   </div>
@@ -111,15 +111,15 @@ import type { Tasks } from '@prisma/client';
 import { useUserStore } from '~/store/userStore';
 
 defineOptions({
-  name: 'TaskForm'
+  name: 'ModuleForm'
 });
 
 const props = defineProps({
-  taskId: {
+  itemId: {
     type: String,
     default: undefined
   },
-  taskDetails: {
+  itemDetails: {
     type: Object as PropType<Tasks>,
     default: undefined
   }
@@ -154,9 +154,9 @@ const form = ref<Omit<Tasks, 'id' | 'clientId'>>({
 });
 
 onBeforeMount(() => {
-  if (props.taskDetails) {
+  if (props.itemDetails) {
     form.value = {
-      ...props.taskDetails
+      ...props.itemDetails
     };
   }
 });
@@ -189,14 +189,14 @@ watch(() => form.value, (newValue) => {
   }
 }, { deep: true, immediate: true });
 
-async function createTask () {
-  if (props.taskId) {
+async function createModuleItem () {
+  if (props.itemId) {
     try {
       const { data } = await $fetch('/api/data/tasks/update', {
         method: 'POST',
         body: {
           ...form.value,
-          id: props.taskId,
+          id: props.itemId,
           clientId: userStore.currentCompany,
           updatedById: userStore.currentUserId,
           updatedOn: new Date().toISOString()
