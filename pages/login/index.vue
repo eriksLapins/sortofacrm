@@ -16,7 +16,7 @@ definePageMeta({
 
 onBeforeMount(() => {
   if (useUserStore().isLoggedIn) {
-    navigateTo('/tasks', {
+    navigateTo('/datasets/tasks', {
       replace: true
     });
   }

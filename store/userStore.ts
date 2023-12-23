@@ -11,6 +11,7 @@ export const useUserStore = defineStore('users', () => {
   const currentCompany = ref<Number>();
   const availableUsers = ref<UserData[]>([]);
   const userPreferences = ref<PreferenceWrapper>({});
+  const defaultDataset = ref('tasks');
 
   const fetchUsers = async () => {
     const data = await $fetch('/api/data/users/get', {
@@ -117,6 +118,7 @@ export const useUserStore = defineStore('users', () => {
     fetchUsers,
     availableUsers,
     userPreferences,
-    fetchUserPreferences
+    fetchUserPreferences,
+    defaultDataset
   };
 });

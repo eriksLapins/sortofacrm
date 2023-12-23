@@ -6,29 +6,19 @@ const allDefaultPages: Omit<Pages, 'id' | 'clientId' | 'userId'>[] = [
     order: 0
   },
   {
-    name: 'tasks',
-    title: 'Tasks',
+    name: 'datasets',
+    title: 'Data',
     order: 1
-  },
-  {
-    name: 'invoices',
-    title: 'Invoices',
-    order: 2
-  },
-  {
-    name: 'quotes',
-    title: 'Quotes',
-    order: 3
   },
   {
     name: 'reports',
     title: 'Reports',
-    order: 4
+    order: 2
   },
   {
     name: 'settings',
     title: 'Settings',
-    order: 5
+    order: 1000
   }
 ];
 
@@ -39,29 +29,19 @@ const defaultPages: Omit<Pages, 'id' | 'clientId' | 'userId'>[] = [
     order: 0
   },
   {
-    name: 'tasks',
-    title: 'Tasks',
+    name: 'datasets',
+    title: 'Data',
     order: 1
-  },
-  {
-    name: 'invoices',
-    title: 'Invoices',
-    order: 2
-  },
-  {
-    name: 'quotes',
-    title: 'Quotes',
-    order: 3
   },
   {
     name: 'reports',
     title: 'Reports',
-    order: 4
+    order: 2
   },
   {
     name: 'settings',
     title: 'Settings',
-    order: 5
+    order: 1000
   }
 ];
 

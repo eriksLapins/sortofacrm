@@ -100,7 +100,7 @@
         class="w-full md:max-w-[350px]"
         as-link-button
         secondary
-        :href="`/tasks/${props.taskId}/view`"
+        :href="`/datasets/tasks/${props.taskId}/view`"
       />
     </form>
   </div>

@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import type { TableTasks } from '~/types';
+import type { TableItems } from '~/types';
 
 defineOptions({
   name: 'TablePreview'
@@ -35,7 +35,7 @@ defineOptions({
 
 const props = defineProps({
   dataJson: {
-    type: Array as PropType<TableTasks[][]>,
+    type: Array as PropType<TableItems[][]>,
     required: true
   },
   module: {

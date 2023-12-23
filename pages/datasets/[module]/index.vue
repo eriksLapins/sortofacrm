@@ -1,53 +1,65 @@
 <template>
-  <div v-if="loading">
-    <LoadingAnimation />
-  </div>
-  <div v-else class="lg:container mx-auto py-8 px-6 md:px-8">
-    <div class="flex w-full justify-end">
-      <UiButton href="/tasks/create" as-link-button text="Create" />
-    </div>
-    <PageContent
-      title="Tasks"
-    >
-      <div class="flex gap-4 flex-col md:flex-row justify-between">
-        <ClientOnly>
-          <UiMultiSelect
-            v-if="columns.length"
-            v-model:model-value="columns"
-            :items="columnList"
-            :initial-items="initialColumns"
-            label="Columns"
-            name="task-columns"
-            :disabled="columnsSaving"
-            draggable
-            @update:column-order="handleColumnOrderUpdate"
-            @update:save-columns="handleSaveColumns"
-          />
-        </ClientOnly>
-        <UiTextInput
-          v-model="searchText"
-          name="search-text-field"
-          label="Search by title/description"
-          class="md:max-w-xs"
-          @update:model-value="fetchTasksByText"
-        />
-      </div>
-      <TablePreview
-        v-if="tableTasks.length"
-        :data-json="tableTasks"
-        module="tasks"
+  <div>
+    <div class="flex flex-col lg:flex-row gap-4 lg:container md:mx-auto md:px-8 justify-center pt-8">
+      <UiButton
+        v-for="item in moduleItems"
+        :key="item.id"
+        :href="`/datasets/${item.id}`"
+        as-link-button
+        :text="item.name"
+        :secondary="currentRoute !== item.id"
       />
-      <div v-else>
-        No tasks matching the criteria
+    </div>
+    <div v-if="loading" class="pt-48 mx-auto">
+      <LoadingAnimation large-size />
+    </div>
+    <div v-else class="lg:container mx-auto py-8 px-6 md:px-8">
+      <div class="flex w-full justify-end">
+        <UiButton :href="`/datasets/${currentRoute}/create`" as-link-button text="Create" />
       </div>
-    </PageContent>
+      <PageContent
+        :title="moduleItems.find(item => item.id === currentRoute)?.name"
+      >
+        <div class="flex gap-4 flex-col md:flex-row justify-between">
+          <ClientOnly>
+            <UiMultiSelect
+              v-if="columns.length"
+              v-model:model-value="columns"
+              :items="columnList"
+              :initial-items="initialColumns"
+              label="Columns"
+              :name="`${currentRoute}-columns`"
+              :disabled="columnsSaving"
+              draggable
+              @update:column-order="handleColumnOrderUpdate"
+              @update:save-columns="handleSaveColumns"
+            />
+          </ClientOnly>
+          <UiTextInput
+            v-model="searchText"
+            name="search-text-field"
+            label="Search by title/description"
+            class="md:max-w-xs"
+            @update:model-value="fetchModuleItemsByText"
+          />
+        </div>
+        <TablePreview
+          v-if="tableItems.length"
+          :data-json="tableItems"
+          module="tasks"
+        />
+        <div v-else>
+          No items matching the criteria
+        </div>
+      </PageContent>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { type Tasks } from '@prisma/client';
 import { useUserStore } from '~/store/userStore';
-import type { MultiSelect, Preferences, TableTasks } from '~/types';
+import type { MultiSelect, Preferences, TableItems } from '~/types';
 const userStore = useUserStore();
 
 const tasks = ref<Tasks[]>();
@@ -56,8 +68,12 @@ const columnsSaving = ref(false);
 const initialColumns = ref<MultiSelect[]>([]);
 const searchText = ref('');
 const previousQuery = ref('');
+const route = useRoute();
 
-async function fetchTasks () {
+const currentRoute = computed(() => {
+  return route.params.module;
+});
+async function fetchModuleItems () {
   const { data } = await $fetch('/api/data/tasks/get', {
     method: 'POST',
     body: {
@@ -71,9 +87,9 @@ async function fetchTasks () {
   tasks.value = jsonTasks.tasks;
 }
 
-async function fetchTasksByText (searchQuery: string) {
+async function fetchModuleItemsByText (searchQuery: string) {
   if (searchQuery.length === 0) {
-    await fetchTasks();
+    await fetchModuleItems();
 
     return;
   }
@@ -92,20 +108,35 @@ async function fetchTasksByText (searchQuery: string) {
     }
   });
 
-  const jsonTasks = JSON.parse(JSON.stringify(data));
+  const jsonData = JSON.parse(JSON.stringify(data));
 
-  tasks.value = jsonTasks;
+  tasks.value = jsonData;
 }
+
+const moduleItems = [
+  {
+    id: 'tasks',
+    name: 'Tasks'
+  },
+  {
+    id: 'quotes',
+    name: 'Quotes'
+  },
+  {
+    id: 'invoices',
+    name: 'Invoices'
+  }
+];
 
 const columns = ref<string[]>([]);
 
 const columnList = ref<MultiSelect[]>([]);
 
-const tableTasks = computed(() => {
+const tableItems = computed(() => {
   if (tasks.value?.length) {
     const newTasks = tasks.value?.map((task: Record<string, any>) => {
       const id = task.id;
-      const object: TableTasks[] = [];
+      const object: TableItems[] = [];
       columns.value.forEach((value) => {
         object.push({
           ref_id: id,
@@ -167,7 +198,7 @@ async function handleSaveColumns (items: MultiSelect[]) {
 
 onBeforeMount(async () => {
   loading.value = true;
-  await fetchTasks();
+  await fetchModuleItems();
   await userStore.fetchUserPreferences('tasks');
   if (tasks.value) {
     columns.value = Object.keys(tasks.value[0]);

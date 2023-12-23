@@ -1,4 +1,4 @@
-export type TableTasks = {
+export type TableItems = {
     title: string,
     data: any;
     position: number | undefined;

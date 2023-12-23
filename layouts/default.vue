@@ -23,20 +23,8 @@ const NavItems = computed<NavItem[]>(() => [
     path: '/'
   },
   {
-    name: 'Tasks',
-    path: '/tasks'
-  },
-  {
-    name: 'Invoices',
-    path: '/invoices'
-  },
-  {
-    name: 'Quotes',
-    path: '/quotes'
-  },
-  {
-    name: 'Reports',
-    path: '/reports'
+    name: 'Data',
+    path: '/datasets'
   },
   {
     name: 'Settings',
