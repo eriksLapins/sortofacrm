@@ -7,74 +7,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model TImage {
-  clientId    Int
-  id          String          @id @default(uuid())
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
-  title       String
-  extension   EImageExtension
-  url         String
-  size        Float
-  caption     String?
-  alt_text    String?
-  description String?
-  isTop       Boolean         @default(false)
-  userId      String
-  scope       EScope          @default(local)
-
-  @@index([clientId])
-  @@index([userId])
-  @@index([createdAt])
-  @@index([title])
-  @@index([isTop])
-  @@index([scope])
-  @@map("images")
-}
-
-model TCategory {
-  id      Int         @id @default(autoincrement())
-  name    ECategories
-  imageId String
-
-  @@unique([name, imageId])
-  @@index([name, imageId])
-  @@map("categories")
-}
-
-model Account {
-  clientId          Int
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
-
-  @@unique([provider, providerAccountId])
-  @@index([clientId])
-  @@index([userId])
-  @@map("accounts")
-}
-
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-
-  @@map("sessions")
-}
-
 model User {
-  clientId       Int
-  id             String    @id @default(cuid())
+  id             Int       @id @default(autoincrement())
   role           ERole     @default(USER)
   name           String
   lastname       String
@@ -87,22 +21,28 @@ model User {
   phoneNumber    String?
   image          String?
   position       String?
-  departmentId   String
+  departmentId   Int
 
-  @@index([clientId])
   @@index([departmentId])
   @@map("users")
 }
 
 model UserPreferences {
-  clientId       Int
-  id             String           @id @default(cuid())
-  userId         String
+  id             Int    @id @default(autoincrement())
+  userId         Int
   module         String
-  preferenceType EPreferenceTypes
+  preferenceType String
   preferences    Json?
 
-  @@index([clientId, userId])
+  @@index([userId])
+}
+
+model PreferenceTypes {
+  id                 Int    @id @default(autoincrement())
+  clientCompanyId    Int
+  preferenceTypeName String
+
+  @@unique([preferenceTypeName])
 }
 
 model ClientCompany {
@@ -128,11 +68,11 @@ model ClientCompany {
   webpage               String?
   logo                  String?
   uploadDirectory       String?
+  isMain                Boolean
 }
 
 model Company {
-  clientId              Int
-  id                    String  @id @default(cuid())
+  id                    Int     @id @default(autoincrement())
   legalName             String
   alternateName         String?
   regNo                 String
@@ -153,22 +93,19 @@ model Company {
   webpage               String?
   logo                  String?
 
-  @@unique([clientId, regNo], map: "unique_company_client_regno_idx")
-  @@unique([clientId, legalName], map: "unique_company_client_legal_idx")
-  @@index([clientId])
   @@index([alternateName])
   @@index([legalName])
 }
 
 model Department {
-  clientId Int
-  id       String @id @default(cuid())
-  name     String
+  id   Int    @id @default(autoincrement())
+  name String
+
+  @@unique([name])
 }
 
 model Person {
-  clientId       Int
-  id             String  @id @default(cuid())
+  id             Int     @id @default(autoincrement())
   name           String
   lastname       String?
   position       String?
@@ -177,163 +114,133 @@ model Person {
   email          String?
   department     String?
 
-  @@unique([clientId, email], map: "unique_person_client_email_idx")
   @@index([name])
   @@index([lastname])
   @@index([email])
-  @@index([clientId])
 }
 
 model Relations {
-  clientId        Int
-  id              String         @id @default(cuid())
-  relatedFromType ERelationTypes
-  relatedFromId   String /// ID of the person/company/etc making the relation from
-  relatedToType   ERelationTypes
-  relatedToId     String /// ID of the person/company/etc making the relation to
+  id              Int    @id @default(autoincrement())
+  relatedFromType String
+  relatedFromId   Int /// ID of the person/company/etc making the relation from
+  relatedToType   String
+  relatedToId     Int /// ID of the person/company/etc making the relation to
 
-  @@index([clientId])
   @@index([relatedFromType])
   @@index([relatedToType])
 }
 
-model TPermissions {
-  clientId Int
-  id       String           @id @default(cuid())
-  userId   String
-  module   String
-  can      EPermissionTypes
+model RelationTypes {
+  id               Int    @id @default(autoincrement())
+  relationTypeName String
 
-  @@index([clientId])
+  @@unique([relationTypeName])
+}
+
+model Permissions {
+  id     Int              @id @default(autoincrement())
+  userId Int
+  module String
+  can    EPermissionTypes
+
   @@index([userId])
   @@map("permissions")
 }
 
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
-  @@map("verificationtokens")
+model ItemPermissions {
+  id     Int                  @id @default(autoincrement())
+  userId Int
+  itemId Int
+  can    EItemPermissionTypes
 }
 
 model Pages {
-  clientId Int
-  userId   String
-  id       String @id @default(cuid())
+  userId   Int
+  id       Int    @id @default(autoincrement())
   name     String
   title    String
-  order    Int
-
-  @@unique([clientId, name], map: "unique_pages_client_name_idx")
-  @@index([clientId, userId], map: "pages_client_user_idx")
+  position Int
 }
 
 model Blocks {
-  id              String  @id @default(cuid())
-  clientId        Int
-  userId          String
-  page            String  @db.VarChar(50)
+  id              Int     @id @default(autoincrement())
+  userId          Int
+  pagePath        String  @db.VarChar(150)
   verticalOrder   Int     @default(0)
   horizontalOrder Int     @default(0)
   width           Int     @default(300)
   height          Int     @default(300)
   contentType     String?
 
-  @@index([clientId, userId, page], map: "block_pages_client_user_idx")
-}
-
-model TTexts {
-  id       Int       @id @default(autoincrement())
-  page     String
-  type     ETextType
-  text     String    @db.Text
-  language ELanguage
-
-  @@map("texts")
+  @@unique([userId, pagePath])
 }
 
 model Tasks {
-  id             String    @id @default(cuid())
-  clientId       Int
-  createdById    String
-  updatedById    String
+  id             Int       @id @default(autoincrement())
+  createdById    Int
+  updatedById    Int
   createdOn      DateTime  @default(now())
   updatedOn      DateTime  @updatedAt
   startDate      DateTime?
   dueDate        DateTime?
   done           Boolean   @default(false)
   doneOn         DateTime?
-  managerId      String?
-  quoteId        String?
-  invoiceId      String?
-  companyId      String?
-  personId       String?
-  projectId      String?
   title          String    @db.VarChar(100)
   description    String?   @db.Text
   activityTypeId String?
-
-  @@index([clientId])
 }
 
 model TaskDoers {
-  id       String @id @default(cuid())
-  clientId Int
-  taskId   String
-  doerId   String
+  id     Int @id @default(autoincrement())
+  taskId Int
+  doerId Int
 
-  @@index([clientId])
-  @@index([clientId, taskId])
-  @@index([clientId, doerId])
+  @@index([taskId])
+  @@index([doerId])
+}
+
+model ModuleItems {
+  id          Int      @id @default(autoincrement())
+  createdById Int
+  updatedById Int
+  createdOn   DateTime @default(now())
+  updatedOn   DateTime @updatedAt
+  module      String
+  data        Json
+  title       String   @db.VarChar(100)
+  description String?  @db.Text
+
+  @@index([module])
+}
+
+model Modules {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  @@unique([name])
+}
+
+model ModuleFields {
+  id       Int     @id @default(autoincrement())
+  key      String
+  title    String
+  required Boolean
+
+  @@unique([key])
+  @@unique([title])
 }
 
 model ActivityTypes {
-  id       String @id @default(cuid())
-  clientId Int
-  name     String
+  id   Int    @id @default(autoincrement())
+  name String
 
-  @@unique([clientId, name])
-  @@index([clientId])
-}
-
-enum EImageExtension {
-  jpg
-  jpeg
-  png
-  svg
-  webp
+  @@unique([name])
 }
 
 enum ERole {
   SUPERADMIN
   ADMIN
   USER
-}
-
-enum ECategories {
-  Animals
-  Sports
-  People
-  Travel
-  Nature
-  Stills
-  Views
-}
-
-enum ETextType {
-  title
-  image_url
-  subtitle
-  description
-  text
-  tooltip
-}
-
-enum ELanguage {
-  lv
-  eng
 }
 
 enum EPermissionTypes {
@@ -363,23 +270,14 @@ enum EPermissionTypes {
   IMPORT_TAGGED
 }
 
-enum EContactRelationTypes {
-  Person
-  Company
+enum EItemPermissionTypes {
+  CREATE
+  READ
+  UPDATE
+  DELETE
 }
 
-enum EFinancialRelationTypes {
-  Invoice
-  Quote
-  Expense
-}
-
-enum EProjectRelationTypes {
-  Project
-  Task
-}
-
-enum ERelationTypes {
+enum ERelationTypesDefault {
   Person
   Company
   Invoice
@@ -387,17 +285,17 @@ enum ERelationTypes {
   Expense
   Project
   Task
+  Module
+  Department
+  Page
+  ClientCompany
 }
 
-enum EPreferenceTypes {
+enum EPreferenceTypesDefault {
   Layout
   Columns
+  Header
   PushNotifications
   EmailNotifications
   MarketingEmails
-}
-
-enum EScope {
-  local
-  global
 }

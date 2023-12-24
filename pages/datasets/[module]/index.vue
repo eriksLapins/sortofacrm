@@ -10,9 +10,7 @@
         :secondary="currentRoute !== item.id"
       />
     </div>
-    <div v-if="loading" class="pt-48 mx-auto">
-      <LoadingAnimation large-size />
-    </div>
+    <LoadingAnimation v-if="loading" large-size class="pt-48 mx-auto" />
     <div v-else class="lg:container mx-auto py-8 px-6 md:px-8">
       <div class="flex w-full justify-end">
         <UiButton :href="`/datasets/${currentRoute}/create`" as-link-button text="Create" />

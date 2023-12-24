@@ -1,4 +1,4 @@
-import { EPreferenceTypes, ERole, type User, type UserPreferences } from '@prisma/client';
+import { ERole, type User, type UserPreferences } from '@prisma/client';
 import { defineStore } from 'pinia';
 import type { PreferenceWrapper, Preferences, UserData } from '~/types';
 
@@ -8,17 +8,13 @@ export const useUserStore = defineStore('users', () => {
   const isSuperAdmin = ref(false);
   const isAdmin = ref(false);
   const isLoggedIn = ref(false);
-  const currentCompany = ref<Number>();
   const availableUsers = ref<UserData[]>([]);
   const userPreferences = ref<PreferenceWrapper>({});
   const defaultDataset = ref('tasks');
 
   const fetchUsers = async () => {
     const data = await $fetch('/api/data/users/get', {
-      method: 'POST',
-      body: {
-        clientId: currentCompany.value
-      }
+      method: 'POST'
     });
 
     const jsonData = JSON.parse(JSON.stringify(data));
@@ -40,7 +36,6 @@ export const useUserStore = defineStore('users', () => {
     if (verified) {
       isAdmin.value = verified.role === (ERole.ADMIN || ERole.SUPERADMIN);
       isSuperAdmin.value = verified.role === ERole.SUPERADMIN;
-      currentCompany.value = verified.companyId;
       currentUserId.value = verified.userId;
       isLoggedIn.value = true;
     } else {
@@ -58,7 +53,6 @@ export const useUserStore = defineStore('users', () => {
   const destroyUser = () => {
     currentUser.value = undefined;
     currentUserId.value = undefined;
-    currentCompany.value = undefined;
     isAdmin.value = false;
     isSuperAdmin.value = false;
     isLoggedIn.value = false;
@@ -72,7 +66,6 @@ export const useUserStore = defineStore('users', () => {
         const data = await $fetch('/api/data/users/preferences/get', {
           method: 'POST',
           body: {
-            clientId: currentCompany.value,
             userId: currentUserId.value,
             module: moduleName
           }
@@ -108,7 +101,6 @@ export const useUserStore = defineStore('users', () => {
 
   return {
     currentUser,
-    currentCompany,
     currentUserId,
     setUser,
     destroyUser,
