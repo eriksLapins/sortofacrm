@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TaskForm />
+    <ModuleForm />
   </div>
 </template>
 
