@@ -1,4 +1,4 @@
-import type { Modules } from '@prisma/client';
+import { Modules } from '@prisma/client';
 import { prisma } from '@db';
 
 export default defineEventHandler(async (): Promise<{data: Modules[]}> => {
