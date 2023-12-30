@@ -73,6 +73,15 @@ export default defineEventHandler(async (event) => {
     errors.data = { itemPermissions: 'Failed to delete module itemPermissions' };
   });
 
+  const fieldPermissions = await prisma.fieldPermissions.deleteMany({
+    where: {
+      module
+    }
+  }).catch((e) => {
+    console.log(e);
+    errors.data = { fieldPermissions: 'Failed to delete module fieldPermissions' };
+  });
+
   if (errors.data && Object.keys(errors.data).length) {
     throw createError({
       status: 500,
@@ -91,6 +100,7 @@ export default defineEventHandler(async (event) => {
       items,
       permissions,
       itemPermissions,
+      fieldPermissions,
       preferences
     }
   };

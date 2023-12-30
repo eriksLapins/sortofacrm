@@ -97,6 +97,17 @@ export default defineEventHandler(async (event) => {
     console.log(e);
     errors.data = { itemPermissions: 'Failed to update modulename in itemPermissions' };
   });
+  await prisma.fieldPermissions.updateMany({
+    where: {
+      module: body.oldName
+    },
+    data: {
+      module: body.newName
+    }
+  }).catch((e) => {
+    console.log(e);
+    errors.data = { fieldPermissions: 'Failed to update modulename in fieldPermissions' };
+  });
 
   if (errors.data && Object.keys(errors.data).length) {
     throw createError({

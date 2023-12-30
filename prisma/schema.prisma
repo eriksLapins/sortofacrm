@@ -155,6 +155,15 @@ model ItemPermissions {
   can    EItemPermissionTypes
 }
 
+model FieldPermissions {
+  id              Int                  @id @default(autoincrement())
+  userId          Int
+  fieldKey        String
+  module          String
+  clientCompanyId Int?
+  can             EItemPermissionTypes
+}
+
 model Pages {
   userId   Int
   id       Int    @id @default(autoincrement())
