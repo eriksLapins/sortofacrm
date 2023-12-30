@@ -1,15 +1,8 @@
-import type { EPreferenceTypes, Prisma, UserPreferences } from '@prisma/client';
-import { prisma } from '~/server/api/db';
+import { prisma } from '@db';
+import type { Prisma, UserPreferences } from '@prisma/client';
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
-
-  if (!body.clientId) {
-    throw createError({
-      status: 401,
-      statusMessage: 'Please log in again before changing the task'
-    });
-  }
 
   if (!body.userId) {
     throw createError({
@@ -21,10 +14,9 @@ export default defineEventHandler(async (event) => {
   try {
     await prisma.userPreferences.deleteMany({
       where: {
-        clientId: body.clientId as number,
-        userId: body.userId as string,
-        module: body.module as string,
-        preferenceType: body.preferenceType as EPreferenceTypes
+        userId: body.userId,
+        module: body.module,
+        preferenceType: body.preferenceType
       }
     });
   } catch (e) {
@@ -38,10 +30,9 @@ export default defineEventHandler(async (event) => {
 
   const bodies: UserPreferences[] = body.preferences.map((preference: Prisma.JsonObject) => {
     return {
-      clientId: body.clientId as number,
-      userId: body.userId as string,
-      module: body.module as string,
-      preferenceType: body.preferenceType as EPreferenceTypes,
+      userId: body.userId,
+      module: body.module,
+      preferenceType: body.preferenceType,
       preferences: preference
     };
   });

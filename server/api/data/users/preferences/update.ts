@@ -1,14 +1,7 @@
-import { prisma } from '~/server/api/db';
+import { prisma } from '@db';
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
-
-  if (!body.clientId) {
-    throw createError({
-      status: 401,
-      statusMessage: 'Please log in again before updating preferences'
-    });
-  }
 
   if (!body.userId) {
     throw createError({
@@ -25,7 +18,7 @@ export default defineEventHandler(async (event) => {
       status: 400,
       statusMessage: 'Please provide a preference',
       data: {
-        user: { text: 'preference id is missing' }
+        id: { text: 'preference id is missing' }
       }
     });
   }
@@ -33,8 +26,7 @@ export default defineEventHandler(async (event) => {
   try {
     const existingPreferences = await prisma.userPreferences.findMany({
       where: {
-        clientId: body.clientId as number,
-        userId: body.userId as string,
+        userId: body.userId,
         module: body.module
       }
     });
@@ -50,9 +42,8 @@ export default defineEventHandler(async (event) => {
   try {
     const data = await prisma.userPreferences.update({
       where: {
-        id: body.id as string,
-        clientId: body.clientId as number,
-        userId: body.userId as string,
+        id: body.id,
+        userId: body.userId,
         module: body.module
       },
       data: {

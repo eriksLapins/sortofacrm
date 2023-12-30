@@ -7,16 +7,16 @@
         :href="`/datasets/${item.id}`"
         as-link-button
         :text="item.name"
-        :secondary="currentRoute !== item.id"
+        :secondary="currentModule !== item.id"
       />
     </div>
     <LoadingAnimation v-if="loading" large-size class="pt-48 mx-auto" />
     <div v-else class="lg:container mx-auto py-8 px-6 md:px-8">
       <div class="flex w-full justify-end">
-        <UiButton :href="`/datasets/${currentRoute}/create`" as-link-button text="Create" />
+        <UiButton :href="`/datasets/${currentModule}/create`" as-link-button text="Create" />
       </div>
       <PageContent
-        :title="moduleItems.find(item => item.id === currentRoute)?.name"
+        :title="moduleItems.find(item => item.id === currentModule)?.name"
       >
         <div class="flex gap-4 flex-col md:flex-row justify-between">
           <ClientOnly>
@@ -26,7 +26,7 @@
               :items="columnList"
               :initial-items="initialColumns"
               label="Columns"
-              :name="`${currentRoute}-columns`"
+              :name="`${currentModule}-columns`"
               :disabled="columnsSaving"
               draggable
               @update:column-order="handleColumnOrderUpdate"
@@ -57,7 +57,7 @@
 <script setup lang="ts">
 import { type Tasks } from '@prisma/client';
 import { useUserStore } from '~/store/userStore';
-import type { MultiSelect, Preferences, TableItems } from '~/types';
+import type { MultiSelect, TableItems } from '~/types';
 const userStore = useUserStore();
 
 const tasks = ref<Tasks[]>();
@@ -68,14 +68,13 @@ const searchText = ref('');
 const previousQuery = ref('');
 const route = useRoute();
 
-const currentRoute = computed(() => {
+const currentModule = computed(() => {
   return route.params.module;
 });
 async function fetchModuleItems () {
-  const { data } = await $fetch('/api/data/tasks/get', {
+  const { data } = await $fetch(`/api/data/${currentModule}/get`, {
     method: 'POST',
     body: {
-      clientId: userStore.currentCompany,
       createdById: userStore.currentUserId
     }
   });
@@ -96,11 +95,8 @@ async function fetchModuleItemsByText (searchQuery: string) {
 
   previousQuery.value = searchQuery;
 
-  const { data } = await $fetch('/api/data/tasks/search/text', {
+  const { data } = await $fetch(`/api/data/${currentModule}/search/text`, {
     method: 'POST',
-    body: {
-      clientId: userStore.currentCompany
-    },
     params: {
       searchQuery
     }
@@ -181,9 +177,8 @@ async function handleSaveColumns (items: MultiSelect[]) {
     await $fetch('/api/data/users/preferences/create', {
       method: 'POST',
       body: {
-        clientId: userStore.currentCompany,
         userId: userStore.currentUserId,
-        module: 'tasks',
+        module: currentModule,
         preferenceType: 'Columns',
         preferences: mappedItems
       }
@@ -197,30 +192,30 @@ async function handleSaveColumns (items: MultiSelect[]) {
 onBeforeMount(async () => {
   loading.value = true;
   await fetchModuleItems();
-  await userStore.fetchUserPreferences('tasks');
-  if (tasks.value) {
-    columns.value = Object.keys(tasks.value[0]);
-    if (tasks.value) {
-      const taskItems = Object.keys(tasks.value[0]);
+  // await userStore.fetchUserPreferences(currentModule as unknown as string);
+  // if (tasks.value) {
+  //   columns.value = Object.keys(tasks.value[0]);
+  //   if (tasks.value) {
+  //     const taskItems = Object.keys(tasks.value[0]);
 
-      columnList.value = taskItems.map((item) => {
-        const index = taskItems.findIndex(value => value === item);
+  //     columnList.value = taskItems.map((item) => {
+  //       const index = taskItems.findIndex(value => value === item);
 
-        return {
-          key: item,
-          title: item,
-          position: index,
-          visible: columns.value.includes(item)
-        };
-      });
-      initialColumns.value = columnList.value.map(item => item);
-    }
-  }
-  if (userStore.userPreferences.tasks?.Columns?.length) {
-    columnList.value = userStore.userPreferences.tasks.Columns;
-    columns.value = columnList.value.filter((item: Preferences) => item.visible).map(item => item.title);
-    initialColumns.value = columnList.value.map(item => item);
-  }
+  //       return {
+  //         key: item,
+  //         title: item,
+  //         position: index,
+  //         visible: columns.value.includes(item)
+  //       };
+  //     });
+  //     initialColumns.value = columnList.value.map(item => item);
+  //   }
+  // }
+  // if (userStore.userPreferences.tasks?.Columns?.length) {
+  //   columnList.value = userStore.userPreferences.tasks.Columns;
+  //   columns.value = columnList.value.filter((item: Preferences) => item.visible).map(item => item.title);
+  //   initialColumns.value = columnList.value.map(item => item);
+  // }
   loading.value = false;
 });
 

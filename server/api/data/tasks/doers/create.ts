@@ -1,5 +1,5 @@
+import { prisma } from '@db';
 import type { TaskDoers } from '@prisma/client';
-import { prisma } from '~/server/api/db';
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);

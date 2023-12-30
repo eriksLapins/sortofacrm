@@ -104,11 +104,10 @@ async function createModuleItem () {
     }
   } else {
     try {
-      const data = await $fetch('/api/data/tasks/create', {
+      const data = await $fetch(`/api/data/${props.module}/create`, {
         method: 'POST',
         body: {
           ...form.value,
-          clientId: userStore.currentCompany,
           createdById: userStore.currentUserId,
           updatedById: userStore.currentUserId
         }

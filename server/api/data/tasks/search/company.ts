@@ -1,4 +1,4 @@
-import { prisma } from '~/server/api/db';
+import { prisma } from '@db';
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);

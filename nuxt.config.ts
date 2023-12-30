@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { resolve } from 'path';
+
 export default defineNuxtConfig({
   devtools: { enabled: true },
   runtimeConfig: {
@@ -45,5 +47,8 @@ export default defineNuxtConfig({
     defaultImport: 'component',
     global: false,
     componentPrefix: 'i'
+  },
+  alias: {
+    '@db': resolve(__dirname, './server/api/db')
   }
 });

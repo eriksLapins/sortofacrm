@@ -1,6 +1,6 @@
+import { prisma } from '@db';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { prisma } from '../db';
 
 export default defineEventHandler(async (event): Promise<{ token: string}> => {
   const config = useRuntimeConfig(event);

@@ -1,14 +1,7 @@
-import { prisma } from '~/server/api/db';
+import { prisma } from '@db';
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
-
-  if (!body.clientId) {
-    throw createError({
-      status: 401,
-      statusMessage: 'Please log in again before retrieving the data'
-    });
-  }
 
   if (!body.userId) {
     throw createError({
@@ -23,7 +16,8 @@ export default defineEventHandler(async (event) => {
   try {
     const data = await prisma.userPreferences.findMany({
       where: {
-        ...body
+        module: body.module,
+        userId: body.userId
       }
     });
 

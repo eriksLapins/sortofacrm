@@ -2,15 +2,9 @@ import { prisma } from '@db';
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
+  const module = getRouterParam(event, 'module');
 
   const errors: Record<string, Record<string, string>> = {};
-
-  if (!body.clientId) {
-    throw createError({
-      status: 401,
-      statusMessage: 'Please log in again before changing the task'
-    });
-  }
 
   if (!body.title) {
     errors.form = { title: 'Title is required' };
@@ -26,8 +20,9 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const created = await prisma.tasks.create({
+    const created = await prisma.moduleItems.create({
       data: {
+        module,
         ...body
       }
     });

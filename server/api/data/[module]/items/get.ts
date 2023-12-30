@@ -2,29 +2,26 @@ import { prisma } from '@db';
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
+  const module = getRouterParam(event, 'module');
 
   try {
-    const userData = await prisma.user.findMany({
+    const moduleItems = await prisma.moduleItems.findMany({
       where: {
+        module,
         ...body
-      },
-      select: {
-        id: true,
-        image: true,
-        initials: true,
-        name: true,
-        lastname: true,
-        position: true,
-        departmentId: true
       }
     });
 
-    return { data: userData };
+    return {
+      data: {
+        moduleItems
+      }
+    };
   } catch (e) {
     throw createError({
       status: 500,
       statusText: 'Something went wrong, please try again later',
-      message: 'unhandled error at users get'
+      message: 'unhandled error at tasks get'
     });
   }
 });
