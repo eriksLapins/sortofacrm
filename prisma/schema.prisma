@@ -151,6 +151,7 @@ model ItemPermissions {
   id     Int                  @id @default(autoincrement())
   userId Int
   itemId Int
+  module String
   can    EItemPermissionTypes
 }
 
@@ -221,13 +222,15 @@ model Modules {
 }
 
 model ModuleFields {
-  id       Int     @id @default(autoincrement())
+  id       Int         @id @default(autoincrement())
   key      String
   title    String
+  module   String
+  type     EFieldTypes
   required Boolean
 
-  @@unique([key])
-  @@unique([title])
+  @@unique([module, key])
+  @@unique([module, title])
 }
 
 model ActivityTypes {
@@ -275,6 +278,16 @@ enum EItemPermissionTypes {
   READ
   UPDATE
   DELETE
+}
+
+enum EFieldTypes {
+  string
+  date
+  datetime
+  boolean
+  number
+  array
+  object
 }
 
 enum ERelationTypesDefault {

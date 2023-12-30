@@ -84,7 +84,7 @@ const userOptions = ref<{key: string, title: string}[]>([]);
 async function createModuleItem () {
   if (props.itemId) {
     try {
-      const { data } = await $fetch(`/api/data/${props.module}/update`, {
+      const { data } = await $fetch(`/api/data/${props.module}/items/update`, {
         method: 'POST',
         body: {
           ...form.value,
@@ -104,7 +104,7 @@ async function createModuleItem () {
     }
   } else {
     try {
-      const data = await $fetch(`/api/data/${props.module}/create`, {
+      const data = await $fetch(`/api/data/${props.module}/items/create`, {
         method: 'POST',
         body: {
           ...form.value,

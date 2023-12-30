@@ -85,7 +85,7 @@ const initialDoersList = ref<string[]>([]);
 
 async function fetchTaskById () {
   try {
-    const { data } = await $fetch('/api/data/tasks/get', {
+    const { data } = await $fetch('/api/data/tasks/items/get', {
       method: 'POST',
       body: {
         clientId: userStore.currentCompany,
