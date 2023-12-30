@@ -1,5 +1,5 @@
-import { prisma } from '@db';
 import { ModuleFields } from '@prisma/client';
+import { prisma } from '@db';
 import { ResponseError } from '~/types';
 
 export default defineEventHandler(async (event) => {

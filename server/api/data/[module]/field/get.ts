@@ -1,5 +1,5 @@
+import { ModuleFields } from '@prisma/client';
 import { prisma } from '@db';
-import type { ModuleFields } from '@prisma/client';
 
 export default defineEventHandler(async (event): Promise<{data: ModuleFields[]}> => {
   const module = getRouterParam(event, 'module');
