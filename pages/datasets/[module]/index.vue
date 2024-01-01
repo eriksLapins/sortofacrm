@@ -58,6 +58,7 @@
 import { type ModuleItems } from '@prisma/client';
 import { useUserStore } from '~/store/userStore';
 import type { MultiSelect, TableItems } from '~/types';
+import jsonParse from '~/utils/jsonParse';
 const userStore = useUserStore();
 
 const moduleItems = ref<ModuleItems[]>();
@@ -79,9 +80,9 @@ async function fetchModuleItems () {
         }
     });
 
-    const jsonData = JSON.parse(JSON.stringify(data));
+    const jsonData = jsonParse(data);
 
-    moduleItems.value = jsonData.moduleItems;
+    moduleItems.value = jsonData;
 }
 
 async function fetchModuleItemsByText (searchQuery: string) {
@@ -102,7 +103,7 @@ async function fetchModuleItemsByText (searchQuery: string) {
         }
     });
 
-    const jsonData = JSON.parse(JSON.stringify(data));
+    const jsonData = jsonParse(data);
 
     moduleItems.value = jsonData;
 }
