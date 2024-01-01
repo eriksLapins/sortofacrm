@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { resolve } from 'path';
+import react from '@vitejs/plugin-react';
 
 export default defineNuxtConfig({
     devtools: { enabled: true },
@@ -36,9 +37,11 @@ export default defineNuxtConfig({
     },
     ssr: true,
     vite: {
+        plugins: [react()],
         resolve: {
             alias: {
-                '.prisma/client/index-browser': './node_modules/.prisma/client/index-browser.js'
+                '.prisma/client/index-browser': './node_modules/.prisma/client/index-browser.js',
+                '@shadcn': resolve(__dirname, './shadcn')
             }
         }
     },

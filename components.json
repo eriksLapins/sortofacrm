@@ -1,0 +1,18 @@
+{
+    
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "default",
+  "tailwind": {
+    "config": "tailwind.config.js",
+    "css": "./assets/css/main/css",
+    "baseColor": "slate",
+    "cssVariables": false
+  },
+  "rsc": false,
+  "tsx": false,
+  "aliases": {
+    "utils": "@shadcn/lib/utils",
+    "components": "@shadcn/components"
+  }
+
+}
