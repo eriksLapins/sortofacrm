@@ -31,34 +31,30 @@
 
 <script setup lang="ts">
 import format from 'date-fns/format';
-import { useUserStore } from '~/store/userStore';
 
 defineOptions({
-  name: 'ItemHeader'
+    name: 'ItemHeader'
 });
 
-const userStore = useUserStore();
-
 const props = defineProps({
-  item: {
-    type: Object as PropType<{id: String, createdBy: String, updatedBy: String, updatedOn: Date}>,
-    required: true
-  },
-  moduleName: {
-    type: String,
-    required: true
-  }
+    item: {
+        type: Object as PropType<{id: String, createdBy: String, updatedBy: String, updatedOn: Date}>,
+        required: true
+    },
+    moduleName: {
+        type: String,
+        required: true
+    }
 });
 
 async function deleteItem () {
-  await $fetch(`/api/data/${props.moduleName}/delete`, {
-    method: 'POST',
-    body: {
-      clientId: userStore.currentCompany,
-      id: props.item.id
-    }
-  });
-  navigateTo(`/${props.moduleName}`);
+    await $fetch(`/api/data/${props.moduleName}/delete`, {
+        method: 'POST',
+        body: {
+            id: props.item.id
+        }
+    });
+    navigateTo(`/${props.moduleName}`);
 }
 
 </script>

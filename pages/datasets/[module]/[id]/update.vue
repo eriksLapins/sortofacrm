@@ -9,10 +9,9 @@
 
 <script setup lang="ts">
 import type { Tasks } from '@prisma/client';
-import { useUserStore } from '~/store/userStore';
 
 defineOptions({
-  name: 'UpdateModuleIndex'
+    name: 'UpdateModuleIndex'
 });
 
 const route = useRoute();
@@ -20,21 +19,20 @@ const id = route.params.id;
 const task = ref<Tasks>();
 
 async function fetchTaskById () {
-  const { data } = await $fetch('/api/data/tasks/get', {
-    method: 'POST',
-    body: {
-      clientId: useUserStore().currentCompany,
-      id
-    }
-  });
+    const { data } = await $fetch('/api/data/tasks/get', {
+        method: 'POST',
+        body: {
+            id
+        }
+    });
 
-  const jsonResponse = JSON.parse(JSON.stringify(data));
+    const jsonResponse = JSON.parse(JSON.stringify(data));
 
-  task.value = jsonResponse.tasks[0];
+    task.value = jsonResponse.tasks[0];
 }
 
 onBeforeMount(async () => {
-  await fetchTaskById();
+    await fetchTaskById();
 });
 
 </script>

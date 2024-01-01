@@ -70,7 +70,7 @@ import format from 'date-fns/format';
 import { useUserStore } from '~/store/userStore';
 
 defineOptions({
-  name: 'ViewTasksIndex'
+    name: 'ViewTasksIndex'
 });
 
 const route = useRoute();
@@ -84,113 +84,109 @@ const usersUpdated = ref(false);
 const initialDoersList = ref<string[]>([]);
 
 async function fetchTaskById () {
-  try {
-    const { data } = await $fetch('/api/data/tasks/items/get', {
-      method: 'POST',
-      body: {
-        clientId: userStore.currentCompany,
-        createdById: userStore.currentUserId,
-        id
-      }
-    });
+    try {
+        const { data } = await $fetch('/api/data/tasks/items/get', {
+            method: 'POST',
+            body: {
+                createdById: userStore.currentUserId,
+                id
+            }
+        });
 
-    const jsonTask = JSON.parse(JSON.stringify(data));
+        const jsonTask = JSON.parse(JSON.stringify(data));
 
-    task.value = jsonTask.tasks[0];
-    loading.value = false;
-  } catch (e) {
-    console.log(e);
-    throw new Error('Sorry, something went wrong');
-  }
+        task.value = jsonTask.tasks[0];
+        loading.value = false;
+    } catch (e) {
+        console.log(e);
+        throw new Error('Sorry, something went wrong');
+    }
 }
 
 const taskDoerIds = ref<Array<string>>([]);
 
 const headerItem = computed(() => {
-  if (task.value) {
-    return {
-      id: task.value.id,
-      updatedOn: task.value.updatedOn,
-      createdBy: task.value.createdById,
-      updatedBy: task.value.updatedById
-    };
-  }
+    if (task.value) {
+        return {
+            id: task.value.id,
+            updatedOn: task.value.updatedOn,
+            createdBy: task.value.createdById,
+            updatedBy: task.value.updatedById
+        };
+    }
 
-  return undefined;
+    return undefined;
 });
 
 function findUserById (id: string) {
-  return userStore.availableUsers.find(user => user.id === id);
+    return userStore.availableUsers.find(user => user.id === id);
 }
 
 async function updateTaskDoers () {
-  const doersToAdd = taskDoerIds.value.filter(doer => !initialDoersList.value?.includes(doer));
-  const doersToDelete = initialDoersList.value?.filter(doer => !taskDoerIds.value.includes(doer));
-  if (doersToAdd.length) {
-    await $fetch('/api/data/tasks/doers/create', {
-      method: 'POST',
-      body: {
-        clientId: userStore.currentCompany,
-        taskId: id,
-        doerId: doersToAdd
-      }
-    }).catch(() => {
-      throw createError({
-        statusCode: 500,
-        statusMessage: 'Sorry, something went wrong when adding users'
-      });
-    }); ;
-  }
+    const doersToAdd = taskDoerIds.value.filter(doer => !initialDoersList.value?.includes(doer));
+    const doersToDelete = initialDoersList.value?.filter(doer => !taskDoerIds.value.includes(doer));
+    if (doersToAdd.length) {
+        await $fetch('/api/data/tasks/doers/create', {
+            method: 'POST',
+            body: {
+                taskId: id,
+                doerId: doersToAdd
+            }
+        }).catch(() => {
+            throw createError({
+                statusCode: 500,
+                statusMessage: 'Sorry, something went wrong when adding users'
+            });
+        }); ;
+    }
 
-  if (doersToDelete.length) {
-    await $fetch('/api/data/tasks/doers/delete', {
-      method: 'POST',
-      body: {
-        clientId: userStore.currentCompany,
-        taskId: id,
-        doerId: doersToDelete
-      }
-    }).catch(() => {
-      throw createError({
-        statusCode: 500,
-        statusMessage: 'Sorry, something went wrong when removing users'
-      });
-    });
-  }
+    if (doersToDelete.length) {
+        await $fetch('/api/data/tasks/doers/delete', {
+            method: 'POST',
+            body: {
+                taskId: id,
+                doerId: doersToDelete
+            }
+        }).catch(() => {
+            throw createError({
+                statusCode: 500,
+                statusMessage: 'Sorry, something went wrong when removing users'
+            });
+        });
+    }
 }
 
 async function fetchTaskDoers () {
-  const { data } = await $fetch('/api/data/tasks/doers/get', {
-    method: 'POST',
-    body: {
-      clientId: userStore.currentCompany,
-      taskId: id
-    }
-  }).catch(() => {
-    throw createError({
-      statusCode: 500,
-      message: 'Sorry, something went wrong, please try again later'
+    const { data } = await $fetch('/api/data/tasks/doers/get', {
+        method: 'POST',
+        body: {
+            taskId: id
+        }
+    }).catch(() => {
+        throw createError({
+            statusCode: 500,
+            message: 'Sorry, something went wrong, please try again later'
+        });
     });
-  });
 
-  const jsonData = JSON.parse(JSON.stringify(data)) as TaskDoers[];
+    const jsonData = JSON.parse(JSON.stringify(data)) as TaskDoers[];
 
-  taskDoerIds.value = jsonData.map(item => item.doerId);
-  initialDoersList.value = jsonData.map(item => item.doerId);
+    taskDoerIds.value = jsonData.map(item => item.doerId);
+    initialDoersList.value = jsonData.map(item => item.doerId);
 }
 
 onBeforeMount(async () => {
-  await fetchTaskById();
-  await fetchTaskDoers();
-  if (!userStore.availableUsers.length) {
-    await userStore.fetchUsers();
-  }
-  userOptions.value = userStore.availableUsers?.map((user) => {
-    return {
-      key: user.id,
-      title: `${user.name} ${user.lastname}`
-    };
-  });
+    await fetchTaskById();
+    await fetchTaskDoers();
+    if (!userStore.availableUsers.length) {
+        await userStore.fetchUsers();
+    }
+    userOptions.value = userStore.availableUsers?.map((user) => {
+        return {
+            key: user.id,
+            title: `${user.name} ${user.lastname}`
+        };
+    });
 });
 
 </script>
