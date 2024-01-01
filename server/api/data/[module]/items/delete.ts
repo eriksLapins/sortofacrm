@@ -1,4 +1,4 @@
-import { prisma } from '@db';
+import { prisma } from '~db';
 
 export default defineEventHandler(async (event): Promise<{success: boolean} | Error> => {
     const body = await readBody(event);

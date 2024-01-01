@@ -1,5 +1,5 @@
 import { ModuleItems } from '@prisma/client';
-import { prisma } from '@db';
+import { prisma } from '~db';
 
 export default defineEventHandler(async (event): Promise<{data: ModuleItems[]} | Error> => {
     const body = await readBody(event);

@@ -1,5 +1,5 @@
 import type { Prisma, UserPreferences } from '@prisma/client';
-import { prisma } from '@db';
+import { prisma } from '~db';
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);

@@ -37,29 +37,29 @@
 
 <script lang="ts" setup>
 defineOptions({
-  name: 'UIButton'
+    name: 'UIButton'
 });
 
 defineProps({
-  text: {
-    type: String,
-    required: true
-  },
-  secondary: {
-    type: Boolean
-  },
-  errorVariant: {
-    type: Boolean
-  },
-  asLinkButton: {
-    type: Boolean
-  },
-  asLink: {
-    type: Boolean
-  },
-  href: {
-    type: String,
-    default: undefined
-  }
+    text: {
+        type: String,
+        required: true
+    },
+    secondary: {
+        type: Boolean
+    },
+    errorVariant: {
+        type: Boolean
+    },
+    asLinkButton: {
+        type: Boolean
+    },
+    asLink: {
+        type: Boolean
+    },
+    href: {
+        type: String,
+        default: undefined
+    }
 });
 </script>

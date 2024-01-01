@@ -1,6 +1,6 @@
 import { User } from '@prisma/client';
 import bcrypt from 'bcryptjs';
-import { prisma } from '@db';
+import { prisma } from '~db';
 
 export default defineCachedEventHandler(async (event) => {
     const body: User = await readBody(event);

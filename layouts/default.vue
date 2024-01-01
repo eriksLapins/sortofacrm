@@ -14,22 +14,22 @@
 import type { NavItem } from '~/types';
 
 defineOptions({
-  name: 'DefaultLayout'
+    name: 'DefaultLayout'
 });
 
 const NavItems = computed<NavItem[]>(() => [
-  {
-    name: 'Main',
-    path: '/'
-  },
-  {
-    name: 'Data',
-    path: '/datasets'
-  },
-  {
-    name: 'Settings',
-    path: '/settings'
-  }
+    {
+        name: 'Main',
+        path: '/'
+    },
+    {
+        name: 'Data',
+        path: '/datasets'
+    },
+    {
+        name: 'Settings',
+        path: '/settings'
+    }
 ]);
 
 </script>

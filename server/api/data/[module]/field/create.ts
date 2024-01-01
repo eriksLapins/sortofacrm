@@ -1,6 +1,6 @@
 import { ModuleFields } from '@prisma/client';
-import { prisma } from '@db';
 import { ResponseError } from '~/types';
+import { prisma } from '~db';
 
 export default defineEventHandler(async (event): Promise<{success: boolean} | Error> => {
     const body: {fields: Omit<ModuleFields, 'id'>[]} = await readBody(event);

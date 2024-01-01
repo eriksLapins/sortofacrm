@@ -1,6 +1,6 @@
 import { FieldPermissions, ItemPermissions, ModuleFields, ModuleItems, Modules, Permissions, UserPreferences } from '@prisma/client';
-import { prisma } from '@db';
 import { ResponseError } from '~/types';
+import { prisma } from '~db';
 
 export default defineEventHandler(async (event): Promise<{data: {
     module: Modules,
