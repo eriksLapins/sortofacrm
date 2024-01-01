@@ -1,12 +1,13 @@
+import { ModuleItems } from '@prisma/client';
 import { prisma } from '@db';
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event): Promise<{data: ModuleItems[]} | Error> => {
     const module = getRouterParam(event, 'module');
 
     const query = getQuery(event);
 
     try {
-        const data = await prisma.moduleItems.findMany({
+        const moduleItems = await prisma.moduleItems.findMany({
             where: {
                 AND: [
                     {
@@ -30,8 +31,13 @@ export default defineEventHandler(async (event) => {
             }
         });
 
-        return { data };
+        return { data: moduleItems };
     } catch (e) {
         console.log(e);
+        throw createError({
+            status: 500,
+            statusMessage: 'Sorry, something went wrong',
+            message: 'Unhandled error at module search by text'
+        });
     }
 });

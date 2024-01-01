@@ -2,8 +2,8 @@ import { ModuleFields } from '@prisma/client';
 import { prisma } from '@db';
 import { ResponseError } from '~/types';
 
-export default defineEventHandler(async (event) => {
-    const body = await readBody(event);
+export default defineEventHandler(async (event): Promise<{success: boolean} | Error> => {
+    const body: {fields: Omit<ModuleFields, 'id'>[]} = await readBody(event);
     const module = getRouterParam(event, 'module');
 
     const errors: ResponseError = {
@@ -23,8 +23,8 @@ export default defineEventHandler(async (event) => {
     }
 
     if (Object.keys(body.fields).length) {
-        const filteredFields: Omit<ModuleFields, 'id'>[] = [];
-        body.fields.forEach((field: Omit<ModuleFields, 'id'>) => {
+        const filteredFields: typeof body.fields = [];
+        body.fields.forEach((field) => {
             if (Object.keys(EFieldTypes).includes(field.type)) {
                 filteredFields.push(field);
             } else {
@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
             }
         });
 
-        const mappedFields: Omit<ModuleFields, 'id'>[] = filteredFields.map((field: Omit<ModuleFields, 'id'>) => {
+        const mappedFields: typeof body.fields = filteredFields.map((field) => {
             return {
                 module,
                 key: field.key,

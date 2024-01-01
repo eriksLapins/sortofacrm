@@ -1,6 +1,6 @@
 import { prisma } from '@db';
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event): Promise<{success: boolean} | Error> => {
     const body = await readBody(event);
     const module = getRouterParam(event, 'module');
 
@@ -25,4 +25,6 @@ export default defineEventHandler(async (event) => {
             message: 'unhandled error at tasks delete'
         });
     }
+
+    return { success: true };
 });

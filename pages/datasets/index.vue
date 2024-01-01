@@ -4,11 +4,11 @@
 
 <script setup lang="ts">
 defineOptions({
-  name: 'DatasetsIndex'
+    name: 'DatasetsIndex'
 });
 
 definePageMeta({
-  middleware: 'datasets'
+    middleware: 'datasets'
 });
 </script>
 

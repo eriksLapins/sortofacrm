@@ -1,6 +1,6 @@
 import { prisma } from '@db';
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event): Promise<{success: boolean} | Error> => {
     const module = getRouterParam(event, 'module');
     const body = await readBody(event);
 
@@ -55,4 +55,6 @@ export default defineEventHandler(async (event) => {
             });
         }
     }
+
+    return { success: true };
 });

@@ -1,7 +1,7 @@
 import { prisma } from '@db';
 import { ResponseError } from '~/types';
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event): Promise<{success: boolean} | Error> => {
     const body = await readBody(event);
 
     const errors: ResponseError = {};

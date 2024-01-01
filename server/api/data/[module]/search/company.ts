@@ -1,10 +1,11 @@
+import { ModuleItems } from '@prisma/client';
 import { prisma } from '@db';
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event): Promise<{data: ModuleItems[]} | Error> => {
     const body = await readBody(event);
     const module = getRouterParam(event, 'module');
 
-    const data = await prisma.moduleItems.findMany({
+    const moduleItems = await prisma.moduleItems.findMany({
         where: {
             module,
             data: {
@@ -14,5 +15,5 @@ export default defineEventHandler(async (event) => {
         }
     });
 
-    return { data };
+    return { data: moduleItems };
 });

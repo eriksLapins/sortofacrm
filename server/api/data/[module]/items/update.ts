@@ -1,6 +1,7 @@
+import { ModuleItems } from '@prisma/client';
 import { prisma } from '@db';
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event): Promise<{data: ModuleItems} | Error> => {
     const module = getRouterParam(event, 'module');
     const body = await readBody(event);
 
@@ -23,7 +24,7 @@ export default defineEventHandler(async (event) => {
     }
 
     try {
-        const task = await prisma.moduleItems.update({
+        const moduleItem = await prisma.moduleItems.update({
             where: {
                 module,
                 id: body.id
@@ -33,7 +34,7 @@ export default defineEventHandler(async (event) => {
             }
         });
 
-        return { data: task };
+        return { data: moduleItem };
     } catch (e) {
         console.log(e);
         throw createError({
