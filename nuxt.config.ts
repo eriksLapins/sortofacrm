@@ -9,7 +9,8 @@ export default defineNuxtConfig({
             secret: process.env.NUXTAUTH_SECRET
         },
         public: {
-            base_url: process.env.NUXT_PUBLIC_BASE_URL
+            base_url: process.env.NUXT_PUBLIC_BASE_URL,
+            defaultModulePath: '/datasets/tasks'
         }
     },
     css: ['~/assets/css/main.css',

@@ -4,6 +4,6 @@
 
 <script setup lang="ts">
 defineOptions({
-  name: 'DashboardIndex'
+    name: 'DashboardIndex'
 });
 </script>

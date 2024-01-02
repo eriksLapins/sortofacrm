@@ -6,13 +6,13 @@
 
 <script setup lang="ts">
 defineOptions({
-  name: 'LoadingAnimation'
+    name: 'LoadingAnimation'
 });
 
 defineProps({
-  largeSize: {
-    type: Boolean
-  }
+    largeSize: {
+        type: Boolean
+    }
 });
 </script>
 
