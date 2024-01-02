@@ -11,7 +11,7 @@
 <script setup lang="ts">
 
 defineOptions({
-  name: 'DefaultLayout'
+    name: 'DefaultLayout'
 });
 
 </script>

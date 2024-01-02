@@ -10,16 +10,15 @@
         :secondary="currentModule !== item.id"
       />
     </div>
-    <LoadingAnimation v-if="loading" large-size class="pt-48 mx-auto" />
-    <div v-else class="lg:container mx-auto py-8 px-6 md:px-8">
-      <div class="flex w-full justify-end">
-        <UiButton :href="`/datasets/${currentModule}/create`" as-link-button text="Create" />
-      </div>
-      <PageContent
-        :title="modules.find(item => item.id === currentModule)?.name"
-      >
-        <div class="flex gap-4 flex-col md:flex-row justify-between">
-          <ClientOnly>
+    <ClientOnly>
+      <div class="lg:container mx-auto py-8 px-6 md:px-8">
+        <div class="flex w-full justify-end">
+          <UiButton :href="`/datasets/${currentModule}/create`" as-link-button text="Create" />
+        </div>
+        <PageContent
+          :title="modules.find(item => item.id === currentModule)?.name"
+        >
+          <div class="flex gap-4 flex-col md:flex-row justify-between">
             <UiMultiSelect
               v-if="columns.length"
               v-model="columns"
@@ -32,25 +31,28 @@
               @update:column-order="handleColumnOrderUpdate"
               @update:save-columns="handleSaveColumns"
             />
-          </ClientOnly>
-          <UiTextInput
-            v-model="searchText"
-            name="search-text-field"
-            label="Search by title/description"
-            class="md:max-w-xs"
-            @update:model-value="fetchModuleItemsByText"
+            <UiTextInput
+              v-model="searchText"
+              name="search-text-field"
+              label="Search by title/description"
+              class="md:max-w-xs"
+              @update:model-value="fetchModuleItemsByText"
+            />
+          </div>
+          <TablePreview
+            v-if="tableItems.length"
+            :data-json="tableItems"
+            module="tasks"
           />
-        </div>
-        <TablePreview
-          v-if="tableItems.length"
-          :data-json="tableItems"
-          module="tasks"
-        />
-        <div v-else>
-          No items matching the criteria
-        </div>
-      </PageContent>
-    </div>
+          <div v-else>
+            No items matching the criteria
+          </div>
+        </PageContent>
+      </div>
+      <template #fallback>
+        <LoadingAnimation large-size class="pt-48 mx-auto" />
+      </template>
+    </ClientOnly>
   </div>
 </template>
 
@@ -72,6 +74,7 @@ const route = useRoute();
 const currentModule = computed(() => {
     return route.params.module;
 });
+
 async function fetchModuleItems () {
     const { data } = await $fetch(`/api/data/${currentModule.value}/items/get`, {
         method: 'POST',

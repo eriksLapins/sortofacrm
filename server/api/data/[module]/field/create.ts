@@ -25,13 +25,17 @@ export default defineEventHandler(async (event): Promise<{success: boolean} | Er
     if (Object.keys(body.fields).length) {
         const filteredFields: typeof body.fields = [];
         body.fields.forEach((field) => {
-            if (Object.keys(EFieldTypes).includes(field.type)) {
-                filteredFields.push(field);
-            } else {
+            if (!Object.keys(EFieldValueType).includes(field.type)) {
                 errors.data.fields.push({
                     [`${field.key}`]: `${field.type} not recognized as a field type`
                 });
             }
+            if (!Object.keys(EFieldType).includes(field.valueType)) {
+                errors.data.fields.push({
+                    [`${field.key}`]: `${field.valueType} not recognized as a field value type`
+                });
+            }
+            filteredFields.push(field);
         });
 
         const mappedFields: typeof body.fields = filteredFields.map((field) => {
@@ -40,11 +44,14 @@ export default defineEventHandler(async (event): Promise<{success: boolean} | Er
                 key: field.key,
                 title: field.title,
                 type: field.type,
-                required: field.required
+                required: field.required,
+                valueType: field.valueType,
+                additional: field.additional
             };
         });
         try {
             await prisma.moduleFields.createMany({
+                // @ts-ignore
                 data: mappedFields
             });
         } catch (e) {

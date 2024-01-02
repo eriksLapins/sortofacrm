@@ -24,7 +24,7 @@ const NavItems = computed<NavItem[]>(() => [
     },
     {
         name: 'Data',
-        path: useRuntimeConfig().public.defaultModulePath
+        path: '/datasets'
     },
     {
         name: 'Settings',

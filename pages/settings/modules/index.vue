@@ -22,18 +22,16 @@ definePageMeta({
 
 const availableModules = ref<Modules[]>();
 
-async function fetchModules () {
+const { data } = useAsyncData(async () => {
     const { data } = await $fetch('/api/data/modules/get');
 
     const jsonResponse = jsonParse(data);
 
-    availableModules.value = jsonResponse;
-}
-
-onMounted(async () => {
-    await fetchModules();
+    return {
+        jsonResponse
+    };
 });
-
+availableModules.value = data.value?.jsonResponse || undefined;
 </script>
 
 <style scoped>

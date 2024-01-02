@@ -225,18 +225,22 @@ model ModuleItems {
 
 model Modules {
   id   Int    @id @default(autoincrement())
+  key  String
   name String
 
   @@unique([name])
+  @@unique([key])
 }
 
 model ModuleFields {
-  id       Int         @id @default(autoincrement())
-  key      String
-  title    String
-  module   String
-  type     EFieldTypes
-  required Boolean
+  id         Int             @id @default(autoincrement())
+  key        String
+  title      String
+  module     String
+  valueType  EFieldValueType
+  type       EFieldType
+  additional Json? // options, text-length, mask, etc.
+  required   Boolean
 
   @@unique([module, key])
   @@unique([module, title])
@@ -289,7 +293,7 @@ enum EItemPermissionTypes {
   DELETE
 }
 
-enum EFieldTypes {
+enum EFieldValueType {
   string
   date
   datetime
@@ -297,6 +301,22 @@ enum EFieldTypes {
   number
   array
   object
+  blob
+  file
+}
+
+enum EFieldType {
+  dropdown
+  text
+  textarea
+  datepicker
+  switch
+  checkbox
+  phoneNumber
+  email
+  password
+  fileUpload
+  imageUpload
 }
 
 enum ERelationTypesDefault {
