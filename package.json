@@ -1,7 +1,6 @@
 {
   "name": "lapinseriks_nuxt",
-  "private": true,
-  "license": "ISC",
+  "license": "MIT",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
