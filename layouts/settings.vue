@@ -1,11 +1,11 @@
-<template>
+<template ref="settingsLayout">
   <div class="h-[100dvh]">
     <AppHeader
       :nav-items="NavItems"
     />
-    <div class="settings-layout container mx-auto p-4 md:p-8 flex flex-col gap-8">
+    <div class="settings-layout container mx-auto p-4 md:p-8 flex flex-col gap-4">
       <h1 class="text-l font-bold">
-        Settings {{ currentModule === 'General' ? '' : `- ${currentModule}` }}
+        Settings
       </h1>
       <div class="flex flex-col lg:flex-row gap-4 justify-center">
         <UiButton
@@ -14,7 +14,7 @@
           :href="item.path"
           as-link-button
           :text="item.name"
-          :secondary="item.path !== $route.fullPath"
+          :secondary="!isCurrentPath(item.path)"
           @click="currentModule = item.name"
         />
       </div>
@@ -30,6 +30,11 @@ import type { NavItem } from '~/types';
 defineOptions({
     name: 'SettingsLayout'
 });
+
+defineEmits(['change-page-name']);
+
+const route = useRoute();
+const settingsLayout = ref();
 
 const NavItems = computed<NavItem[]>(() => [
     {
@@ -62,6 +67,20 @@ const settingsPaths = [
 ];
 
 const currentModule = ref('General');
+const isCurrentPath = (path: string) => {
+    const routePath = route.path.replace('/settings', '');
+    const itemPath = path.replace('/settings', '');
+
+    if (routePath === '' && itemPath === '') {
+        return true;
+    }
+
+    if (itemPath !== '' && routePath.includes(itemPath)) {
+        return true;
+    }
+
+    return false;
+};
 
 </script>
 
