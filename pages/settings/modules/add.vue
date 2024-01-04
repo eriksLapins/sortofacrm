@@ -45,7 +45,6 @@ const fieldTypeItems = Object.values(EFieldType).map((value) => {
         title: value
     };
 });
-console.log(fieldTypeItems)
 
 const fieldTemplate: Omit<ModuleFields, 'id'> = {
     key: '',
