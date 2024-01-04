@@ -7,7 +7,7 @@
       <UiTextInput v-model="form.name" label="Module name" name="module-name" />
       <ul>
         <li v-for="(field, index) in form.fields" :key="index">
-          <!-- <UiSelect v-model="field.valueType" :items="fieldTypeItems" :name="`field-type-${index}`" /> -->
+          <UiSelect v-model="field.valueType" :items="fieldTypeItems" :name="`field-type-${index}`" />
           <UiCheckbox v-model="field.required" label="Required" :name="`field-required-${index}`" />
         </li>
       </ul>
@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { type ModuleFields } from '@prisma/client';
+import { EFieldType, type ModuleFields } from '@prisma/client';
 
 defineOptions({
     name: 'ModulesAdd'
@@ -39,12 +39,13 @@ const form = ref({
     fields: [] as Omit<ModuleFields, 'id'>[]
 });
 
-// const fieldTypeItems = Object.values(EFieldType).map((value) => {
-//     return {
-//         key: value,
-//         title: value
-//     };
-// });
+const fieldTypeItems = Object.values(EFieldType).map((value) => {
+    return {
+        key: value,
+        title: value
+    };
+});
+console.log(fieldTypeItems)
 
 const fieldTemplate: Omit<ModuleFields, 'id'> = {
     key: '',
