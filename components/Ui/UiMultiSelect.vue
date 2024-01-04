@@ -106,54 +106,54 @@ import type { PropType } from 'vue';
 import type { MultiSelect } from '~/types/MultiSelect';
 
 defineOptions({
-  name: 'UIMultiSelect'
+    name: 'UIMultiSelect'
 });
 const emit = defineEmits([
-  'update:modelValue',
-  'update:columnOrder',
-  'update:saveColumns',
-  'return',
-  'reset'
+    'update:modelValue',
+    'update:columnOrder',
+    'update:saveColumns',
+    'return',
+    'reset'
 ]);
 
 const props = defineProps({
-  modelValue: {
-    type: Array as PropType<string[]>,
-    default: () => []
-  },
-  name: {
-    type: String,
-    required: true
-  },
-  label: {
-    type: String,
-    default: undefined
-  },
-  type: {
-    type: String,
-    default: 'text'
-  },
-  items: {
-    type: Array as PropType<MultiSelect[]>,
-    required: true
-  },
-  initialItems: {
-    type: Array as PropType<MultiSelect[]>,
-    required: true
-  },
-  prependIcon: {
-    type: String,
-    default: undefined
-  },
-  asButton: {
-    type: Boolean
-  },
-  draggable: {
-    type: Boolean
-  },
-  disabled: {
-    type: Boolean
-  }
+    modelValue: {
+        type: Array as PropType<string[]>,
+        default: () => []
+    },
+    name: {
+        type: String,
+        required: true
+    },
+    label: {
+        type: String,
+        default: undefined
+    },
+    type: {
+        type: String,
+        default: 'text'
+    },
+    items: {
+        type: Array as PropType<MultiSelect[]>,
+        required: true
+    },
+    initialItems: {
+        type: Array as PropType<MultiSelect[]>,
+        required: true
+    },
+    prependIcon: {
+        type: String,
+        default: undefined
+    },
+    asButton: {
+        type: Boolean
+    },
+    draggable: {
+        type: Boolean
+    },
+    disabled: {
+        type: Boolean
+    }
 });
 
 const currentArray = ref<string[]>(mapArrayKeyToValue(props.modelValue, props.items));
@@ -170,158 +170,158 @@ const currentDraggedStartPosition = ref<number>(0);
 const visibilityChanges = ref(false);
 
 function clearInput () {
-  setValue.value = null;
-  handleInput('');
+    setValue.value = null;
+    handleInput('');
 }
 
 function clearAllItems () {
-  currentArray.value = [];
-  emit('update:modelValue', currentArray.value);
+    currentArray.value = [];
+    emit('update:modelValue', currentArray.value);
 }
 
 function selectAllItems () {
-  currentArray.value = options.value.map((item) => {
-    return item.title;
-  });
-  emit('update:modelValue', currentArray.value);
+    currentArray.value = options.value.map((item) => {
+        return item.title;
+    });
+    emit('update:modelValue', currentArray.value);
 }
 
 function clearItem (item: string) {
-  currentArray.value = currentArray.value.filter(value => value !== item);
-  emit('update:modelValue', currentArray.value);
+    currentArray.value = currentArray.value.filter(value => value !== item);
+    emit('update:modelValue', currentArray.value);
 }
 
 const handleInput = (input: string | null) => {
-  const checkableInput = input || '';
-  options.value = props.items.filter(item => item.title.match(checkableInput));
-  if (!props.asButton) {
-    showItems.value = true;
-  }
+    const checkableInput = input || '';
+    options.value = props.items.filter(item => item.title.match(checkableInput));
+    if (!props.asButton) {
+        showItems.value = true;
+    }
 };
 
 function checkClickOutside () {
-  onClickOutside(optionList, () => {
-    if (props.asButton) {
-      showInput.value = false;
-    } else {
-      showItems.value = false;
-    }
-  });
+    onClickOutside(optionList, () => {
+        if (props.asButton) {
+            showInput.value = false;
+        } else {
+            showItems.value = false;
+        }
+    });
 }
 
 function handleReturn () {
-  sortingMode.value = false;
-  emit('return');
+    sortingMode.value = false;
+    emit('return');
 }
 
 function handleReset () {
-  sortingMode.value = false;
-  visibilityChanges.value = false;
-  options.value = [...props.initialItems];
-  currentArray.value = props.initialItems.filter(item => item.visible === true).map(item => item.title);
-  emit('update:modelValue', mapArrayValueToKey(currentArray.value, props.initialItems));
+    sortingMode.value = false;
+    visibilityChanges.value = false;
+    options.value = [...props.initialItems];
+    currentArray.value = props.initialItems.filter(item => item.visible === true).map(item => item.title);
+    emit('update:modelValue', mapArrayValueToKey(currentArray.value, props.initialItems));
 }
 
 const handleSelectOption = (item: string) => {
-  visibilityChanges.value = true;
-  if (currentArray.value.includes(item)) {
-    clearItem(item);
-  } else {
-    currentArray.value.push(item);
-  }
+    visibilityChanges.value = true;
+    if (currentArray.value.includes(item)) {
+        clearItem(item);
+    } else {
+        currentArray.value.push(item);
+    }
 
-  emit('update:modelValue', mapArrayValueToKey(currentArray.value, props.items));
+    emit('update:modelValue', mapArrayValueToKey(currentArray.value, props.items));
 };
 
 const startDrag = (event: DragEvent, item: MultiSelect) => {
-  if (!event.dataTransfer) {
-    return;
-  }
-  currentDraggedStartPosition.value = item.position;
-  currentDragged.value = item;
-  event.dataTransfer.dropEffect = 'move';
-  event.dataTransfer.effectAllowed = 'move';
+    if (!event.dataTransfer) {
+        return;
+    }
+    currentDraggedStartPosition.value = item.position;
+    currentDragged.value = item;
+    event.dataTransfer.dropEffect = 'move';
+    event.dataTransfer.effectAllowed = 'move';
 };
 
 const handleDragOver = (event: DragEvent, item: MultiSelect) => {
-  const currentDraggedPosition = currentDragged.value?.position;
-  if (currentDraggedPosition === undefined) {
-    return;
-  }
+    const currentDraggedPosition = currentDragged.value?.position;
+    if (currentDraggedPosition === undefined) {
+        return;
+    }
 
-  if (item.position === currentDraggedPosition) {
-    return;
-  }
+    if (item.position === currentDraggedPosition) {
+        return;
+    }
 
-  const y = event.clientY;
-  // @ts-ignore
-  const box = event.target?.getBoundingClientRect();
+    const y = event.clientY;
+    // @ts-ignore
+    const box = event.target?.getBoundingClientRect();
 
-  const offset = y - box.top - box.height / 2;
+    const offset = y - box.top - box.height / 2;
 
-  if (offset < 0) {
-    options.value = options.value.map((listItem) => {
-      if (!listItem.position) {
-        return listItem;
-      }
-      if (listItem?.position > item.position) {
-        listItem.position = listItem.position + 1;
+    if (offset < 0) {
+        options.value = options.value.map((listItem) => {
+            if (!listItem.position) {
+                return listItem;
+            }
+            if (listItem?.position > item.position) {
+                listItem.position = listItem.position + 1;
 
-        return listItem;
-      } else if (listItem.position >= currentDraggedStartPosition.value) {
-        return listItem;
-      }
+                return listItem;
+            } else if (listItem.position >= currentDraggedStartPosition.value) {
+                return listItem;
+            }
 
-      return listItem;
-    });
+            return listItem;
+        });
+
+        // @ts-ignore
+        options.value.find(object => object === currentDragged.value).position = item.position;
+
+        item.position += 1;
+    }
+
+    if (offset > 0) {
+        options.value = options.value.map((listItem) => {
+            if (!listItem.position) {
+                return listItem;
+            }
+            if (listItem?.position < item.position) {
+                listItem.position = listItem.position - 1;
+
+                return listItem;
+            }
+
+            return listItem;
+        });
+
+        // @ts-ignore
+        options.value.find(object => object === currentDragged.value).position = item.position;
+
+        item.position -= 1;
+    }
 
     // @ts-ignore
-    options.value.find(object => object === currentDragged.value).position = item.position;
+    options.value.sort((a, b) => a.position - b.position);
 
-    item.position += 1;
-  }
-
-  if (offset > 0) {
-    options.value = options.value.map((listItem) => {
-      if (!listItem.position) {
-        return listItem;
-      }
-      if (listItem?.position < item.position) {
-        listItem.position = listItem.position - 1;
-
-        return listItem;
-      }
-
-      return listItem;
+    options.value.forEach((value, i) => {
+        value.position = i;
     });
 
-    // @ts-ignore
-    options.value.find(object => object === currentDragged.value).position = item.position;
-
-    item.position -= 1;
-  }
-
-  // @ts-ignore
-  options.value.sort((a, b) => a.position - b.position);
-
-  options.value.forEach((value, i) => {
-    value.position = i;
-  });
-
-  emit('update:columnOrder', options.value);
+    emit('update:columnOrder', options.value);
 };
 
 function handleSaveClick () {
-  sortingMode.value = false;
-  emit('update:saveColumns', options.value);
-  visibilityChanges.value = false;
+    sortingMode.value = false;
+    emit('update:saveColumns', options.value);
+    visibilityChanges.value = false;
 }
 
 watch(() => props.items, (newValue) => {
-  if (!setValue.value) {
-    options.value = newValue;
-    currentArray.value = mapArrayKeyToValue(props.modelValue, newValue) || null;
-  }
+    if (!setValue.value) {
+        options.value = newValue;
+        currentArray.value = mapArrayKeyToValue(props.modelValue, newValue) || null;
+    }
 });
 
 </script>

@@ -294,6 +294,7 @@ enum EItemPermissionTypes {
 }
 
 enum EFieldValueType {
+  autoincrement
   string
   date
   datetime
@@ -307,6 +308,7 @@ enum EFieldValueType {
 
 enum EFieldType {
   dropdown
+  number
   text
   textarea
   datepicker
