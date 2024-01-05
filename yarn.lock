@@ -1832,7 +1832,7 @@
     "@vueuse/shared" "10.7.1"
     vue-demi ">=0.14.6"
 
-"@vueuse/core@10.7.1", "@vueuse/core@^10.6.1":
+"@vueuse/core@10.7.1", "@vueuse/core@^10.7.1":
   version "10.7.1"
   resolved "https://registry.yarnpkg.com/@vueuse/core/-/core-10.7.1.tgz#b4bfe3355dbb0ec17d34d737385e1c8a0156ccf1"
   integrity sha512-74mWHlaesJSWGp1ihg76vAnfVq9NTv1YT0SYhAQ6zwFNdBkkP+CKKJmVOEHcdSnLXCXYiL5e7MaewblfiYLP7g==

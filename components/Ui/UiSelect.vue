@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { onClickOutside } from '@vueuse/core';
+import { onClickOutside, useVModel } from '@vueuse/core';
 import { mapKeyToValue, mapValueToKey } from '~/utils/mappings';
 
 defineOptions({
@@ -86,7 +86,9 @@ function clearItem () {
     emit('update:modelValue', setValue.value);
 }
 
-const setValue = ref<string | null>(mapKeyToValue(props.modelValue, props.items) || null);
+const modelValue = useVModel(props, 'modelValue', emit);
+
+const setValue = ref<string | null>(mapKeyToValue(modelValue.value, props.items) || null);
 
 const showItems = ref(false);
 const options = ref(props.items);
@@ -116,7 +118,15 @@ const handleSelectOption = (item: string) => {
 
 watch(() => props.items, (newValue) => {
     if (!setValue.value) {
-        setValue.value = mapKeyToValue(props.modelValue, newValue) || null;
+        setValue.value = mapKeyToValue(modelValue.value, newValue) || null;
+    }
+});
+
+watch(() => modelValue.value, (newValue) => {
+    if (props.items.length === 1) {
+        setValue.value = props.items[0].title;
+    } else if (!newValue) {
+        setValue.value = null;
     }
 });
 

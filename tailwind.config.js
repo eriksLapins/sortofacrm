@@ -13,13 +13,6 @@ module.exports = {
             lg: '1024px',
             xl: '1280px'
         },
-        fontSize: {
-            sm: '0.9rem',
-            base: '16px',
-            'base-plus': '1.2rem',
-            l: '24px',
-            xl: '32px'
-        },
         colors: {
             transparent: 'transparent',
             currentColor: 'currentColor',
@@ -46,6 +39,13 @@ module.exports = {
             'gray-accent': '#5b5b5b'
         },
         extend: {
+            fontSize: {
+                sm: '0.9rem',
+                base: '16px',
+                'base-plus': '1.2rem',
+                l: '24px',
+                xl: '32px'
+            },
             minHeight: {
                 pictures: '220px',
                 'pictures-large': '350px'

@@ -1,5 +1,5 @@
 import { EFieldType, EFieldValueType } from '@prisma/client';
-const fieldValueTypeMap: Record<EFieldType, Array<EFieldValueType>> = {
+const fieldValueTypeMap: Record<EFieldType, EFieldValueType[]> = {
     dropdown: ['array'],
     number: [
         'number',

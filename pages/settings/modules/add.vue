@@ -4,12 +4,25 @@
       Modules - Add
     </h1>
     <div class="flex flex-col gap-4 w-full">
-      <UiTextInput v-model="form.name" label="Module name" name="module-name" @update:model-value="setModuleKey" />
-      <UiTextInput v-model="form.key" label="Module key" name="module-key" disabled />
+      <div class="separator" />
+      <h2 class="font-bold text-base-plus">
+        Module
+      </h2>
+      <div class="flex gap-4">
+        <UiTextInput v-model="form.name" label="Module name" name="module-name" @update:model-value="setModuleKey" />
+        <UiTextInput v-model="form.key" label="Module key" name="module-key" disabled />
+      </div>
+      <div class="separator" />
+      <h2 class="font-bold text-base-plus">
+        Fields
+      </h2>
       <ul ref="fieldList" class="grid gap-4">
         <li v-for="(field, index) in form.fields" :key="index" class="grid gap-4">
           <div class="flex gap-4">
-            <UiSelect v-model="field.type" :items="fieldTypeItems" :name="`field-type-${index}`" label="Field type" @update:model-value="field.valueType = null; getFieldValueItems(field.type, index)" />
+            <UiTextInput v-model="field.title" label="Field name" :name="`field-name-${index}`" @update:model-value="setFieldKey(index)" />
+            <UiTextInput v-model="field.key" label="Field key" :name="`module-key-${index}`" disabled />
+            <!-- @vue-ignore -->
+            <UiSelect v-model="field.type" :items="fieldTypeItems" :name="`field-type-${index}`" label="Field type" @update:model-value="field.valueType = undefined; getFieldValueItems(field.type, index)" />
             <UiSelect
               :ref="`fieldValue${index}`"
               v-model="field.valueType"
@@ -23,7 +36,8 @@
           <UiCheckbox v-model="field.required" label="Required" :name="`field-required-${index}`" />
         </li>
       </ul>
-      <UiButton text="Add field" secondary @click="addField" />
+      <UiButton text="Add field" secondary class="w-[300px]" @click="addField" />
+      <div class="separator" />
       <UiButton
         class="self-center w-full md:w-[300px]"
         text="Save"
@@ -36,7 +50,6 @@
 
 <script setup lang="ts">
 import { EFieldType, type ModuleFields } from '@prisma/client';
-import type { AdditionalsJson } from '~/types/AdditionalsJson';
 
 defineOptions({
     name: 'ModulesAdd'
@@ -88,7 +101,13 @@ const fieldTemplate: Omit<ModuleFields, 'id'> = {
     type: undefined,
     // @ts-ignore
     valueType: undefined,
-    additional: {} as AdditionalsJson
+    additional: {
+        maxTextLength: undefined,
+        maxFileCount: undefined,
+        arrayValueType: undefined,
+        passwordSafetyRegex: undefined,
+        textPrepend: undefined
+    }
 };
 
 function addField () {
@@ -111,6 +130,10 @@ function sanitizeTitleToKey (stringToAlter: string) {
 
 function setModuleKey () {
     form.value.key = sanitizeTitleToKey(form.value.name);
+}
+
+function setFieldKey (index: number) {
+    form.value.fields[index].key = sanitizeTitleToKey(form.value.fields[index].title);
 }
 
 async function submit () {
