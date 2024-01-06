@@ -10,11 +10,18 @@
       type="text"
       :name="name"
       class="leweb-input h-6 py-1 px-2 rounded-lg"
+      :class="{
+        'leweb-input__error': !!error,
+        'leweb-input__disabled' : disabled
+      }"
       :placeholder="label"
       :disabled="disabled"
       @input="handleInput(setValue)"
       @click="handleInput(setValue)"
     >
+    <div v-if="error" class="text-error-border">
+      {{ error }}
+    </div>
     <div v-if="setValue && !hideCross" class=" absolute hover:cursor-pointer text-primary flex justify-center items-center h-6 right-0 mr-4 top-0 my-1" @click="clearItem">
       X
     </div>
@@ -78,6 +85,10 @@ const props = defineProps({
     },
     filterOptions: {
         type: Boolean
+    },
+    errors: {
+        type: String,
+        default: undefined
     }
 });
 
@@ -87,6 +98,14 @@ function clearItem () {
 }
 
 const modelValue = useVModel(props, 'modelValue', emit);
+
+const error = computed(() => {
+    if (modelValue.value) {
+        return undefined;
+    }
+
+    return props.errors;
+});
 
 const setValue = ref<string | null>(mapKeyToValue(modelValue.value, props.items) || null);
 

@@ -11,35 +11,54 @@
       <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
         <UiTextInput
           v-model="form.name"
+          :errors="formErrors.data?.name"
           label="Module name"
           name="module-name"
-          :errors="formErrors.data?.name"
           @update:model-value="setModuleKey"
         />
         <UiTextInput
           v-model="form.key"
+          :errors="formErrors.data?.key"
           label="Module key"
           name="module-key"
           disabled
-          :errors="formErrors.data?.key"
         />
       </div>
       <div class="separator" />
       <h2 class="font-bold text-base-plus">
         Fields
       </h2>
-      <ul ref="fieldList" class="grid gap-4">
+      <ul
+        ref="fieldList"
+        class="grid gap-4 border-solid border-primary rounded-lg"
+        :class="{'border p-4': form.fields.length}"
+      >
         <li v-for="(field, index) in form.fields" :key="index" class="grid gap-4">
           <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
             <UiTextInput
               v-model="field.title"
               label="Field name"
               :name="`field-name-${index}`"
+              :errors="formErrors.data[field.key]?.title"
               @update:model-value="setFieldKey(index)"
             />
-            <UiTextInput v-model="field.key" label="Field key" :name="`module-key-${index}`" disabled />
+            <UiTextInput
+              v-model="field.key"
+              label="Field key"
+              :name="`module-key-${index}`"
+              :errors="formErrors.data[field.key]?.key"
+
+              disabled
+            />
             <!-- @vue-ignore -->
-            <UiSelect v-model="field.type" :items="fieldTypeItems" :name="`field-type-${index}`" label="Field type" @update:model-value="field.valueType = undefined; getFieldValueItems(field.type, index)" />
+            <UiSelect
+              v-model="field.type"
+              :items="fieldTypeItems"
+              :name="`field-type-${index}`"
+              label="Field type"
+              :errors="formErrors.data[field.key]?.type"
+              @update:model-value="field.valueType = undefined; form.fields[index].additional = {}; getFieldValueItems(field.type, index)"
+            />
             <UiSelect
               :ref="`fieldValue${index}`"
               v-model="field.valueType"
@@ -48,9 +67,17 @@
               label="Field value type"
               :disabled="!field.type || fieldValueTypeMap[field.type].length === 1"
               :hide-cross="!field.type || fieldValueTypeMap[field.type].length === 1"
+              :errors="formErrors.data[field.key]?.valueType"
+            />
+            <UiTextInput
+              v-if="getAdditionalFieldType(field.type, field.valueType)"
+              v-model="field.additional[getAdditionalFieldType(field.type, field.valueType)!.name]"
+              :name="`field-addditionals-${field.type}-${field.valueType}-${index}`"
+              :label="getAdditionalFieldType(field.type, field.valueType)?.inputLabel"
             />
           </div>
           <UiCheckbox v-model="field.required" label="Required" :name="`field-required-${index}`" />
+          <div class="separator" />
         </li>
       </ul>
       <UiButton text="Add field" secondary class="w-[300px]" @click="addField" />
@@ -66,8 +93,9 @@
 </template>
 
 <script setup lang="ts">
-import { EFieldType, type ModuleFields } from '@prisma/client';
-import type { ResponseError } from '~/types';
+import { EFieldType, EFieldValueType } from '@prisma/client';
+import { UiSelect, UiTextInput } from '#components';
+import type { ModuleFieldsAdjusted, ResponseError } from '~/types';
 
 defineOptions({
     name: 'ModulesAdd'
@@ -80,7 +108,7 @@ definePageMeta({
 const form = ref({
     name: '',
     key: '',
-    fields: [] as Omit<ModuleFields, 'id'>[]
+    fields: [] as ModuleFieldsAdjusted[]
 });
 
 const fieldList = ref();
@@ -111,7 +139,7 @@ function getFieldValueItems (fieldType: EFieldType, index: number) {
     });
 }
 
-const fieldTemplate: Omit<ModuleFields, 'id'> = {
+const fieldTemplate: ModuleFieldsAdjusted = {
     key: '',
     module: '',
     required: false,
@@ -131,6 +159,14 @@ const fieldTemplate: Omit<ModuleFields, 'id'> = {
 
 function addField () {
     form.value.fields.push({ ...fieldTemplate });
+}
+
+function getAdditionalFieldType (fieldType: EFieldType, fieldValueType: EFieldValueType) {
+    if (!fieldType || !fieldValueType) {
+        return;
+    }
+
+    return additionalsTypeMap[fieldType][fieldValueType];
 }
 
 function sanitizeTitleToKey (stringToAlter: string) {
@@ -156,6 +192,7 @@ function setFieldKey (index: number) {
 }
 
 async function submit () {
+    formErrors.value = {};
     form.value.fields.forEach((field) => {
         field.module = form.value.key;
     });
@@ -169,9 +206,13 @@ async function submit () {
             }
         });
     } catch (e: any) {
-        if ('errors' in e.data.data) {
+        if (e.status === 400) {
             formErrors.value = { ...e.data.data.errors };
+        } else if (e.status === 500) {
+            error500(e.data.message);
         }
+
+        error500('Something went wrong during module creation');
     }
 }
 

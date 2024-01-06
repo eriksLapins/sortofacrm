@@ -1,19 +1,41 @@
 import { EFieldType, EFieldValueType } from '@prisma/client';
 import type { AdditionalsJson } from '~/types/AdditionalsJson';
 
-const additionalsTypeMap: Record<EFieldType, Partial<Record<EFieldValueType, keyof AdditionalsJson | undefined>>> = {
+export type AdditionalsTypeMapType = {
+    [key in EFieldType]: {
+        [key in EFieldValueType]?: {
+            name: keyof AdditionalsJson,
+            helper?: string,
+            inputLabel: string,
+        }
+    }
+}
+
+const additionalsTypeMap: AdditionalsTypeMapType = {
     dropdown: {
-        array: 'arrayValueType'
+        array: undefined
     },
     number: {
         number: undefined,
-        autoincrement: 'textPrepend'
+        autoincrement: {
+            name: 'textPrepend',
+            helper: 'The text to add to the start of the number',
+            inputLabel: 'Text prepend'
+        }
     },
     text: {
-        string: 'maxTextLength'
+        string: {
+            name: 'maxTextLength',
+            helper: 'Maximum length of the text input',
+            inputLabel: 'Max text size'
+        }
     },
     textarea: {
-        string: 'maxTextLength'
+        string: {
+            name: 'maxTextLength',
+            helper: 'Maximum length of the text input',
+            inputLabel: 'Max text size'
+        }
     },
     datepicker: {
         date: undefined,
@@ -32,13 +54,25 @@ const additionalsTypeMap: Record<EFieldType, Partial<Record<EFieldValueType, key
         string: undefined
     },
     password: {
-        string: 'passwordSafetyRegex'
+        string: {
+            name: 'passwordSafetyRegex',
+            helper: 'Regex expression to match for new passwords others make',
+            inputLabel: 'Regex for new passwords'
+        }
     },
     fileUpload: {
-        file: 'maxFileSizeMb'
+        file: {
+            name: 'maxFileSizeMb',
+            helper: 'Maximum allowed file size in MB',
+            inputLabel: 'Max file size in MB'
+        }
     },
     imageUpload: {
-        blob: 'maxFileSizeMb'
+        blob: {
+            name: 'maxFileSizeMb',
+            helper: 'Maximum allowed image size in MB',
+            inputLabel: 'Max image size in MB'
+        }
     }
 };
 

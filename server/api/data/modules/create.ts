@@ -1,4 +1,5 @@
 import { ResponseError } from '~/types';
+import { error400, error500 } from '~/utils/errorThrows';
 import { prisma } from '~db';
 
 export default defineEventHandler(async (event): Promise<{success: boolean} | Error> => {
@@ -8,47 +9,23 @@ export default defineEventHandler(async (event): Promise<{success: boolean} | Er
 
     if (!body.name) {
         errors.data = { name: 'Please provide a name for the module' };
-        throw createError({
-            status: 400,
-            data: {
-                errors
-            }
-        });
+        error400(errors);
     }
 
     if (!body.key) {
         errors.data = { key: 'Please provide a key for the module' };
-        throw createError({
-            status: 400,
-            data: {
-                errors
-            }
-        });
+        error400(errors);
     }
 
-    try {
-        const exists = await prisma.modules.findUnique({
-            where: {
-                key: body.key
-            }
-        });
-
-        if (exists) {
-            errors.data = { duplicates: 'such a module already exists' };
-            throw createError({
-                status: 400,
-                data: {
-                    errors
-                }
-            });
+    const exists = await prisma.modules.findUnique({
+        where: {
+            key: body.key
         }
-    } catch (e) {
-        console.log(e);
-        throw createError({
-            status: 500,
-            statusText: 'Something went wrong, please try again later',
-            message: 'unhandled error at modules create search for duplicates'
-        });
+    });
+
+    if (exists) {
+        errors.data = { key: 'duplicate key: such a module already exists' };
+        error400(errors);
     }
 
     try {
@@ -60,11 +37,7 @@ export default defineEventHandler(async (event): Promise<{success: boolean} | Er
         });
     } catch (e) {
         console.log(e);
-        throw createError({
-            status: 500,
-            statusText: 'Something went wrong, please try again later',
-            message: 'unhandled error at modules create'
-        });
+        error500('unhandled error at modules create');
     }
 
     if (Object.keys(body.fields).length) {
@@ -83,19 +56,13 @@ export default defineEventHandler(async (event): Promise<{success: boolean} | Er
                         module: body.key
                     }
                 });
-                throw createError({
-                    status: 400,
-                    data: {
-                        errors: e.data.data.errors
-                    }
-                });
+                error400(e.data.data.errors);
             }
 
-            throw createError({
-                status: 500,
-                statusText: 'Something went wrong, please try again later',
-                message: 'unhandled error at modules create - fields'
-            });
+            if (e.status === 500) {
+                error500(e.data.message);
+            }
+            error500('unhandled error at modules create - fields');
         }
     }
 

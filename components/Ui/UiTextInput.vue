@@ -4,7 +4,7 @@
       <input
         :id="name"
         v-model="value"
-        :type="type"
+        :type="actualType || type"
         :name="name"
         :autocomplete="autocomplete"
         class="h-6 py-1 px-2 rounded-lg leweb-input"
@@ -32,7 +32,7 @@ const emit = defineEmits(['update:modelValue']);
 
 const props = defineProps({
     modelValue: {
-        type: String as PropType<string | null>,
+        type: String as PropType<string | number | null>,
         required: true,
         default: null
     },
@@ -61,17 +61,27 @@ const props = defineProps({
     }
 });
 
-const error = computed(() => {
-    if (value.value) {
-        return undefined;
-    }
-
-    return props.errors;
-});
+const error = ref(props.errors);
 
 const value = computed({
     get: () => props.modelValue,
     set: value => emit('update:modelValue', value)
+});
+
+const actualType = computed(() => {
+    if (typeof value.value === 'number') {
+        return 'number';
+    }
+});
+
+watch(() => props.errors, (newValue) => {
+    if (newValue) {
+        error.value = newValue;
+    }
+});
+
+watch(() => value.value, () => {
+    error.value = undefined;
 });
 
 </script>
