@@ -99,13 +99,7 @@ function clearItem () {
 
 const modelValue = useVModel(props, 'modelValue', emit);
 
-const error = computed(() => {
-    if (modelValue.value) {
-        return undefined;
-    }
-
-    return props.errors;
-});
+const error = ref(props.errors);
 
 const setValue = ref<string | null>(mapKeyToValue(modelValue.value, props.items) || null);
 
@@ -142,10 +136,17 @@ watch(() => props.items, (newValue) => {
 });
 
 watch(() => modelValue.value, (newValue) => {
+    error.value = undefined;
     if (props.items.length === 1) {
         setValue.value = props.items[0].title;
     } else if (!newValue) {
         setValue.value = null;
+    }
+});
+
+watch(() => props.errors, (newValue) => {
+    if (newValue) {
+        error.value = newValue;
     }
 });
 

@@ -42,20 +42,21 @@ export default defineEventHandler(async (event): Promise<{success: boolean} | Er
 
     if (Object.keys(body.fields).length) {
         try {
-            await $fetch(`/api/data/${body.key}/fields/create`, {
+            await $fetch(`/api/data/${body.key}/field/create`, {
                 method: 'POST',
                 body: {
                     fields: body.fields
                 }
             });
         } catch (e: any) {
+            console.log(e);
+            await $fetch('/api/data/modules/delete', {
+                method: 'POST',
+                body: {
+                    module: body.key
+                }
+            });
             if (e.status === 400) {
-                await $fetch('/api/data/modules/delete', {
-                    method: 'POST',
-                    body: {
-                        module: body.key
-                    }
-                });
                 error400(e.data.data.errors);
             }
 

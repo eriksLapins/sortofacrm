@@ -3,6 +3,9 @@
     <h1 class="text-l font-bold w-full">
       Modules - Add
     </h1>
+    <div v-if="generalError" class="text-error-border text-left w-full">
+      {{ generalError.main }}
+    </div>
     <div class="flex flex-col gap-4 w-full">
       <div class="separator" />
       <h2 class="font-bold text-base-plus">
@@ -34,20 +37,31 @@
         :class="{'border p-4': form.fields.length}"
       >
         <li v-for="(field, index) in form.fields" :key="index" class="grid gap-4">
+          <div class="flex gap-4 w-full">
+            <UiButton
+              class="w-max text-sm"
+              error-variant
+              @click.prevent="deleteField(index)"
+            >
+              Remove field
+            </UiButton>
+            <div v-if="generalError && field.key === ''" class="text-error-border text-left">
+              {{ generalError.field }}
+            </div>
+          </div>
           <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
             <UiTextInput
               v-model="field.title"
               label="Field name"
               :name="`field-name-${index}`"
-              :errors="formErrors.data[field.key]?.title"
+              :errors="formErrors.data?.fields[field.key]?.title"
               @update:model-value="setFieldKey(index)"
             />
             <UiTextInput
               v-model="field.key"
               label="Field key"
               :name="`module-key-${index}`"
-              :errors="formErrors.data[field.key]?.key"
-
+              :errors="formErrors.data?.fields[field.key]?.key"
               disabled
             />
             <!-- @vue-ignore -->
@@ -56,7 +70,7 @@
               :items="fieldTypeItems"
               :name="`field-type-${index}`"
               label="Field type"
-              :errors="formErrors.data[field.key]?.type"
+              :errors="formErrors.data?.fields[field.key]?.type"
               @update:model-value="field.valueType = undefined; form.fields[index].additional = {}; getFieldValueItems(field.type, index)"
             />
             <UiSelect
@@ -67,7 +81,7 @@
               label="Field value type"
               :disabled="!field.type || fieldValueTypeMap[field.type].length === 1"
               :hide-cross="!field.type || fieldValueTypeMap[field.type].length === 1"
-              :errors="formErrors.data[field.key]?.valueType"
+              :errors="formErrors.data?.fields[field.key]?.valueType"
             />
             <UiTextInput
               v-if="getAdditionalFieldType(field.type, field.valueType)"
@@ -80,7 +94,7 @@
           <div class="separator" />
         </li>
       </ul>
-      <UiButton text="Add field" secondary class="w-[300px]" @click="addField" />
+      <UiButton text="Add field" secondary class="w-full md:w-[300px]" @click="addField" />
       <div class="separator" />
       <UiButton
         class="self-center w-full md:w-[300px]"
@@ -113,6 +127,7 @@ const form = ref({
 
 const fieldList = ref();
 const formErrors = ref<ResponseError>({});
+const generalError = ref();
 
 const fieldTypeItems = Object.keys(fieldValueTypeMap).map((value) => {
     return {
@@ -161,6 +176,10 @@ function addField () {
     form.value.fields.push({ ...fieldTemplate });
 }
 
+function deleteField (index: number) {
+    form.value.fields.splice(index, 1);
+}
+
 function getAdditionalFieldType (fieldType: EFieldType, fieldValueType: EFieldValueType) {
     if (!fieldType || !fieldValueType) {
         return;
@@ -193,9 +212,19 @@ function setFieldKey (index: number) {
 
 async function submit () {
     formErrors.value = {};
+    generalError.value = undefined;
     form.value.fields.forEach((field) => {
+        if (field.title === '') {
+            generalError.value = {
+                main: 'Some fields are missing titles',
+                field: 'Field is missing a title, please remove or input a title'
+            };
+        }
         field.module = form.value.key;
     });
+    if (generalError.value) {
+        return;
+    }
     try {
         await $fetch('/api/data/modules/create', {
             method: 'POST',

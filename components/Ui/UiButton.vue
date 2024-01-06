@@ -9,7 +9,8 @@
       'border-primary text-primary hover:bg-primary hover:bg-opacity-30 focus-within:bg-primary focus-within:bg-opacity-30 hover:text-white focus-within:text-white' : secondary,
     }"
   >
-    {{ text }}
+    <span v-if="text">{{ text }}</span>
+    <slot v-else />
   </NuxtLink>
   <NuxtLink
     v-else-if="asLink"
@@ -20,7 +21,8 @@
       'text-error-border': errorVariant
     }"
   >
-    {{ text }}
+    <span v-if="text">{{ text }}</span>
+    <slot v-else />
   </NuxtLink>
   <button
     v-else
@@ -31,7 +33,8 @@
       'border-primary text-primary hover:bg-primary hover:bg-opacity-30 focus-within:bg-primary focus-within:bg-opacity-30 hover:text-white focus-within:text-white' : secondary,
     }"
   >
-    {{ text }}
+    <span v-if="text">{{ text }}</span>
+    <slot v-else />
   </button>
 </template>
 
@@ -43,7 +46,7 @@ defineOptions({
 defineProps({
     text: {
         type: String,
-        required: true
+        default: undefined
     },
     secondary: {
         type: Boolean
