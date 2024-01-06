@@ -8,9 +8,21 @@
       <h2 class="font-bold text-base-plus">
         Module
       </h2>
-      <div class="flex gap-4">
-        <UiTextInput v-model="form.name" label="Module name" name="module-name" @update:model-value="setModuleKey" />
-        <UiTextInput v-model="form.key" label="Module key" name="module-key" disabled />
+      <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+        <UiTextInput
+          v-model="form.name"
+          label="Module name"
+          name="module-name"
+          :errors="formErrors.data?.name"
+          @update:model-value="setModuleKey"
+        />
+        <UiTextInput
+          v-model="form.key"
+          label="Module key"
+          name="module-key"
+          disabled
+          :errors="formErrors.data?.key"
+        />
       </div>
       <div class="separator" />
       <h2 class="font-bold text-base-plus">
@@ -18,8 +30,13 @@
       </h2>
       <ul ref="fieldList" class="grid gap-4">
         <li v-for="(field, index) in form.fields" :key="index" class="grid gap-4">
-          <div class="flex gap-4">
-            <UiTextInput v-model="field.title" label="Field name" :name="`field-name-${index}`" @update:model-value="setFieldKey(index)" />
+          <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+            <UiTextInput
+              v-model="field.title"
+              label="Field name"
+              :name="`field-name-${index}`"
+              @update:model-value="setFieldKey(index)"
+            />
             <UiTextInput v-model="field.key" label="Field key" :name="`module-key-${index}`" disabled />
             <!-- @vue-ignore -->
             <UiSelect v-model="field.type" :items="fieldTypeItems" :name="`field-type-${index}`" label="Field type" @update:model-value="field.valueType = undefined; getFieldValueItems(field.type, index)" />
@@ -50,6 +67,7 @@
 
 <script setup lang="ts">
 import { EFieldType, type ModuleFields } from '@prisma/client';
+import type { ResponseError } from '~/types';
 
 defineOptions({
     name: 'ModulesAdd'
@@ -66,6 +84,7 @@ const form = ref({
 });
 
 const fieldList = ref();
+const formErrors = ref<ResponseError>({});
 
 const fieldTypeItems = Object.keys(fieldValueTypeMap).map((value) => {
     return {
@@ -140,14 +159,20 @@ async function submit () {
     form.value.fields.forEach((field) => {
         field.module = form.value.key;
     });
-    await $fetch('/api/data/modules/create', {
-        method: 'POST',
-        body: {
-            name: form.value.name,
-            key: form.value.key,
-            fields: form.value.fields
+    try {
+        await $fetch('/api/data/modules/create', {
+            method: 'POST',
+            body: {
+                name: form.value.name,
+                key: form.value.key,
+                fields: form.value.fields
+            }
+        });
+    } catch (e: any) {
+        if ('errors' in e.data.data) {
+            formErrors.value = { ...e.data.data.errors };
         }
-    });
+    }
 }
 
 </script>

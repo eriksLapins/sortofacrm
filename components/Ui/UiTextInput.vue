@@ -88,12 +88,12 @@ const value = computed({
         box-shadow: 0 0 0 2px $color-primary;
     }
 
-    &__error {
+    &.leweb-input__error {
       box-shadow: 0 0 0 2px $color-error-border;
     }
 
     &.leweb-input__disabled {
-      box-shadow: 0 0 0 2px $color-gray-text-disabled;
+      box-shadow: 0 0 0 1px $color-gray-text-disabled;
       color: $color-gray-text-disabled;
     }
 }

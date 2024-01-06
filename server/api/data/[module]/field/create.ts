@@ -38,6 +38,15 @@ export default defineEventHandler(async (event): Promise<{success: boolean} | Er
             filteredFields.push(field);
         });
 
+        if (errors.data.fields.length) {
+            throw createError({
+                status: 400,
+                data: {
+                    errors
+                }
+            });
+        }
+
         const mappedFields: typeof body.fields = filteredFields.map((field) => {
             return {
                 module,

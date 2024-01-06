@@ -12,6 +12,11 @@ export default defineNuxtConfig({
             base_url: process.env.NUXT_PUBLIC_BASE_URL
         }
     },
+    nitro: {
+        experimental: {
+            openAPI: true
+        }
+    },
     css: ['~/assets/css/main.css',
         '~/scss/style.scss'],
     postcss: {

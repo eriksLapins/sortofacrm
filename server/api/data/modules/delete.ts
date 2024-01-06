@@ -27,7 +27,7 @@ export default defineEventHandler(async (event): Promise<{data: {
 
     const moduleData = await prisma.modules.delete({
         where: {
-            name: module
+            key: module
         }
     }).catch((e) => {
         console.log(e);

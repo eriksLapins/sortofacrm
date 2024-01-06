@@ -6,8 +6,18 @@ export default defineEventHandler(async (event): Promise<{success: boolean} | Er
 
     const errors: ResponseError = {};
 
-    if (!body.module) {
+    if (!body.name) {
         errors.data = { name: 'Please provide a name for the module' };
+        throw createError({
+            status: 400,
+            data: {
+                errors
+            }
+        });
+    }
+
+    if (!body.key) {
+        errors.data = { key: 'Please provide a key for the module' };
         throw createError({
             status: 400,
             data: {
@@ -19,7 +29,7 @@ export default defineEventHandler(async (event): Promise<{success: boolean} | Er
     try {
         const exists = await prisma.modules.findUnique({
             where: {
-                name: body.module
+                key: body.key
             }
         });
 
@@ -33,6 +43,7 @@ export default defineEventHandler(async (event): Promise<{success: boolean} | Er
             });
         }
     } catch (e) {
+        console.log(e);
         throw createError({
             status: 500,
             statusText: 'Something went wrong, please try again later',
@@ -41,9 +52,10 @@ export default defineEventHandler(async (event): Promise<{success: boolean} | Er
     }
 
     try {
-        prisma.modules.create({
+        await prisma.modules.create({
             data: {
-                name: body.module
+                name: body.name,
+                key: body.key
             }
         });
     } catch (e) {
@@ -57,13 +69,28 @@ export default defineEventHandler(async (event): Promise<{success: boolean} | Er
 
     if (Object.keys(body.fields).length) {
         try {
-            await $fetch(`/api/data/${body.module}/fields/create`, {
+            await $fetch(`/api/data/${body.key}/fields/create`, {
                 method: 'POST',
                 body: {
                     fields: body.fields
                 }
             });
-        } catch (e) {
+        } catch (e: any) {
+            if (e.status === 400) {
+                await $fetch('/api/data/modules/delete', {
+                    method: 'POST',
+                    body: {
+                        module: body.key
+                    }
+                });
+                throw createError({
+                    status: 400,
+                    data: {
+                        errors: e.data.data.errors
+                    }
+                });
+            }
+
             throw createError({
                 status: 500,
                 statusText: 'Something went wrong, please try again later',
