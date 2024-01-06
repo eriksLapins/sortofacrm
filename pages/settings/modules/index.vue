@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-4">
     <div class="w-full flex justify-between">
       <h1 class="text-l font-bold">
         Modules
@@ -10,7 +10,7 @@
         as-link-button
       />
     </div>
-    <div class="border-b border-solid border-primary" />
+    <div class="separator" />
     <ClientOnly>
       <table v-if="availableModules.length">
         <thead>

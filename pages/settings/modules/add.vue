@@ -97,11 +97,14 @@
       <UiButton text="Add field" secondary class="w-full md:w-[300px]" @click="addField" />
       <div class="separator" />
       <UiButton
+        v-if="!loading"
         class="self-center w-full md:w-[300px]"
-        text="Save"
         secondary
         @click="submit"
-      />
+      >
+        <span>Save</span>
+      </UiButton>
+      <LoadingAnimation v-else />
     </div>
   </div>
 </template>
@@ -128,6 +131,7 @@ const form = ref({
 const fieldList = ref();
 const formErrors = ref<ResponseError>({});
 const generalError = ref();
+const loading = ref(false);
 
 const fieldTypeItems = Object.keys(fieldValueTypeMap).map((value) => {
     return {
@@ -211,6 +215,7 @@ function setFieldKey (index: number) {
 }
 
 async function submit () {
+    loading.value = true;
     formErrors.value = {};
     generalError.value = undefined;
     form.value.fields.forEach((field) => {
@@ -226,7 +231,7 @@ async function submit () {
         return;
     }
     try {
-        await $fetch('/api/data/modules/create', {
+        const response = await $fetch('/api/data/modules/create', {
             method: 'POST',
             body: {
                 name: form.value.name,
@@ -234,15 +239,23 @@ async function submit () {
                 fields: form.value.fields
             }
         });
+
+        if (response.success) {
+            loading.value = false;
+            navigateTo('/settings/modules', {
+                external: true
+            });
+        }
     } catch (e: any) {
         if (e.status === 400) {
             formErrors.value = { ...e.data.data.errors };
         } else if (e.status === 500) {
             error500(e.data.message);
+        } else {
+            error500('Something went wrong during module creation');
         }
-
-        error500('Something went wrong during module creation');
     }
+    loading.value = false;
 }
 
 </script>
