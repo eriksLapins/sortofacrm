@@ -1,8 +1,17 @@
+import { EFieldType, EFieldValueType } from '@prisma/client';
+import { ResponseError } from '~/types';
+import { error400, error500 } from '~/utils/errorThrows';
 import { prisma } from '~db';
 
 export default defineEventHandler(async (event): Promise<{success: boolean} | Error> => {
     const module = getRouterParam(event, 'module');
     const body = await readBody(event);
+
+    const errors: ResponseError = {
+        data: {
+            fields: {}
+        }
+    };
 
     if (!module) {
         throw createError({
@@ -12,7 +21,7 @@ export default defineEventHandler(async (event): Promise<{success: boolean} | Er
         });
     }
 
-    if (!body.field_key) {
+    if (!body.id) {
         throw createError({
             status: 400,
             statusText: 'No field provided',
@@ -22,37 +31,63 @@ export default defineEventHandler(async (event): Promise<{success: boolean} | Er
 
     const currentField = await prisma.moduleFields.findUnique({
         where: {
-            module_key: {
-                module,
-                key: body.field_key
-            }
+            id: body.id
         }
     });
 
     if (currentField) {
+        const bodyType = body.type || currentField.type;
+        const bodyValueType = body.valueType || currentField.valueType;
+        if (!Object.keys(EFieldType).includes(bodyType)) {
+            errors.data.fields[body.key] = {
+                ...errors.data.fields[body.key],
+                type: `${bodyType} not recognized as a field type`
+            };
+        }
+        if (!Object.keys(EFieldValueType).includes(bodyValueType)) {
+            errors.data.fields[body.key] = {
+                ...errors.data.fields[body.key],
+                valueType: `${body.valueType} not recognized as a field value type`
+            };
+        }
+
+        if (Object.keys(errors.data.fields).length) {
+            error400(errors);
+        }
         try {
             await prisma.moduleFields.update({
                 where: {
-                    module_key: {
-                        module,
-                        key: body.field_key
-                    }
+                    id: body.id
                 },
                 data: {
                     key: body.key || currentField.key,
                     module: body.module || currentField.module,
                     required: body.required || currentField.required,
                     title: body.title || currentField.title,
-                    type: body.type || currentField.type
+                    type: bodyType,
+                    valueType: bodyValueType,
+                    additional: body.additional || currentField.additional
                 }
             });
         } catch (e) {
             console.log(e);
-            throw createError({
-                status: 500,
-                statusText: 'Something went wrong, please try again later',
-                message: `No such field with the key ${body.key} in module ${module} exists`
-            });
+            error500(`No such field with the id ${body.id} exists`);
+        }
+
+        if (body.key && body.key !== currentField.key) {
+            try {
+                await prisma.fieldPermissions.updateMany({
+                    where: {
+                        fieldKey: currentField.key
+                    },
+                    data: {
+                        fieldKey: body.key
+                    }
+                });
+            } catch (e) {
+                console.log(e);
+                error500('something went wrong at module fields update field permissions');
+            }
         }
     }
 

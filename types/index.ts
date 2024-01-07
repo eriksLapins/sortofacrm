@@ -1,3 +1,4 @@
+export * from './AdditionalsJson';
 export * from './Errors';
 export * from './MappedTasks';
 export * from './ModuleFields';

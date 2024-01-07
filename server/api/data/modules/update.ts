@@ -1,115 +1,200 @@
 import { ResponseError } from '~/types';
+import { error400, error500 } from '~/utils/errorThrows';
 import { prisma } from '~db';
 
 export default defineEventHandler(async (event): Promise<{success: boolean} | Error> => {
     const body = await readBody(event);
-    const errors: ResponseError = {};
+    const errors: ResponseError = {
+        data: {
+            fields: {}
+        }
+    };
 
     if (!body.oldName) {
-        errors.data = { name: 'Please provide a name for the module you would like to update' };
+        errors.data = {
+            ...errors.data,
+            name: 'Please provide a name for the module you would like to update'
+        };
     }
 
     if (!body.newName) {
         errors.data = {
-            newName: 'Please provide the new name for the module'
+            ...errors.data,
+            name: 'Please provide the new name for the module'
         };
     }
 
-    if (errors.data.name || errors.data.newName) {
-        throw createError({
-            status: 400,
-            data: {
-                errors
+    if (!body.oldKey) {
+        errors.data = {
+            ...errors.data,
+            key: 'Please provide a key for the module you would like to update'
+        };
+    }
+
+    if (!body.newKey) {
+        errors.data = {
+            ...errors.data,
+            key: 'Please provide the new key for the module'
+        };
+    }
+
+    if (errors.data.name || errors.data.key) {
+        error400(errors);
+    }
+
+    try {
+        const existsTitle = await prisma.modules.findUnique({
+            where: {
+                name: body.newName
             }
         });
+        if (existsTitle) {
+            errors.data = {
+                ...errors.data,
+                name: 'A module with such a name already exists'
+            };
+        }
+    } catch (e) {
+        error500('something went wrong at modules udpdate get by title');
+    }
+
+    if (errors.data.name || errors.data.key) {
+        error400(errors);
+    }
+
+    try {
+        const existsKey = await prisma.modules.findFirst({
+            where: {
+                key: body.newKey
+            }
+        });
+        if (existsKey) {
+            errors.data = {
+                ...errors.data,
+                key: 'A module with such a key already exists'
+            };
+        }
+    } catch (e) {
+        error500('something went wrong at modules udpdate get by key');
     }
 
     try {
         await prisma.modules.update({
             where: {
-                name: body.oldName
+                key: body.oldKey
             },
             data: {
-                name: body.newName
+                name: body.newName,
+                key: body.newKey
             }
         });
     } catch (e) {
         console.log(e);
-        throw createError({
-            status: 500,
-            statusText: 'Something went wrong, please try again later',
-            message: 'unhandled error at module delete'
-        });
+        error500('unhandled error at module update');
+    }
+
+    if (body.oldKey === body.newKey) {
+        return { success: true };
     }
 
     await prisma.moduleFields.updateMany({
         where: {
-            module: body.oldName
+            module: body.oldKey
         },
         data: {
-            module: body.newName
+            module: body.newKey
         }
     }).catch((e) => {
         console.log(e);
-        errors.data = { fields: 'Failed to update modulename in fields' };
+        errors.data = {
+            ...errors.data,
+            external: {
+                fields: 'Failed to update modulename in fields'
+            }
+        };
     });
     await prisma.moduleItems.updateMany({
         where: {
-            module: body.oldName
+            module: body.oldKey
         },
         data: {
-            module: body.newName
+            module: body.newKey
         }
     }).catch((e) => {
         console.log(e);
-        errors.data = { items: 'Failed to update modulename in items' };
+        errors.data = {
+            ...errors.data,
+            external: {
+                items: 'Failed to update modulename in items'
+            }
+        };
     });
     await prisma.userPreferences.updateMany({
         where: {
-            module: body.oldName
+            module: body.oldKey
         },
         data: {
-            module: body.newName
+            module: body.newKey
         }
     }).catch((e) => {
         console.log(e);
-        errors.data = { preferences: 'Failed to update modulename in preferences' };
+        errors.data = {
+            ...errors.data,
+            external: {
+                preferences: 'Failed to update modulename in preferences'
+            }
+        };
     });
     await prisma.permissions.updateMany({
         where: {
-            module: body.oldName
+            module: body.oldKey
         },
         data: {
-            module: body.newName
+            module: body.newKey
         }
     }).catch((e) => {
         console.log(e);
-        errors.data = { permissions: 'Failed to update modulename in permissions' };
+        errors.data = {
+            ...errors.data,
+            external: {
+                permissions: 'Failed to update modulename in permissions'
+            }
+        };
     });
     await prisma.itemPermissions.updateMany({
         where: {
-            module: body.oldName
+            module: body.oldKey
         },
         data: {
-            module: body.newName
+            module: body.newKey
         }
     }).catch((e) => {
         console.log(e);
-        errors.data = { itemPermissions: 'Failed to update modulename in itemPermissions' };
+        errors.data = {
+            ...errors.data,
+            external: {
+                itemPermissions: 'Failed to update modulename in itemPermissions'
+            }
+        };
     });
     await prisma.fieldPermissions.updateMany({
         where: {
-            module: body.oldName
+            module: body.oldKey
         },
         data: {
-            module: body.newName
+            module: body.newKey
         }
     }).catch((e) => {
         console.log(e);
-        errors.data = { fieldPermissions: 'Failed to update modulename in fieldPermissions' };
+        errors.data = {
+            ...errors.data,
+            external: {
+                fieldPermissions: 'Failed to update modulename in fieldPermissions'
+            }
+        };
     });
 
-    if (errors.data && Object.keys(errors.data).length) {
+    if (Object.keys(errors.data.external).length) {
         throw createError({
             status: 500,
             data: {

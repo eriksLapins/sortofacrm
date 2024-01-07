@@ -1,5 +1,23 @@
 import { EFieldType, EFieldValueType } from '@prisma/client';
-import type { AdditionalsJson } from '~/types/AdditionalsJson';
+import type { AdditionalsJson, ModuleFieldsAdjusted } from '~/types';
+
+export const fieldTemplate: ModuleFieldsAdjusted = {
+    key: '',
+    module: '',
+    required: false,
+    title: '',
+    // @ts-ignore
+    type: undefined,
+    // @ts-ignore
+    valueType: undefined,
+    additional: {
+        maxTextLength: undefined,
+        maxFileCount: undefined,
+        arrayValueType: undefined,
+        passwordSafetyRegex: undefined,
+        textPrepend: undefined
+    }
+};
 
 export type AdditionalsTypeMapType = {
     [key in EFieldType]: {
@@ -11,7 +29,7 @@ export type AdditionalsTypeMapType = {
     }
 }
 
-const additionalsTypeMap: AdditionalsTypeMapType = {
+export const additionalsTypeMap: AdditionalsTypeMapType = {
     dropdown: {
         array: undefined
     },
@@ -76,4 +94,31 @@ const additionalsTypeMap: AdditionalsTypeMapType = {
     }
 };
 
-export default additionalsTypeMap;
+export const fieldTypeItems = Object.keys(fieldValueTypeMap).map((value) => {
+    return {
+        key: value,
+        title: value.toUpperCase()
+    };
+});
+
+export function getAdditionalFieldType (fieldType: EFieldType, fieldValueType: EFieldValueType) {
+    if (!fieldType || !fieldValueType) {
+        return;
+    }
+
+    return additionalsTypeMap[fieldType][fieldValueType];
+}
+
+export function sanitizeTitleToKey (stringToAlter: string) {
+    let tempKey = stringToAlter.toLowerCase();
+    tempKey = tempKey.replaceAll(' ', '_');
+    for (const key in characterReplacementMap) {
+        if (!tempKey.includes(key)) {
+            continue;
+        }
+
+        tempKey = tempKey.replaceAll(key, characterReplacementMap[key]);
+    }
+
+    return tempKey;
+}

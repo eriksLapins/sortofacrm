@@ -1,14 +1,16 @@
-import { ModuleFields } from '@prisma/client';
+import { ModuleFieldsAdjusted, ResponseError } from '~/types';
+import { error400, error500 } from '~/utils/errorThrows';
 import { prisma } from '~db';
 
-export default defineEventHandler(async (event): Promise<{data: ModuleFields[]} | Error> => {
+export default defineEventHandler(async (event): Promise<{data: ModuleFieldsAdjusted[]} | Error | undefined> => {
     const module = getRouterParam(event, 'module');
+    const errors: ResponseError = {
+        data: {}
+    };
+
     if (!module) {
-        throw createError({
-            status: 400,
-            statusText: 'No module name given',
-            message: 'No module name given'
-        });
+        errors.data = { general: 'No module name given' };
+        error400(errors);
     }
     try {
         const moduleFields = await prisma.moduleFields.findMany({
@@ -18,14 +20,10 @@ export default defineEventHandler(async (event): Promise<{data: ModuleFields[]} 
         });
 
         return {
-            data: moduleFields
+            data: moduleFields as ModuleFieldsAdjusted[]
         };
     } catch (e) {
         console.log(e);
-        throw createError({
-            status: 500,
-            statusText: 'Something went wrong, please try again later',
-            message: 'could not get module\'s fields'
-        });
+        error500('could not get module\'s fields');
     }
 });

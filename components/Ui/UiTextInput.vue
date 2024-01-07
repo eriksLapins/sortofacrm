@@ -32,8 +32,7 @@ const emit = defineEmits(['update:modelValue']);
 
 const props = defineProps({
     modelValue: {
-        type: String as PropType<string | number | null>,
-        required: true,
+        type: String as PropType<string | number | null | undefined>,
         default: null
     },
     name: {
@@ -99,12 +98,15 @@ watch(() => value.value, () => {
     }
 
     &.leweb-input__error {
-      box-shadow: 0 0 0 2px $color-error-border;
+        box-shadow: 0 0 0 2px $color-error-border;
     }
 
     &.leweb-input__disabled {
-      box-shadow: 0 0 0 1px $color-gray-text-disabled;
-      color: $color-gray-text-disabled;
+        box-shadow: 0 0 0 1px $color-gray-text-disabled;
+        color: $color-gray-text-disabled;
+        &.leweb-input__error {
+            box-shadow: 0 0 0 2px $color-error-border;
+        }
     }
 }
 </style>

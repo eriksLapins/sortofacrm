@@ -8,7 +8,7 @@ export default defineEventHandler(async (event): Promise<{data: ModuleItems} | E
     if (!body.id) {
         throw createError({
             status: 400,
-            statusMessage: `Please provide an id for the module ${module}`
+            statusMessage: `Please provide an id for the data in ${module}`
         });
     }
 

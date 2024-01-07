@@ -110,7 +110,7 @@
 </template>
 
 <script setup lang="ts">
-import { EFieldType, EFieldValueType } from '@prisma/client';
+import { EFieldType } from '@prisma/client';
 import { UiSelect, UiTextInput } from '#components';
 import type { ModuleFieldsAdjusted, ResponseError } from '~/types';
 
@@ -133,13 +133,6 @@ const formErrors = ref<ResponseError>({});
 const generalError = ref();
 const loading = ref(false);
 
-const fieldTypeItems = Object.keys(fieldValueTypeMap).map((value) => {
-    return {
-        key: value,
-        title: value.toUpperCase()
-    };
-});
-
 function getFieldValueItems (fieldType: EFieldType, index: number) {
     if (!fieldType) {
         return [];
@@ -158,52 +151,12 @@ function getFieldValueItems (fieldType: EFieldType, index: number) {
     });
 }
 
-const fieldTemplate: ModuleFieldsAdjusted = {
-    key: '',
-    module: '',
-    required: false,
-    title: '',
-    // @ts-ignore
-    type: undefined,
-    // @ts-ignore
-    valueType: undefined,
-    additional: {
-        maxTextLength: undefined,
-        maxFileCount: undefined,
-        arrayValueType: undefined,
-        passwordSafetyRegex: undefined,
-        textPrepend: undefined
-    }
-};
-
 function addField () {
     form.value.fields.push({ ...fieldTemplate });
 }
 
 function deleteField (index: number) {
     form.value.fields.splice(index, 1);
-}
-
-function getAdditionalFieldType (fieldType: EFieldType, fieldValueType: EFieldValueType) {
-    if (!fieldType || !fieldValueType) {
-        return;
-    }
-
-    return additionalsTypeMap[fieldType][fieldValueType];
-}
-
-function sanitizeTitleToKey (stringToAlter: string) {
-    let tempKey = stringToAlter.toLowerCase();
-    tempKey = tempKey.replaceAll(' ', '_');
-    for (const key in characterReplacementMap) {
-        if (!tempKey.includes(key)) {
-            continue;
-        }
-
-        tempKey = tempKey.replaceAll(key, characterReplacementMap[key]);
-    }
-
-    return tempKey;
 }
 
 function setModuleKey () {

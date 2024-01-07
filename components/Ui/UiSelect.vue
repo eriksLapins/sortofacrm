@@ -160,5 +160,12 @@ watch(() => props.errors, (newValue) => {
     &:focus {
         box-shadow: 0 0 0 2px $color-primary;
     }
+    &.leweb-input__disabled {
+    box-shadow: 0 0 0 1px $color-gray-text-disabled;
+    color: $color-gray-text-disabled;
+    &.leweb-input__error {
+        box-shadow: 0 0 0 2px $color-error-border;
+    }
+    }
 }
 </style>

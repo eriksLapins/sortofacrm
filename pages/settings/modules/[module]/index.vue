@@ -25,10 +25,10 @@
         </thead>
         <tbody>
           <tr v-for="item in availableFields" :key="item.key" class="hover:bg-gray-text-disabled hover:bg-opacity-30">
-            <TableData class="text-center w-12" :to="`/settings/modules/${item.key}`">
+            <TableData class="text-center w-12">
               {{ item.id }}
             </TableData>
-            <TableData :to="`/settings/modules/${item.key}`">
+            <TableData>
               {{ item.title }}
             </TableData>
           </tr>
