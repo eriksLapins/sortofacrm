@@ -31,7 +31,8 @@ export default defineNuxtConfig({
         '@nuxtjs/tailwindcss',
         '@pinia/nuxt',
         '@pinia-plugin-persistedstate/nuxt',
-        'nuxt-svgo'
+        'nuxt-svgo',
+        '@nuxt/image'
     ],
     piniaPersistedstate: {
         cookieOptions: {

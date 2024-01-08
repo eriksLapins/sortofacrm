@@ -13,16 +13,16 @@
     <div class="separator" />
     <ClientOnly>
       <table v-if="availableModules.length">
-        <thead>
+        <TableHead>
           <tr>
-            <td class="font-bold text-base-plus text-center w-12">
+            <td class="text-center w-12">
               ID
             </td>
-            <td class="font-bold text-base-plus">
+            <td>
               Name
             </td>
           </tr>
-        </thead>
+        </TableHead>
         <tbody>
           <tr v-for="item in availableModules" :key="item.key" class="hover:bg-gray-text-disabled hover:bg-opacity-30">
             <TableData class="text-center w-12" :to="`/settings/modules/${item.key}`">

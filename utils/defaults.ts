@@ -1,24 +1,24 @@
-import { EPermissionTypes, type Pages, type TPermissions } from '@prisma/client';
+import { EPermissionTypes, type Pages, type Permissions } from '@prisma/client';
 const allDefaultPages: Omit<Pages, 'id' | 'userId'>[] = [
     {
         name: 'main',
         title: 'Dashboard',
-        order: 0
+        position: 0
     },
     {
         name: 'datasets',
         title: 'Data',
-        order: 1
+        position: 1
     },
     {
         name: 'reports',
         title: 'Reports',
-        order: 2
+        position: 2
     },
     {
         name: 'settings',
         title: 'Settings',
-        order: 1000
+        position: 1000
     }
 ];
 
@@ -26,26 +26,26 @@ const defaultPages: Omit<Pages, 'id' | 'userId'>[] = [
     {
         name: 'main',
         title: 'Dashboard',
-        order: 0
+        position: 0
     },
     {
         name: 'datasets',
         title: 'Data',
-        order: 1
+        position: 1
     },
     {
         name: 'reports',
         title: 'Reports',
-        order: 2
+        position: 2
     },
     {
         name: 'settings',
         title: 'Settings',
-        order: 1000
+        position: 1000
     }
 ];
 
-const defaultPermissionsSimple: Omit<TPermissions, 'id' | 'userId'>[] = [
+const defaultPermissionsSimple: Omit<Permissions, 'id' | 'userId'>[] = [
     {
         module: 'dashboard',
         can: EPermissionTypes.CREATE_OWN
@@ -128,7 +128,7 @@ const defaultPermissionsSimple: Omit<TPermissions, 'id' | 'userId'>[] = [
     }
 ];
 
-const defaultPermissionsAdmin: Omit<TPermissions, 'id' | 'userId'>[] = [];
+const defaultPermissionsAdmin: Omit<Permissions, 'id' | 'userId'>[] = [];
 
 allDefaultPages.forEach(page => defaultPermissionsAdmin.push(
     {

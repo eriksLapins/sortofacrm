@@ -31,7 +31,11 @@ export type AdditionalsTypeMapType = {
 
 export const additionalsTypeMap: AdditionalsTypeMapType = {
     dropdown: {
-        array: undefined
+        array: {
+            name: 'arrayValueType',
+            helper: 'The type of the value to add (int for ids and most likely otherwise - string)',
+            inputLabel: 'Array Value type'
+        }
     },
     number: {
         number: undefined,

@@ -1,13 +1,9 @@
+import { error500 } from '~/utils/errorThrows';
 import { prisma } from '~db';
 
-export default defineEventHandler(async (event) => {
-    const body = await readBody(event);
-
+export default defineEventHandler(async () => {
     try {
         const userData = await prisma.user.findMany({
-            where: {
-                ...body
-            },
             select: {
                 id: true,
                 image: true,
@@ -21,10 +17,6 @@ export default defineEventHandler(async (event) => {
 
         return { data: userData };
     } catch (e) {
-        throw createError({
-            status: 500,
-            statusText: 'Something went wrong, please try again later',
-            message: 'unhandled error at users get'
-        });
+        error500('unhandled error at users get');
     }
 });

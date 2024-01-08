@@ -64,7 +64,7 @@
               :errors="formErrors.data?.fields[field.key]?.key"
               disabled
             />
-            <!-- @vue-ignore -->
+            <!-- @vue-ignore - due to field.valueType = undefined -->
             <UiSelect
               v-model="field.type"
               :items="fieldTypeItems"
@@ -83,8 +83,15 @@
               :hide-cross="!field.type || fieldValueTypeMap[field.type].length === 1"
               :errors="formErrors.data?.fields[field.key]?.valueType"
             />
+            <UiSelect
+              v-if="getAdditionalFieldType(field.type, field.valueType)?.name === 'arrayValueType'"
+              v-model="field.additional.arrayValueType"
+              :items="fieldValueItemsArrayType"
+              :name="`field-addditionals-${field.type}-${field.valueType}-${index}`"
+              :label="getAdditionalFieldType(field.type, field.valueType)?.inputLabel"
+            />
             <UiTextInput
-              v-if="getAdditionalFieldType(field.type, field.valueType)"
+              v-else-if="getAdditionalFieldType(field.type, field.valueType)"
               v-model="field.additional[getAdditionalFieldType(field.type, field.valueType)!.name]"
               :name="`field-addditionals-${field.type}-${field.valueType}-${index}`"
               :label="getAdditionalFieldType(field.type, field.valueType)?.inputLabel"
@@ -174,6 +181,17 @@ function getFieldValueItems (fieldType: EFieldType, index: number) {
         };
     });
 }
+
+const fieldValueItemsArrayType = [
+    {
+        key: 'string',
+        title: 'STRING'
+    },
+    {
+        key: 'number',
+        title: 'NUMBER'
+    }
+];
 
 function addField () {
     form.value.fields.push({ ...fieldTemplate });
@@ -421,7 +439,7 @@ async function submit () {
     loading.value = false;
     // otherwise prisma is being lazy and takes from the cache and no values change
 
-    reloadNuxtApp();
+    await getModuleWithFields();
 }
 
 async function deleteModule () {

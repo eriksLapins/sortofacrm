@@ -13,25 +13,49 @@
     <div class="separator" />
     <ClientOnly>
       <table v-if="availableFields.length">
-        <thead>
+        <TableHead>
           <tr>
-            <td class="font-bold text-base-plus text-center w-12">
+            <td class="text-center w-12">
               ID
             </td>
-            <td class="font-bold text-base-plus">
+            <td>
               Title
             </td>
+            <td>
+              Type
+            </td>
+            <td>
+              Value type
+            </td>
+            <td>
+              Required?
+            </td>
+            <td>
+              Additional
+            </td>
           </tr>
-        </thead>
+        </TableHead>
         <tbody>
-          <tr v-for="item in availableFields" :key="item.key" class="hover:bg-gray-text-disabled hover:bg-opacity-30">
+          <TableRow v-for="item in availableFields" :key="item.key">
             <TableData class="text-center w-12">
               {{ item.id }}
             </TableData>
             <TableData>
               {{ item.title }}
             </TableData>
-          </tr>
+            <TableData>
+              {{ item.type }}
+            </TableData>
+            <TableData>
+              {{ item.valueType }}
+            </TableData>
+            <TableData>
+              {{ item.required ? 'required' : 'optional' }}
+            </TableData>
+            <TableData>
+              {{ item.additional }}
+            </TableData>
+          </TableRow>
         </tbody>
       </table>
       <div v-else class="font-bold text-md">
