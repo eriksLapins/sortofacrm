@@ -3,7 +3,6 @@
     <h1 class="text-l font-bold w-full">
       Modules - {{ $route.params.module }} - edit
     </h1>
-    {{ formErrors }}
     <div v-if="generalError" class="text-error-border text-left w-full">
       {{ generalError.main }}
     </div>
@@ -97,15 +96,34 @@
       </ul>
       <UiButton text="Add field" secondary class="w-full md:w-[300px]" @click="addField" />
       <div class="separator" />
-      <UiButton
-        v-if="!loading"
-        class="self-center w-full md:w-[300px]"
-        secondary
-        @click="submit"
-      >
-        <span>Save</span>
-      </UiButton>
+      <div v-if="!loading" class="flex justify-between">
+        <UiButton
+          class="self-center w-full md:w-[300px]"
+          secondary
+          @click="submit"
+        >
+          <span>Save</span>
+        </UiButton>
+        <UiButton popovertarget="before-delete" text="Delete Module" :error-variant="true" />
+      </div>
       <LoadingAnimation v-else />
+    </div>
+    <div id="before-delete" popover class="border-2 border-primary border-solid w-[500px] p-6 backdrop:bg-[#00000099]">
+      <div class="grid gap-4 items-center justify-center">
+        <h2 class="font-bold">
+          Are you sure you want to delete this module?
+        </h2>
+        <div>
+          <p>
+            Deleting this module also means deleting any and all data related to this module.
+          </p>
+          <UiButton
+            :error-variant="true"
+            text="Delete"
+            @click="deleteModule"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -404,6 +422,17 @@ async function submit () {
     // otherwise prisma is being lazy and takes from the cache and no values change
 
     reloadNuxtApp();
+}
+
+async function deleteModule () {
+    await $fetch('/api/data/modules/delete', {
+        method: 'POST',
+        body: {
+            module: route.params.module
+        }
+    });
+
+    navigateTo('/settings/modules');
 }
 
 onMounted(async () => {
