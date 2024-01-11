@@ -3,6 +3,12 @@ import { resolve } from 'path';
 
 export default defineNuxtConfig({
     devtools: { enabled: true },
+    app: {
+        head: {
+            title: 'SortofaCRM',
+            link: [{ rel: 'icon', type: 'image/svg', href: '/soa_logo.svg' }]
+        }
+    },
     runtimeConfig: {
         DATABASE_URL: process.env.DATABASE_URL,
         auth: {

@@ -36,6 +36,6 @@ const NavItems = computed<NavItem[]>(() => [
 
 <style lang="scss">
 .main-layout {
-    min-height: calc(100dvh - 8rem - 4rem);
+    height: calc(100dvh - 4rem - 3.5rem);
 }
 </style>

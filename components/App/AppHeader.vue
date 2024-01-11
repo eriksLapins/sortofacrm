@@ -1,11 +1,11 @@
 <template>
   <nav
-    class="navbar shadow-md shadow-primary w-full px-4 flex h-16 sticky top-0 z-50 bg-white dark:bg-gray-secondary justify-between md:p-0 md:justify-start"
+    class="navbar shadow-md shadow-primary w-full px-4 flex h-14 sticky top-0 z-50 bg-white dark:bg-gray-secondary justify-between md:p-0 md:justify-start"
     :class="{'active-menu': activeMenu}"
   >
     <div class="md:w-1/4 flex md:m-0 justify-center items-center self-stretch">
       <NuxtLink href="/">
-        <ElLogo class="w-10 h-10 md:w-12 md:h-12" />
+        <SoaLogo class="w-10 h-10 md:w-12 md:h-12" />
       </NuxtLink>
     </div>
     <template v-if="navItems.length">
@@ -34,21 +34,21 @@
             :key="item.name"
           >
             <li
-              class="md:w-1/4 text-center md:border-2 md:border-transparent rounded-md lg:hover:border-primary"
+              class="md:w-1/6 text-center md:border-2 md:border-transparent rounded-md lg:hover:border-primary"
               :class="{'active-link': isActive(item.path)}"
             >
               <NuxtLink
                 :to="item.path"
-                class="navlink w-full block text-l text-primary"
+                class="navlink w-full block text-lg text-primary"
                 :class="{'active-link': isActive(item.path)}"
               >
                 {{ item.name }}
               </NuxtLink>
             </li>
           </template>
-          <li v-if="userStore.isLoggedIn" class="md:w-1/4 text-center md:border-2 md:border-transparent rounded-md lg:hover:border-primary">
+          <li v-if="userStore.isLoggedIn" class="md:w-1/6 text-center md:border-2 md:border-transparent rounded-md lg:hover:border-primary">
             <NuxtLink
-              class="w-full block text-l text-primary hover:cursor-pointer"
+              class="w-full block text-lg text-primary hover:cursor-pointer"
               @click="handleLogout"
             >
               Logout
@@ -62,21 +62,21 @@
 
 <script setup lang="ts">
 import type { PropType } from 'vue';
-import ElLogo from './svg/el_logo.svg';
 import MenuClose from './svg/menu-close-icon.svg';
 import MenuOpen from './svg/menu-icon.svg';
-import type { NavItem } from '~/types';
+import SoaLogo from '~/assets/soa_logo.svg';
 import { useUserStore } from '~/store/userStore';
+import type { NavItem } from '~/types';
 
 defineOptions({
-  name: 'NavBar'
+    name: 'NavBar'
 });
 
 defineProps({
-  navItems: {
-    type: Array as PropType<NavItem[]>,
-    default: () => []
-  }
+    navItems: {
+        type: Array as PropType<NavItem[]>,
+        default: () => []
+    }
 });
 
 const userStore = useUserStore();
@@ -85,23 +85,23 @@ const route = useRoute();
 const activeMenu = ref(false);
 
 function handleMenuOpenClose () {
-  activeMenu.value = !activeMenu.value;
+    activeMenu.value = !activeMenu.value;
 };
 
 function handleLogout () {
-  userStore.destroyUser();
-  navigateTo('/login');
-  activeMenu.value = false;
+    userStore.destroyUser();
+    navigateTo('/login');
+    activeMenu.value = false;
 }
 
 const isActive = (path: string) => {
-  const actualPath = '/' + route.path.split('/')[1];
+    const actualPath = '/' + route.path.split('/')[1];
 
-  return path === actualPath;
+    return path === actualPath;
 };
 
 watch(() => route.path, () => {
-  activeMenu.value = false;
+    activeMenu.value = false;
 });
 
 </script>

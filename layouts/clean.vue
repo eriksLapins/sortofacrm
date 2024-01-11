@@ -18,6 +18,6 @@ defineOptions({
 
 <style lang="scss">
 .clean-layout {
-    height: calc(100dvh - 8rem - 4rem);
+    height: calc(100dvh - 4rem - 3.5rem);
 }
 </style>
