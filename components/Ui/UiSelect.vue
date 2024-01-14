@@ -22,7 +22,7 @@
     <div v-if="error" class="text-error-border">
       {{ error }}
     </div>
-    <div v-if="setValue && !hideCross" class=" absolute hover:cursor-pointer text-primary flex justify-center items-center h-6 right-0 mr-4 top-0 my-1" @click="clearItem">
+    <div v-if="setValue && !hideCross && !disabled" class=" absolute hover:cursor-pointer text-primary flex justify-center items-center h-6 right-0 mr-4 top-0 my-1" @click="clearItem">
       X
     </div>
     <ul v-show="showItems" class="absolute bg-white border-primary border-2 border-solid rounded-lg top-7 mt-2 p-2 grid gap-2 w-full z-10">
@@ -43,6 +43,7 @@
 
 <script setup lang="ts">
 import { onClickOutside, useVModel } from '@vueuse/core';
+import type { MultiSelect } from '~/types';
 import { mapKeyToValue, mapValueToKey } from '~/utils/mappings';
 
 defineOptions({
@@ -52,44 +53,27 @@ const emit = defineEmits([
     'update:modelValue'
 ]);
 
-const props = defineProps({
-    modelValue: {
-        type: String as PropType<string | null>,
-        default: null
-    },
-    name: {
-        type: String,
-        required: true
-    },
-    label: {
-        type: String,
-        default: undefined
-    },
-    type: {
-        type: String,
-        default: 'text'
-    },
-    items: {
-        type: Array as PropType<{key: string, title: string, prependIcon?: string, appendIcon?: string}[]>,
-        required: true
-    },
-    prependIcon: {
-        type: String,
-        default: undefined
-    },
-    disabled: {
-        type: Boolean
-    },
-    hideCross: {
-        type: Boolean
-    },
-    filterOptions: {
-        type: Boolean
-    },
-    errors: {
-        type: String,
-        default: undefined
-    }
+const props = withDefaults(defineProps<{
+    modelValue?: string | number | null;
+    name: string;
+    label?: string;
+    type?: string;
+    items: Prettify<MultiSelect[]>;
+    prependIcon?: string;
+    disabled?: boolean;
+    hideCross?: boolean;
+    filterOptions?: boolean;
+    errors?: string;
+}>(),
+{
+    modelValue: null,
+    label: undefined,
+    type: 'text',
+    prependIcon: undefined,
+    disabled: false,
+    hideCross: false,
+    filterOptions: false,
+    errors: undefined
 });
 
 function clearItem () {

@@ -1,6 +1,7 @@
 import { useUserStore } from '~/store/userStore';
+import type { MultiSelect } from '~/types';
 
-export const mapValueToKey = (value: string | null, items: Array<{key: string, title: string}>) => {
+export const mapValueToKey = (value: string | number | null, items: MultiSelect[]) => {
     if (!value) {
         return;
     }
@@ -8,7 +9,7 @@ export const mapValueToKey = (value: string | null, items: Array<{key: string, t
     return items.find(item => item.title === value)?.key;
 };
 
-export const mapKeyToValue = (value: string | null, items: Array<{key: string, title: string}>) => {
+export const mapKeyToValue = (value: string | number | null, items: MultiSelect[]) => {
     if (!value) {
         return;
     }
@@ -16,7 +17,7 @@ export const mapKeyToValue = (value: string | null, items: Array<{key: string, t
     return items.find(item => item.key === value)?.title;
 };
 
-export const mapArrayValueToKey = (value: Array<string> | [], items: Array<{key: string, title: string}>) => {
+export const mapArrayValueToKey = (value: Array<string | number> | [], items: MultiSelect[]) => {
     if (!value.length) {
         return [];
     }
@@ -25,12 +26,12 @@ export const mapArrayValueToKey = (value: Array<string> | [], items: Array<{key:
         return items.find(item => item.title === title)?.key;
     });
 
-    const filteredItems = mappedItems.filter(item => !!item) as string[];
+    const filteredItems = mappedItems.filter(item => !!item) as (string | number)[];
 
     return filteredItems;
 };
 
-export const mapArrayKeyToValue = (value: Array<string> | [], items: Array<{key: string, title: string}>) => {
+export const mapArrayKeyToValue = (value: Array<string | number> | [], items: MultiSelect[]) => {
     if (!value.length) {
         return [];
     }
@@ -39,7 +40,7 @@ export const mapArrayKeyToValue = (value: Array<string> | [], items: Array<{key:
         return items.find(item => item.key === key)?.title;
     });
 
-    const filteredItems = mappedItems.filter(item => !!item) as string[];
+    const filteredItems = mappedItems.filter(item => !!item) as (string | number)[];
 
     return filteredItems;
 };

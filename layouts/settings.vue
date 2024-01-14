@@ -1,5 +1,5 @@
 <template ref="settingsLayout">
-  <div class="h-[100dvh]">
+  <div class="min-h-[100dvh] grid">
     <AppHeader
       :nav-items="NavItems"
     />
@@ -86,6 +86,6 @@ const isCurrentPath = (path: string) => {
 
 <style lang="scss">
 .settings-layout {
-    height: calc(100dvh - 4rem - 3.5rem);
+    min-height: calc(100dvh - 4rem - 3.5rem);
 }
 </style>

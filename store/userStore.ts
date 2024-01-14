@@ -4,7 +4,7 @@ import type { PreferenceWrapper, Preferences, UserData } from '~/types';
 
 export const useUserStore = defineStore('users', () => {
     const currentUser = ref<Omit<User, 'password'>>();
-    const currentUserId = ref<String>();
+    const currentUserId = ref<number>();
     const isSuperAdmin = ref(false);
     const isAdmin = ref(false);
     const isLoggedIn = ref(false);
@@ -36,7 +36,7 @@ export const useUserStore = defineStore('users', () => {
         if (verified) {
             isAdmin.value = verified.role === (ERole.ADMIN || ERole.SUPERADMIN);
             isSuperAdmin.value = verified.role === ERole.SUPERADMIN;
-            currentUserId.value = verified.userId;
+            currentUserId.value = Number(verified.userId);
             isLoggedIn.value = true;
         } else {
             throw new Error('Invalid token, please log in again');
@@ -77,7 +77,7 @@ export const useUserStore = defineStore('users', () => {
 
                 // @ts-ignore
                 fullPreferences[moduleName] = {};
-                Object.values(EPreferenceTypes).forEach((value) => {
+                Object.values(EPreferenceTypesDefault).forEach((value) => {
                     fullPreferences[moduleName][value] = [];
                 });
 
@@ -86,7 +86,7 @@ export const useUserStore = defineStore('users', () => {
                     fullPreferences[moduleName][value.preferenceType].push(preferences);
                 });
 
-                Object.values(EPreferenceTypes).forEach((value) => {
+                Object.values(EPreferenceTypesDefault).forEach((value) => {
                     if (fullPreferences[moduleName][value].length) {
                         fullPreferences[moduleName][value].sort((a, b) => a.position - b.position);
                     }

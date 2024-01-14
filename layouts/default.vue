@@ -1,5 +1,5 @@
 <template>
-  <div class="h-[100dvh]">
+  <div class="min-h-[100dvh]">
     <AppHeader
       :nav-items="NavItems"
     />
@@ -36,6 +36,6 @@ const NavItems = computed<NavItem[]>(() => [
 
 <style lang="scss">
 .main-layout {
-    height: calc(100dvh - 4rem - 3.5rem);
+    min-height: calc(100dvh - 4rem - 3.5rem);
 }
 </style>

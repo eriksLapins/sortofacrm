@@ -4,10 +4,10 @@
       <UiButton
         v-for="item in modules"
         :key="item.id"
-        :href="`/datasets/${item.id}`"
+        :href="`/datasets/${item.key}`"
         as-link-button
         :text="item.name"
-        :secondary="currentModule !== item.id"
+        :secondary="currentModule !== item.key"
       />
     </div>
     <ClientOnly>
@@ -16,7 +16,7 @@
           <UiButton :href="`/datasets/${currentModule}/create`" as-link-button text="Create" />
         </div>
         <PageContent
-          :title="modules.find(item => item.id === currentModule)?.name"
+          :title="modules.find(item => item.key === currentModule)?.name"
         >
           <div class="flex gap-4 flex-col md:flex-row justify-between">
             <UiMultiSelect
@@ -57,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-import { type ModuleItems } from '@prisma/client';
+import { type ModuleItems, type Modules } from '@prisma/client';
 import { useUserStore } from '~/store/userStore';
 import type { MultiSelect, TableItems } from '~/types';
 import jsonParse from '~/utils/jsonParse';
@@ -70,6 +70,7 @@ const initialColumns = ref<MultiSelect[]>([]);
 const searchText = ref('');
 const previousQuery = ref('');
 const route = useRoute();
+const modules = ref<Modules[]>([]);
 
 const currentModule = computed(() => {
     return route.params.module;
@@ -111,20 +112,13 @@ async function fetchModuleItemsByText (searchQuery: string) {
     moduleItems.value = jsonData;
 }
 
-const modules = [
-    {
-        id: 'tasks',
-        name: 'Tasks'
-    },
-    {
-        id: 'quotes',
-        name: 'Quotes'
-    },
-    {
-        id: 'invoices',
-        name: 'Invoices'
-    }
-];
+async function getAvailableModules () {
+    const data = await $fetch('/api/data/modules/get');
+
+    const jsonModules = jsonParse(data.data);
+
+    modules.value = jsonModules;
+}
 
 const columns = ref<string[]>([]);
 
@@ -195,6 +189,7 @@ async function handleSaveColumns (items: MultiSelect[]) {
 
 onBeforeMount(async () => {
     loading.value = true;
+    await getAvailableModules();
     await fetchModuleItems();
     // await userStore.fetchUserPreferences(currentModule as unknown as string);
     // if (tasks.value) {

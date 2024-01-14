@@ -1,12 +1,12 @@
 <template>
   <div>
-    <ModuleForm />
+    <ModuleForm :module="($route.params.module as string)" />
   </div>
 </template>
 
 <script setup lang="ts">
 defineOptions({
-  name: 'CreateTasksIndex'
+    name: 'CreateModuleIndex'
 });
 
 </script>

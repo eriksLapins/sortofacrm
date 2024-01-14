@@ -1,5 +1,5 @@
 export type MultiSelect = {
-    key: string,
+    key: string | number,
     title: string,
     prependIcon?:
     string,
