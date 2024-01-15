@@ -1,8 +1,8 @@
 <template>
   <div class="w-full flex flex-col justify-center items-center p-4">
     <form ref="taskForm" class="grid gap-6 items-start w-full" @submit.prevent="createModuleItem">
-      <div class="flex flex-col md:flex-row gap-6">
-        <div class="flex gap-4">
+      <div class="grid gap-6">
+        <div class="grid gap-4 grid-cols-12 md:grid-cols-6">
           <UiSelect
             v-model="form.createdById"
             :items="userOptions"
@@ -40,12 +40,15 @@
         secondary
         :href="`/datasets/tasks/${props.itemId}/view`"
       />
+      <div v-for="field in moduleFields" :key="field.key">
+        <component :is="getFieldComponent(field).component" v-bind="getFieldComponent(field).props" />
+      </div>
     </form>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { ModuleItems } from '@prisma/client';
+import type { ModuleFields, ModuleItems } from '@prisma/client';
 import { useUserStore } from '~/store/userStore';
 import type { ModuleFieldsAdjusted, MultiSelect } from '~/types';
 
@@ -134,6 +137,10 @@ async function getModuleFields (module: string) {
     moduleFields.value = jsonFields;
 }
 
+function getFieldComponent (field: ModuleFields) {
+    console.log(field);
+}
+
 onBeforeMount(() => {
     if (props.itemDetails) {
         form.value = {
@@ -157,7 +164,9 @@ onBeforeMount(async () => {
         };
     });
     if (userStore.currentUserId) {
-        form.value.createdById = userStore.currentUserId;
+        if (!form.value.createdById) {
+            form.value.createdById = userStore.currentUserId;
+        }
         form.value.updatedById = userStore.currentUserId;
     }
 });

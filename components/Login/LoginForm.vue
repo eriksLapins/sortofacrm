@@ -25,31 +25,37 @@
 const config = useRuntimeConfig();
 
 defineOptions({
-  name: 'LoginForm'
+    name: 'LoginForm'
 });
 
 const initialForm = {
-  username: '',
-  password: ''
+    username: '',
+    password: ''
 };
 
 const form = ref(initialForm);
 
 async function handleLogin () {
-  const response = await $fetch('/api/auth/credentials', {
-    method: 'POST',
-    body: {
-      username: form.value.username,
-      password: form.value.password
-    }
-  }).catch((e) => {
-    console.log(e.data);
-  });
+    const response = await $fetch('/api/auth/credentials', {
+        method: 'POST',
+        body: {
+            username: form.value.username,
+            password: form.value.password
+        }
+    }).catch((e) => {
+        console.log(e.data);
+    });
 
-  if (response) {
-    localStorage.setItem('auth-token', response.token);
-    navigateTo(config.public.base_url);
-  }
+    if (response) {
+        localStorage.setItem('auth-token', response.token);
+        navigateTo(config.public.base_url);
+    }
 }
 
 </script>
+
+<style>
+  .clean-layout {
+    height: calc(100dvh - 4rem - 3.5rem);
+  }
+</style>
