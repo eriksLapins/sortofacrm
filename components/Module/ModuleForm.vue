@@ -55,6 +55,8 @@ import {
     UiTextInput,
     UiTextInputArea,
     UiCheckbox,
+    UiDateSelect,
+UiSelect
 } from '#components';
 
 defineOptions({
@@ -153,38 +155,82 @@ function getFieldComponent (field: ModuleFieldsAdjusted) {
     }
 
     if (field.type === 'text') {
-        component = UiTextInput,
+        component = UiTextInput
         props = {
             name: field.key,
-            title: field.title,
+            label: field.title,
             maxLength: field.additional.maxTextLength
         }
     }
 
     if (field.type === 'textarea') {
-        component = UiTextInputArea,
+        component = UiTextInputArea
         props = {
             name: field.key,
-            title: field.title,
+            label: field.title,
             maxLength: field.additional.maxTextLength
         }
     }
 
     if (field.type === 'checkbox') {
-        component = UiCheckbox,
+        component = UiCheckbox
         props = {
             name: field.key,
-            title: field.title,
+            label: field.title,
         }
     }
 
     if (field.type === 'number') {
-        component = UiTextInput,
+        component = UiTextInput
         props = {
             name: field.key,
-            title: field.title,
+            label: field.title,
             type: 'number'
         }
+    }
+
+    if (field.type === 'datepicker') {
+        component = UiDateSelect
+        props = {
+            name: field.key,
+            label: field.title
+        }
+    }
+
+    if (field.valueType === 'array') {
+        component = UiSelect
+        props = {
+            name: field.key,
+            label: field.title,
+            items: [
+                {
+                key: 1,
+                title: 1,
+                position: 0,
+                visible: true,
+                },
+                {
+                key: 2,
+                title: 2,
+                position: 0,
+                visible: true,
+                },
+                {
+                key: 3,
+                title: 3,
+                position: 0,
+                visible: true,
+                },
+                {
+                key: 4,
+                title: 4,
+                position: 0,
+                visible: true,
+                },
+            ],
+
+        }
+
     }
 
     if (component) {
