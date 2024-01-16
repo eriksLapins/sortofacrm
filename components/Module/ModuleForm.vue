@@ -138,7 +138,23 @@ async function getModuleFields (module: string) {
 }
 
 function getFieldComponent (field: ModuleFields) {
-    console.log(field);
+    if (field.type === 'checkbox') {
+        return {
+            component: 'UiCheckbox',
+            props: {
+                name: 'Checkbox'
+            }
+        }
+    }
+
+    else {
+        return {
+            component: 'UiTextInput',
+            props: {
+                label: 'Testing'
+            }
+        }
+    }
 }
 
 onBeforeMount(() => {
