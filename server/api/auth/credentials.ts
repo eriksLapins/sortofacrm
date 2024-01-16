@@ -72,7 +72,7 @@ export default defineEventHandler(async (event): Promise<{ token: string}> => {
             userId: user.id
         },
         config.auth.secret,
-        { expiresIn: 60 * 60 * 24 }
+        { expiresIn: 60 * 60 * 24 * 7 }
     );
 
     return { token };

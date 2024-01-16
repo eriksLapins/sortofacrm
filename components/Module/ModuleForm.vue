@@ -41,7 +41,7 @@
         :href="`/datasets/tasks/${props.itemId}/view`"
       />
       <div v-for="field in moduleFields" :key="field.key">
-        <component :is="getFieldComponent(field).component" v-bind="getFieldComponent(field).props" />
+        <component :is="getFieldComponent(field)?.component" v-bind="getFieldComponent(field)?.props" v-model="form.data[field.key]" />
       </div>
     </form>
   </div>
@@ -51,6 +51,11 @@
 import type { ModuleFields, ModuleItems } from '@prisma/client';
 import { useUserStore } from '~/store/userStore';
 import type { ModuleFieldsAdjusted, MultiSelect } from '~/types';
+import {
+    UiTextInput,
+    UiTextInputArea,
+    UiCheckbox,
+} from '#components';
 
 defineOptions({
     name: 'ModuleForm'
@@ -137,24 +142,58 @@ async function getModuleFields (module: string) {
     moduleFields.value = jsonFields;
 }
 
-function getFieldComponent (field: ModuleFields) {
+function getFieldComponent (field: ModuleFieldsAdjusted) {
+    let component;
+    let props;
     if (field.type === 'checkbox') {
-        return {
-            component: 'UiCheckbox',
-            props: {
-                name: 'Checkbox'
-            }
+        component = UiCheckbox;
+        props = {
+            name: 'Checkbox'
         }
     }
 
-    else {
-        return {
-            component: 'UiTextInput',
-            props: {
-                label: 'Testing'
-            }
+    if (field.type === 'text') {
+        component = UiTextInput,
+        props = {
+            name: field.key,
+            title: field.title,
+            maxLength: field.additional.maxTextLength
         }
     }
+
+    if (field.type === 'textarea') {
+        component = UiTextInputArea,
+        props = {
+            name: field.key,
+            title: field.title,
+            maxLength: field.additional.maxTextLength
+        }
+    }
+
+    if (field.type === 'checkbox') {
+        component = UiCheckbox,
+        props = {
+            name: field.key,
+            title: field.title,
+        }
+    }
+
+    if (field.type === 'number') {
+        component = UiTextInput,
+        props = {
+            name: field.key,
+            title: field.title,
+            type: 'number'
+        }
+    }
+
+    if (component) {
+        return {
+            component,
+            props
+        }    
+    }
+        
 }
 
 onBeforeMount(() => {
