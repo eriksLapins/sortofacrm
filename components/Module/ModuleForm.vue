@@ -48,15 +48,15 @@
 </template>
 
 <script setup lang="ts">
-import type { ModuleFields, ModuleItems } from '@prisma/client';
 import { useUserStore } from '~/store/userStore';
-import type { ModuleFieldsAdjusted, MultiSelect } from '~/types';
+import type { ModuleFieldsAdjusted, ModuleItemsAdjusted, MultiSelect } from '~/types';
 import {
     UiTextInput,
     UiTextInputArea,
     UiCheckbox,
     UiDateSelect,
-UiSelect
+    UiSelect,
+    UiMultiSelect
 } from '#components';
 
 defineOptions({
@@ -69,7 +69,7 @@ const props = defineProps({
         default: undefined
     },
     itemDetails: {
-        type: Object as PropType<ModuleItems>,
+        type: Object as PropType<ModuleItemsAdjusted>,
         default: undefined
     },
     module: {
@@ -85,7 +85,7 @@ const moduleFields = ref<Prettify<ModuleFieldsAdjusted>[]>([]);
 
 const userStore = useUserStore();
 
-const form = ref<Omit<ModuleItems, 'id'>>({
+const form = ref<ModuleItemsAdjusted>({
     createdOn: new Date(),
     updatedOn: new Date(),
     createdById: 0,
@@ -93,7 +93,7 @@ const form = ref<Omit<ModuleItems, 'id'>>({
     title: '',
     description: '',
     module: props.module,
-    data: {}
+    data: {} as Record<string, ModuleFieldsAdjusted>
 });
 
 const userOptions = ref<MultiSelect[]>([]);
@@ -114,7 +114,7 @@ async function createModuleItem () {
                 }
             });
 
-            form.value = data as unknown as ModuleItems;
+            form.value = data as unknown as ModuleItemsAdjusted;
         } catch (e: any) {
             console.log(e);
             errors.value = e.data.data.errors;
@@ -129,7 +129,7 @@ async function createModuleItem () {
                     updatedById: userStore.currentUserId
                 }
             });
-            form.value = data as unknown as ModuleItems;
+            form.value = data as unknown as ModuleItemsAdjusted;
         } catch (e: any) {
             errors.value = e.data.data.errors;
         }
@@ -197,8 +197,44 @@ function getFieldComponent (field: ModuleFieldsAdjusted) {
         }
     }
 
-    if (field.valueType === 'array') {
+    if (field.valueType === 'array' && !field.additional.multiselect) {
         component = UiSelect
+        props = {
+            name: field.key,
+            label: field.title,
+            items: [
+                {
+                key: 1,
+                title: 1,
+                position: 0,
+                visible: true,
+                },
+                {
+                key: 2,
+                title: 2,
+                position: 0,
+                visible: true,
+                },
+                {
+                key: 3,
+                title: 3,
+                position: 0,
+                visible: true,
+                },
+                {
+                key: 4,
+                title: 4,
+                position: 0,
+                visible: true,
+                },
+            ],
+
+        }
+
+    }
+
+    if (field.valueType === 'array' && field.additional.multiselect) {
+        component = UiMultiSelect
         props = {
             name: field.key,
             label: field.title,

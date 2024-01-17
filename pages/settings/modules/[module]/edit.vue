@@ -83,15 +83,26 @@
               :hide-cross="!field.type || fieldValueTypeMap[field.type].length === 1"
               :errors="formErrors.data?.fields[field.key]?.valueType"
             />
-            <UiSelect
-              v-if="getAdditionalFieldType(field.type, field.valueType)?.name === 'arrayValueType'"
-              v-model="field.additional.arrayValueType"
-              :items="fieldValueItemsArrayType"
-              :name="`field-addditionals-${field.type}-${field.valueType}-${index}`"
-              :label="getAdditionalFieldType(field.type, field.valueType)?.inputLabel"
-            />
+            <div v-if="getAdditionalFieldType(field.type, field.valueType)?.name === 'arrayValueType'">
+                <UiSelect
+                    v-model="field.additional.arrayValueType"
+                    :items="fieldValueItemsArrayType"
+                    :name="`field-addditionals-${field.type}-${field.valueType}-${index}`"
+                    :label="getAdditionalFieldType(field.type, field.valueType)?.inputLabel"
+                />
+                <UiCheckbox
+                    v-model="field.additional.multiselect"
+                    :name="`field-addditionals-${field.type}-${field.valueType}-multiselect-${index}`"
+                    label="Multiselect?"
+                />               
+            </div>
+
             <UiTextInput
-              v-else-if="getAdditionalFieldType(field.type, field.valueType)"
+              v-else-if="
+                    getAdditionalFieldType(field.type, field.valueType)
+                    &&
+                    getAdditionalFieldType(field.type, field.valueType)!.name !== 'multiselect'
+                "
               v-model="field.additional[getAdditionalFieldType(field.type, field.valueType)!.name]"
               :name="`field-addditionals-${field.type}-${field.valueType}-${index}`"
               :label="getAdditionalFieldType(field.type, field.valueType)?.inputLabel"
@@ -177,7 +188,9 @@ function getFieldValueItems (fieldType: EFieldType, index: number) {
     return currentArray.map((value) => {
         return {
             key: value,
-            title: value.toUpperCase()
+            title: value.toUpperCase(),
+            position: 0,
+            visible: true,
         };
     });
 }
@@ -185,11 +198,15 @@ function getFieldValueItems (fieldType: EFieldType, index: number) {
 const fieldValueItemsArrayType = [
     {
         key: 'string',
-        title: 'STRING'
+        title: 'STRING',
+        position: 0,
+        visible: true,
     },
     {
         key: 'number',
-        title: 'NUMBER'
+        title: 'NUMBER',
+        position: 1,
+        visible: true,
     }
 ];
 

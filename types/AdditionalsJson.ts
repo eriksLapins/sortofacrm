@@ -7,4 +7,5 @@ export type AdditionalsJson = {
     passwordSafetyRegex?: string,
     textPrepend?: string,
     maxFileSizeMb?: number,
+    multiselect?: boolean,
 }
