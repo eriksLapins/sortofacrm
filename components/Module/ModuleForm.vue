@@ -48,16 +48,16 @@
 </template>
 
 <script setup lang="ts">
-import { useUserStore } from '~/store/userStore';
-import type { ModuleFieldsAdjusted, ModuleItemsAdjusted, MultiSelect } from '~/types';
 import {
-    UiTextInput,
-    UiTextInputArea,
     UiCheckbox,
     UiDateSelect,
+    UiMultiSelect,
     UiSelect,
-    UiMultiSelect
+    UiTextInput,
+    UiTextInputArea
 } from '#components';
+import { useUserStore } from '~/store/userStore';
+import type { ModuleFieldsAdjusted, ModuleItemsAdjusted, MultiSelect } from '~/types';
 
 defineOptions({
     name: 'ModuleForm'
@@ -137,7 +137,7 @@ async function createModuleItem () {
 }
 
 async function getModuleFields (module: string) {
-    const data = await $fetch(`/api/data/${module}/field/get`);
+    const data = await $fetch(`/api/data/${module}/field`);
 
     const jsonFields = jsonParse(data.data);
 
@@ -151,131 +151,128 @@ function getFieldComponent (field: ModuleFieldsAdjusted) {
         component = UiCheckbox;
         props = {
             name: 'Checkbox'
-        }
+        };
     }
 
     if (field.type === 'text') {
-        component = UiTextInput
+        component = UiTextInput;
         props = {
             name: field.key,
             label: field.title,
             maxLength: field.additional.maxTextLength
-        }
+        };
     }
 
     if (field.type === 'textarea') {
-        component = UiTextInputArea
+        component = UiTextInputArea;
         props = {
             name: field.key,
             label: field.title,
             maxLength: field.additional.maxTextLength
-        }
+        };
     }
 
     if (field.type === 'checkbox') {
-        component = UiCheckbox
+        component = UiCheckbox;
         props = {
             name: field.key,
-            label: field.title,
-        }
+            label: field.title
+        };
     }
 
     if (field.type === 'number') {
-        component = UiTextInput
+        component = UiTextInput;
         props = {
             name: field.key,
             label: field.title,
             type: 'number'
-        }
+        };
     }
 
     if (field.type === 'datepicker') {
-        component = UiDateSelect
+        component = UiDateSelect;
         props = {
             name: field.key,
             label: field.title
-        }
+        };
     }
 
     if (field.valueType === 'array' && !field.additional.multiselect) {
-        component = UiSelect
+        component = UiSelect;
         props = {
             name: field.key,
             label: field.title,
             items: [
                 {
-                key: 1,
-                title: 1,
-                position: 0,
-                visible: true,
+                    key: 1,
+                    title: 1,
+                    position: 0,
+                    visible: true
                 },
                 {
-                key: 2,
-                title: 2,
-                position: 0,
-                visible: true,
+                    key: 2,
+                    title: 2,
+                    position: 0,
+                    visible: true
                 },
                 {
-                key: 3,
-                title: 3,
-                position: 0,
-                visible: true,
+                    key: 3,
+                    title: 3,
+                    position: 0,
+                    visible: true
                 },
                 {
-                key: 4,
-                title: 4,
-                position: 0,
-                visible: true,
-                },
-            ],
+                    key: 4,
+                    title: 4,
+                    position: 0,
+                    visible: true
+                }
+            ]
 
-        }
-
+        };
     }
 
     if (field.valueType === 'array' && field.additional.multiselect) {
-        component = UiMultiSelect
+        component = UiMultiSelect;
         props = {
             name: field.key,
             label: field.title,
             items: [
                 {
-                key: 1,
-                title: 1,
-                position: 0,
-                visible: true,
+                    key: 1,
+                    title: 1,
+                    position: 0,
+                    visible: true
                 },
                 {
-                key: 2,
-                title: 2,
-                position: 0,
-                visible: true,
+                    key: 2,
+                    title: 2,
+                    position: 0,
+                    visible: true
                 },
                 {
-                key: 3,
-                title: 3,
-                position: 0,
-                visible: true,
+                    key: 3,
+                    title: 3,
+                    position: 0,
+                    visible: true
                 },
                 {
-                key: 4,
-                title: 4,
-                position: 0,
-                visible: true,
-                },
-            ],
+                    key: 4,
+                    title: 4,
+                    position: 0,
+                    visible: true
+                }
+            ]
 
-        }
-
+        };
     }
 
     if (component) {
         return {
             component,
             props
-        }    
+        };
     }
-        
 }
 
 onBeforeMount(() => {

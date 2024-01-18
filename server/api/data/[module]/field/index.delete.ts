@@ -1,7 +1,10 @@
 import { ModuleFields } from '@prisma/client';
+// import type { EventHandlerRequest } from 'h3';
 import { prisma } from '~db';
 
-export default defineEventHandler(async (event): Promise<{data: ModuleFields} | Error> => {
+type Response = Promise<{data: ModuleFields} | Error>;
+
+export default defineEventHandler(async (event): Response => {
     const body: {key: string} = await readBody(event);
     const module = getRouterParam(event, 'module');
 

@@ -52,6 +52,12 @@ export default defineNuxtConfig({
             alias: {
                 '.prisma/client/index-browser': './node_modules/.prisma/client/index-browser.js'
             }
+        },
+        optimizeDeps: {
+            include: [
+                'date-fns'
+            ],
+            exclude: []
         }
     },
     svgo: {

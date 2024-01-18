@@ -82,7 +82,7 @@ const route = useRoute();
 const currentModule = route.params.module;
 
 const { data } = useAsyncData(async () => {
-    const { data } = await $fetch(`/api/data/${currentModule}/field/get`);
+    const { data } = await $fetch(`/api/data/${currentModule}/field`);
 
     const jsonResponse = jsonParse(data);
 

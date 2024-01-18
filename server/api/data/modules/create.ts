@@ -42,7 +42,7 @@ export default defineEventHandler(async (event): Promise<{success: boolean} | Er
 
     if (Object.keys(body.fields).length) {
         try {
-            await $fetch(`/api/data/${body.key}/field/create`, {
+            await $fetch(`/api/data/${body.key}/field`, {
                 method: 'POST',
                 body: {
                     fields: body.fields

@@ -6,6 +6,11 @@
     <div class="main-layout">
       <slot />
     </div>
+    <DevOnly>
+      <UiButton href="/_nitro/swagger" target="_blank" secondary as-link-button class="absolute bottom-20 right-10">
+        OpenAPI
+      </UiButton>
+    </DevOnly>
     <AppFooter />
   </div>
 </template>

@@ -84,25 +84,25 @@
               :errors="formErrors.data?.fields[field.key]?.valueType"
             />
             <div v-if="getAdditionalFieldType(field.type, field.valueType)?.name === 'arrayValueType'">
-                <UiSelect
-                    v-model="field.additional.arrayValueType"
-                    :items="fieldValueItemsArrayType"
-                    :name="`field-addditionals-${field.type}-${field.valueType}-${index}`"
-                    :label="getAdditionalFieldType(field.type, field.valueType)?.inputLabel"
-                />
-                <UiCheckbox
-                    v-model="field.additional.multiselect"
-                    :name="`field-addditionals-${field.type}-${field.valueType}-multiselect-${index}`"
-                    label="Multiselect?"
-                />               
+              <UiSelect
+                v-model="field.additional.arrayValueType"
+                :items="fieldValueItemsArrayType"
+                :name="`field-addditionals-${field.type}-${field.valueType}-${index}`"
+                :label="getAdditionalFieldType(field.type, field.valueType)?.inputLabel"
+              />
+              <UiCheckbox
+                v-model="field.additional.multiselect"
+                :name="`field-addditionals-${field.type}-${field.valueType}-multiselect-${index}`"
+                label="Multiselect?"
+              />
             </div>
 
             <UiTextInput
               v-else-if="
-                    getAdditionalFieldType(field.type, field.valueType)
-                    &&
-                    getAdditionalFieldType(field.type, field.valueType)!.name !== 'multiselect'
-                "
+                getAdditionalFieldType(field.type, field.valueType)
+                  &&
+                  getAdditionalFieldType(field.type, field.valueType)!.name !== 'multiselect'
+              "
               v-model="field.additional[getAdditionalFieldType(field.type, field.valueType)!.name]"
               :name="`field-addditionals-${field.type}-${field.valueType}-${index}`"
               :label="getAdditionalFieldType(field.type, field.valueType)?.inputLabel"
@@ -190,7 +190,7 @@ function getFieldValueItems (fieldType: EFieldType, index: number) {
             key: value,
             title: value.toUpperCase(),
             position: 0,
-            visible: true,
+            visible: true
         };
     });
 }
@@ -200,13 +200,13 @@ const fieldValueItemsArrayType = [
         key: 'string',
         title: 'STRING',
         position: 0,
-        visible: true,
+        visible: true
     },
     {
         key: 'number',
         title: 'NUMBER',
         position: 1,
-        visible: true,
+        visible: true
     }
 ];
 
@@ -239,7 +239,7 @@ async function getModuleWithFields () {
         form.value.key = data.key;
         form.value.name = data.name;
 
-        const { data: response } = await $fetch(`/api/data/${data.key}/field/get`);
+        const { data: response } = await $fetch(`/api/data/${data.key}/field`);
 
         const jsonResponse = jsonParse(response);
         oldFields.value = jsonParse(jsonResponse) as ModuleFieldsAdjusted[];
@@ -355,8 +355,8 @@ async function submit () {
     if (updatedFields.length) {
         updatedFields.forEach(async (field) => {
             try {
-                await $fetch(`/api/data/${oldKey.value}/field/update`, {
-                    method: 'POST',
+                await $fetch(`/api/data/${oldKey.value}/field`, {
+                    method: 'PUT',
                     body: {
                         id: field.id,
                         key: field.key,
@@ -398,7 +398,7 @@ async function submit () {
             };
         });
         try {
-            await $fetch(`/api/data/${oldKey.value}/field/create`, {
+            await $fetch(`/api/data/${oldKey.value}/field`, {
                 method: 'POST',
                 body: {
                     fields: mappedNewFields
@@ -427,8 +427,8 @@ async function submit () {
     if (deletedFields.length) {
         deletedFields.forEach(async (field) => {
             try {
-                await $fetch(`/api/data/${oldKey.value}/field/delete`, {
-                    method: 'POST',
+                await $fetch(`/api/data/${oldKey.value}/field`, {
+                    method: 'DELETE',
                     body: {
                         key: field.key
                     }
