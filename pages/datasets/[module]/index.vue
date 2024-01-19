@@ -77,9 +77,8 @@ const currentModule = computed(() => {
 });
 
 async function fetchModuleItems () {
-    const { data } = await $fetch(`/api/data/${currentModule.value}/items/get`, {
-        method: 'POST',
-        body: {
+    const { data } = await $fetch(`/api/data/${currentModule.value}/items`, {
+        query: {
             createdById: userStore.currentUserId
         }
     });
@@ -113,7 +112,7 @@ async function fetchModuleItemsByText (searchQuery: string) {
 }
 
 async function getAvailableModules () {
-    const data = await $fetch('/api/data/modules/get');
+    const data = await $fetch('/api/data/modules');
 
     const jsonModules = jsonParse(data.data);
 

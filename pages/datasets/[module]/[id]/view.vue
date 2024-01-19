@@ -85,9 +85,8 @@ const initialDoersList = ref<string[]>([]);
 
 async function fetchTaskById () {
     try {
-        const { data } = await $fetch('/api/data/tasks/items/get', {
-            method: 'POST',
-            body: {
+        const { data } = await $fetch('/api/data/tasks/items', {
+            query: {
                 createdById: userStore.currentUserId,
                 id
             }
@@ -118,7 +117,7 @@ const headerItem = computed(() => {
     return undefined;
 });
 
-function findUserById (id: string) {
+function findUserById (id: number) {
     return userStore.availableUsers.find(user => user.id === id);
 }
 

@@ -55,7 +55,7 @@ definePageMeta({
 });
 
 const { data } = useAsyncData(async () => {
-    const { data } = await $fetch('/api/data/modules/get');
+    const { data } = await $fetch('/api/data/modules');
 
     const jsonResponse = jsonParse(data);
 

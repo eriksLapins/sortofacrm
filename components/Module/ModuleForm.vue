@@ -49,12 +49,12 @@
 
 <script setup lang="ts">
 import {
-    UiCheckbox,
-    UiDateSelect,
-    UiMultiSelect,
-    UiSelect,
-    UiTextInput,
-    UiTextInputArea
+UiCheckbox,
+UiDateSelect,
+UiMultiSelect,
+UiSelect,
+UiTextInput,
+UiTextInputArea
 } from '#components';
 import { useUserStore } from '~/store/userStore';
 import type { ModuleFieldsAdjusted, ModuleItemsAdjusted, MultiSelect } from '~/types';
@@ -101,8 +101,8 @@ const userOptions = ref<MultiSelect[]>([]);
 async function createModuleItem () {
     if (props.itemId) {
         try {
-            const { data } = await $fetch(`/api/data/${props.module}/items/update`, {
-                method: 'POST',
+            const { data } = await $fetch(`/api/data/${props.module}/items`, {
+                method: 'PUT',
                 body: {
                     ...form.value,
                     id: props.itemId,
@@ -121,7 +121,7 @@ async function createModuleItem () {
         }
     } else {
         try {
-            const data = await $fetch(`/api/data/${props.module}/items/create`, {
+            const data = await $fetch(`/api/data/${props.module}/items`, {
                 method: 'POST',
                 body: {
                     ...form.value,
