@@ -301,8 +301,8 @@ async function submit () {
 
     if (form.value.name !== oldName.value || form.value.key !== oldKey.value) {
         try {
-            const response = await $fetch('/api/data/modules/update', {
-                method: 'POST',
+            const response = await $fetch('/api/data/modules', {
+                method: 'PUT',
                 body: {
                     oldName: oldName.value,
                     newName: form.value.name,
@@ -460,8 +460,8 @@ async function submit () {
 }
 
 async function deleteModule () {
-    await $fetch('/api/data/modules/delete', {
-        method: 'POST',
+    await $fetch('/api/data/modules', {
+        method: 'DELETE',
         body: {
             module: route.params.module
         }

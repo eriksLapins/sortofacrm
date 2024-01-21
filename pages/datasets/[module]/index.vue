@@ -100,7 +100,6 @@ async function fetchModuleItemsByText (searchQuery: string) {
     previousQuery.value = searchQuery;
 
     const { data } = await $fetch(`/api/data/${currentModule.value}/search/text`, {
-        method: 'POST',
         params: {
             searchQuery
         }
@@ -171,7 +170,7 @@ async function handleSaveColumns (items: MultiSelect[]) {
         }
     });
     try {
-        await $fetch('/api/data/users/preferences/create', {
+        await $fetch('/api/data/users/preferences', {
             method: 'POST',
             body: {
                 userId: userStore.currentUserId,
@@ -190,7 +189,7 @@ onBeforeMount(async () => {
     loading.value = true;
     await getAvailableModules();
     await fetchModuleItems();
-    // await userStore.fetchUserPreferences(currentModule as unknown as string);
+    // await userStore.fetchUserPreferences(currentModule.value as unknown as string);
     // if (tasks.value) {
     //   columns.value = Object.keys(tasks.value[0]);
     //   if (tasks.value) {

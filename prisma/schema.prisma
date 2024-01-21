@@ -320,26 +320,3 @@ enum EFieldType {
   fileUpload
   imageUpload
 }
-
-enum ERelationTypesDefault {
-  Person
-  Company
-  Invoice
-  Quote
-  Expense
-  Project
-  Task
-  Module
-  Department
-  Page
-  ClientCompany
-}
-
-enum EPreferenceTypesDefault {
-  Layout
-  Columns
-  Header
-  PushNotifications
-  EmailNotifications
-  MarketingEmails
-}

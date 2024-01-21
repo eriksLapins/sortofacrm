@@ -67,7 +67,7 @@ definePageMeta({
 });
 
 const { data: users } = await useAsyncData(async () => {
-    const response = await $fetch('/api/data/users/get');
+    const response = await $fetch('/api/data/users');
 
     const data = jsonParse(response.data);
 

@@ -50,8 +50,8 @@ export default defineEventHandler(async (event): Promise<{success: boolean} | Er
             });
         } catch (e: any) {
             console.log(e);
-            await $fetch('/api/data/modules/delete', {
-                method: 'POST',
+            await $fetch('/api/data/modules', {
+                method: 'DELETE',
                 body: {
                     module: body.key
                 }

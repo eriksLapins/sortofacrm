@@ -3,10 +3,10 @@
     <div class="flex flex-col gap-2">
       <div class="flex gap-2">
         <p class="text-gray-text">
-          created by: {{ matchUserById(item.createdBy.toString()) }}
+          created by: {{ matchUserById(item.createdBy) }}
         </p>
         <p class="text-gray-text">
-          last updated by: {{ matchUserById(item.updatedBy.toString()) }}
+          last updated by: {{ matchUserById(item.updatedBy) }}
         </p>
       </div>
 
@@ -38,7 +38,7 @@ defineOptions({
 
 const props = defineProps({
     item: {
-        type: Object as PropType<{id: String, createdBy: String, updatedBy: String, updatedOn: Date}>,
+        type: Object as PropType<{id: number, createdBy: number, updatedBy: number, updatedOn: Date}>,
         required: true
     },
     moduleName: {

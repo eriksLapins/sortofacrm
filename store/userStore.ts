@@ -1,6 +1,7 @@
 import { ERole, type User, type UserPreferences } from '@prisma/client';
 import { defineStore } from 'pinia';
 import type { PreferenceWrapper, Preferences, UserData } from '~/types';
+import { EPreferenceTypesDefault } from '~/types/enum/preferenceTypes';
 
 export const useUserStore = defineStore('users', () => {
     const currentUser = ref<Omit<User, 'password'>>();
@@ -13,9 +14,7 @@ export const useUserStore = defineStore('users', () => {
     const defaultDataset = ref('tasks');
 
     const fetchUsers = async () => {
-        const data = await $fetch('/api/data/users/get', {
-            method: 'POST'
-        });
+        const data = await $fetch('/api/data/users');
 
         const jsonData = JSON.parse(JSON.stringify(data));
 
@@ -63,9 +62,8 @@ export const useUserStore = defineStore('users', () => {
     const fetchUserPreferences = async (moduleName: string) => {
         if (currentUserId.value) {
             try {
-                const data = await $fetch('/api/data/users/preferences/get', {
-                    method: 'POST',
-                    body: {
+                const data = await $fetch('/api/data/users/preferences', {
+                    params: {
                         userId: currentUserId.value,
                         module: moduleName
                     }

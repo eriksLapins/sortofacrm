@@ -184,7 +184,7 @@ async function submit () {
         return;
     }
     try {
-        const response = await $fetch('/api/data/modules/create', {
+        const response = await $fetch('/api/data/modules', {
             method: 'POST',
             body: {
                 name: form.value.name,
