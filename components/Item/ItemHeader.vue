@@ -3,10 +3,10 @@
     <div class="flex flex-col gap-2">
       <div class="flex gap-2">
         <p class="text-gray-text">
-          created by: {{ matchUserById(item.createdBy.toString()) }}
+          created by: {{ matchUserById(item.createdBy) }}
         </p>
         <p class="text-gray-text">
-          last updated by: {{ matchUserById(item.updatedBy.toString()) }}
+          last updated by: {{ matchUserById(item.updatedBy) }}
         </p>
       </div>
 
@@ -31,34 +31,30 @@
 
 <script setup lang="ts">
 import format from 'date-fns/format';
-import { useUserStore } from '~/store/userStore';
 
 defineOptions({
-  name: 'ItemHeader'
+    name: 'ItemHeader'
 });
 
-const userStore = useUserStore();
-
 const props = defineProps({
-  item: {
-    type: Object as PropType<{id: String, createdBy: String, updatedBy: String, updatedOn: Date}>,
-    required: true
-  },
-  moduleName: {
-    type: String,
-    required: true
-  }
+    item: {
+        type: Object as PropType<{id: number, createdBy: number, updatedBy: number, updatedOn: Date}>,
+        required: true
+    },
+    moduleName: {
+        type: String,
+        required: true
+    }
 });
 
 async function deleteItem () {
-  await $fetch(`/api/data/${props.moduleName}/delete`, {
-    method: 'POST',
-    body: {
-      clientId: userStore.currentCompany,
-      id: props.item.id
-    }
-  });
-  navigateTo(`/${props.moduleName}`);
+    await $fetch(`/api/data/${props.moduleName}/delete`, {
+        method: 'POST',
+        body: {
+            id: props.item.id
+        }
+    });
+    navigateTo(`/${props.moduleName}`);
 }
 
 </script>

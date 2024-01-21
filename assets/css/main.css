@@ -2,40 +2,52 @@
 @tailwind components;
 
 :root {
+  --primary: #00606b;
+  --secondary: #f5f5db;
+  --accent: #191971;
 	--foreground-rgb: #FFFFFF;
 	--background-start-rgb: 214, 219, 220;
 	--background-end-rgb: 255, 255, 255;
-	}
+}
 
-	@media (prefers-color-scheme: dark) {
-	:root {
-		--foreground-rgb: #dedede;
-		--background-start-rgb: 0, 0, 0;
-		--background-end-rgb: 0, 0, 0;
+@layer components {
+	.separator {
+		border-bottom: var(--primary) solid 1px;
 	}
-	}
-	html {
-		margin: 0;
-		font-family: system-ui, sans-serif;
-	}
+}
 
-	body {
-		margin: 0;	
-	}
-	code {
-		font-family:
-			Menlo,
-			Monaco,
-			Lucida Console,
-			Liberation Mono,
-			DejaVu Sans Mono,
-			Bitstream Vera Sans Mono,
-			Courier New,
-			monospace;
-	}
-	input {
-	    all: unset;
-	}
-	textarea {
-		all: unset;
-	}
+@media (prefers-color-scheme: dark) {
+:root {
+  --primary: #00606b;
+  --secondary: #f5f5db;
+  --accent: #191971;
+	--foreground-rgb: #dedede;
+	--background-start-rgb: 0, 0, 0;
+	--background-end-rgb: 0, 0, 0;
+}
+}
+html {
+	margin: 0;
+	font-family: system-ui, sans-serif;
+}
+
+body {
+	margin: 0;	
+}
+code {
+	font-family:
+		Menlo,
+		Monaco,
+		Lucida Console,
+		Liberation Mono,
+		DejaVu Sans Mono,
+		Bitstream Vera Sans Mono,
+		Courier New,
+		monospace;
+}
+input {
+	all: unset;
+}
+textarea {
+	all: unset;
+}

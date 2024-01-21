@@ -1,5 +1,5 @@
 <template>
-  <div class="h-[100dvh]">
+  <div class="min-h-[100dvh]">
     <AppHeader />
     <div class="clean-layout">
       <slot />
@@ -11,13 +11,13 @@
 <script setup lang="ts">
 
 defineOptions({
-  name: 'DefaultLayout'
+    name: 'DefaultLayout'
 });
 
 </script>
 
 <style lang="scss">
 .clean-layout {
-    height: calc(100dvh - 8rem - 4rem);
+    min-height: calc(100dvh - 4rem - 3.5rem);
 }
 </style>

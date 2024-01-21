@@ -1,56 +1,57 @@
 import { useUserStore } from '~/store/userStore';
+import type { MultiSelect } from '~/types';
 
-export const mapValueToKey = (value: string | null, items: Array<{key: string, title: string}>) => {
-  if (!value) {
-    return;
-  }
+export const mapValueToKey = (value: string | number | null, items: MultiSelect[]) => {
+    if (!value) {
+        return;
+    }
 
-  return items.find(item => item.title === value)?.key;
+    return items.find(item => item.title === value)?.key;
 };
 
-export const mapKeyToValue = (value: string | null, items: Array<{key: string, title: string}>) => {
-  if (!value) {
-    return;
-  }
+export const mapKeyToValue = (value: string | number | null, items: MultiSelect[]) => {
+    if (!value) {
+        return;
+    }
 
-  return items.find(item => item.key === value)?.title;
+    return items.find(item => item.key === value)?.title;
 };
 
-export const mapArrayValueToKey = (value: Array<string> | [], items: Array<{key: string, title: string}>) => {
-  if (!value.length) {
-    return [];
-  }
+export const mapArrayValueToKey = (value: Array<string | number> | [], items: MultiSelect[]) => {
+    if (!value.length) {
+        return [];
+    }
 
-  const mappedItems = value.map((title) => {
-    return items.find(item => item.title === title)?.key;
-  });
+    const mappedItems = value.map((title) => {
+        return items.find(item => item.title === title)?.key;
+    });
 
-  const filteredItems = mappedItems.filter(item => !!item) as string[];
+    const filteredItems = mappedItems.filter(item => !!item) as (string | number)[];
 
-  return filteredItems;
+    return filteredItems;
 };
 
-export const mapArrayKeyToValue = (value: Array<string> | [], items: Array<{key: string, title: string}>) => {
-  if (!value.length) {
-    return [];
-  }
+export const mapArrayKeyToValue = (value: Array<string | number> | [], items: MultiSelect[]) => {
+    if (!value.length) {
+        return [];
+    }
 
-  const mappedItems = value.map((key) => {
-    return items.find(item => item.key === key)?.title;
-  });
+    const mappedItems = value.map((key) => {
+        return items.find(item => item.key === key)?.title;
+    });
 
-  const filteredItems = mappedItems.filter(item => !!item) as string[];
+    const filteredItems = mappedItems.filter(item => !!item) as (string | number)[];
 
-  return filteredItems;
+    return filteredItems;
 };
 
-export const matchUserById = (id: string | null) => {
-  if (!id) {
-    return null;
-  }
-  if (useUserStore().availableUsers.length) {
-    const user = useUserStore().availableUsers.find(user => user.id === id);
+export const matchUserById = (id: number | null) => {
+    if (!id) {
+        return null;
+    }
+    if (useUserStore().availableUsers.length) {
+        const user = useUserStore().availableUsers.find(user => user.id === id);
 
-    return user?.initials || id;
-  }
+        return user?.initials || id;
+    }
 };

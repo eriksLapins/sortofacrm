@@ -1,9 +1,9 @@
 export type UserData = {
-    id: string,
-    image: string,
+    id: number,
+    image: string | null,
     initials: string,
     name: string,
     lastname: string,
-    position: string,
-    departmentId: string
+    position: string | null,
+    departmentId: number
 }

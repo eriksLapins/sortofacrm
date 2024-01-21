@@ -4,7 +4,7 @@
   "rules": {
     "semi": ["error", "always"],
     "quotes": ["error", "single"],
-    "indent": ["warn", 2],
+    "indent": ["warn", 4],
     "newline-before-return": "error",
     "newline-per-chained-call": "error",
     "array-element-newline":"warn",

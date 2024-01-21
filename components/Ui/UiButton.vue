@@ -6,10 +6,11 @@
     :class="{
       'border-primary bg-primary hover:bg-opacity-90 focus-within:bg-opacity-90 text-white' : !secondary && !errorVariant,
       'border-error-border text-error-border bg-error-background hover:bg-error-border focus-within:bg-error-border hover:text-white focus-within:text-white': errorVariant,
-      'border-primary text-primary hover:bg-primary hover:bg-opacity-30 focus-within:bg-primary focus-within:bg-opacity-30' : secondary,
+      'border-primary text-primary hover:bg-primary hover:bg-opacity-30 focus-within:bg-primary focus-within:bg-opacity-30 hover:text-white focus-within:text-white' : secondary,
     }"
   >
-    {{ text }}
+    <span v-if="text">{{ text }}</span>
+    <slot v-else />
   </NuxtLink>
   <NuxtLink
     v-else-if="asLink"
@@ -20,7 +21,8 @@
       'text-error-border': errorVariant
     }"
   >
-    {{ text }}
+    <span v-if="text">{{ text }}</span>
+    <slot v-else />
   </NuxtLink>
   <button
     v-else
@@ -28,38 +30,39 @@
     :class="{
       'border-primary bg-primary hover:bg-opacity-90 focus-within:bg-opacity-90 text-white' : !secondary && !errorVariant,
       'border-error-border text-error-border bg-error-background hover:bg-error-border focus-within:bg-error-border hover:text-white focus-within:text-white': errorVariant,
-      'border-primary text-primary hover:bg-primary hover:bg-opacity-30 focus-within:bg-primary focus-within:bg-opacity-30' : secondary,
+      'border-primary text-primary hover:bg-primary hover:bg-opacity-30 focus-within:bg-primary focus-within:bg-opacity-30 hover:text-white focus-within:text-white' : secondary,
     }"
   >
-    {{ text }}
+    <span v-if="text">{{ text }}</span>
+    <slot v-else />
   </button>
 </template>
 
 <script lang="ts" setup>
 defineOptions({
-  name: 'UIButton'
+    name: 'UIButton'
 });
 
 defineProps({
-  text: {
-    type: String,
-    required: true
-  },
-  secondary: {
-    type: Boolean
-  },
-  errorVariant: {
-    type: Boolean
-  },
-  asLinkButton: {
-    type: Boolean
-  },
-  asLink: {
-    type: Boolean
-  },
-  href: {
-    type: String,
-    default: undefined
-  }
+    text: {
+        type: String,
+        default: undefined
+    },
+    secondary: {
+        type: Boolean
+    },
+    errorVariant: {
+        type: Boolean
+    },
+    asLinkButton: {
+        type: Boolean
+    },
+    asLink: {
+        type: Boolean
+    },
+    href: {
+        type: String,
+        default: undefined
+    }
 });
 </script>

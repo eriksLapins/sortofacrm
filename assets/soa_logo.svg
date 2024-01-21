@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="152"
+   height="122"
+   viewBox="0 0 30.4 24.4"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   sodipodi:docname="soa_logo_inkscape.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="2.0849549"
+     inkscape:cx="189.69236"
+     inkscape:cy="170.98692"
+     inkscape:window-width="1450"
+     inkscape:window-height="981"
+     inkscape:window-x="224"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid6222" />
+  </sodipodi:namedview>
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="SortofaCrm"
+     inkscape:groupmode="layer"
+     id="layer1"
+     inkscape:export-filename="soa_logo.png"
+     inkscape:export-xdpi="39.669422"
+     inkscape:export-ydpi="39.669422"
+     transform="translate(-8.8000002,-8.8000002)">
+    <rect
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;paint-order:normal"
+       id="rect7175"
+       width="30"
+       height="24"
+       x="9"
+       y="9"
+       inkscape:label="Square"
+       inkscape:export-filename="favicon_soa.png"
+       inkscape:export-xdpi="31.578947"
+       inkscape:export-ydpi="31.578947" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;paint-order:normal"
+       d="M 28,11 H 11 v 7 H 28 V 31 H 11"
+       id="path7115"
+       inkscape:label="S" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;paint-order:normal"
+       d="M 29,31 V 17 h 8 v 14"
+       id="path7119"
+       inkscape:label="A" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;paint-order:normal"
+       d="m 29,11 v 4 h 4 v -4 z"
+       id="path7117"
+       inkscape:label="o" />
+  </g>
+</svg>

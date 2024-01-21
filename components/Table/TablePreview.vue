@@ -30,44 +30,44 @@
 import type { TableItems } from '~/types';
 
 defineOptions({
-  name: 'TablePreview'
+    name: 'TablePreview'
 });
 
 const props = defineProps({
-  dataJson: {
-    type: Array as PropType<TableItems[][]>,
-    required: true
-  },
-  module: {
-    type: String,
-    required: true
-  }
+    dataJson: {
+        type: Array as PropType<TableItems[][]>,
+        required: true
+    },
+    module: {
+        type: String,
+        required: true
+    }
 });
 
 const table = ref(props.dataJson);
 
 const tableHeadOptions = computed(() => {
-  if (table.value) {
-    table.value.forEach((row) => {
-      row.sort((a, b) => {
-        if (a.position === undefined || b.position === undefined) {
-          return -1;
-        }
+    if (table.value) {
+        table.value.forEach((row) => {
+            row.sort((a, b) => {
+                if (a.position === undefined || b.position === undefined) {
+                    return -1;
+                }
 
-        return a.position - b.position;
-      });
-    });
+                return a.position - b.position;
+            });
+        });
 
-    const headOptions = table.value[0].map(item => item.title);
+        const headOptions = table.value[0].map(item => item.title);
 
-    return headOptions;
-  }
+        return headOptions;
+    }
 
-  return [];
+    return [];
 });
 
 watch(() => props.dataJson, (newData) => {
-  table.value = newData;
+    table.value = newData;
 });
 
 </script>

@@ -4,12 +4,16 @@
       <input
         :id="name"
         v-model="value"
-        :type="type"
+        :type="actualType || type"
         :name="name"
         :autocomplete="autocomplete"
-        class="h-6 py-1 px-2 rounded-lg"
-        :class="!!error ? 'leweb-input__error' : 'leweb-input'"
+        class="h-6 py-1 px-2 rounded-lg leweb-input"
+        :class="{
+          'leweb-input__error': !!error,
+          'leweb-input__disabled' : disabled
+        }"
         :placeholder="label"
+        :disabled="disabled"
       >
       <div v-if="error" class="text-error-border">
         {{ error }}
@@ -22,49 +26,61 @@
 <script setup lang="ts">
 
 defineOptions({
-  name: 'UITextInput'
+    name: 'UITextInput'
 });
 const emit = defineEmits(['update:modelValue']);
 
 const props = defineProps({
-  modelValue: {
-    type: String as PropType<string | null>,
-    required: true,
-    default: null
-  },
-  name: {
-    type: String,
-    required: true
-  },
-  label: {
-    type: String,
-    default: undefined
-  },
-  autocomplete: {
-    type: String,
-    default: undefined
-  },
-  type: {
-    type: String,
-    default: 'text'
-  },
-  errors: {
-    type: String,
-    default: undefined
-  }
+    modelValue: {
+        type: String as PropType<string | number | null | undefined>,
+        default: null
+    },
+    name: {
+        type: String,
+        required: true
+    },
+    label: {
+        type: String,
+        default: undefined
+    },
+    autocomplete: {
+        type: String,
+        default: undefined
+    },
+    type: {
+        type: String,
+        default: 'text'
+    },
+    errors: {
+        type: String,
+        default: undefined
+    },
+    disabled: {
+        type: Boolean
+    }
 });
 
-const error = computed(() => {
-  if (value.value) {
-    return undefined;
-  }
-
-  return props.errors;
-});
+const error = ref(props.errors);
 
 const value = computed({
-  get: () => props.modelValue,
-  set: value => emit('update:modelValue', value)
+    get: () => props.modelValue,
+    set: value => emit('update:modelValue', value)
+});
+
+const actualType = computed(() => {
+    if (typeof value.value === 'number') {
+        return 'number';
+    }
+});
+
+watch(() => props.errors, (newValue) => {
+    if (newValue) {
+        error.value = newValue;
+    }
+});
+
+watch(() => value.value, () => {
+    error.value = undefined;
 });
 
 </script>
@@ -81,8 +97,16 @@ const value = computed({
         box-shadow: 0 0 0 2px $color-primary;
     }
 
-    &__error {
-      box-shadow: 0 0 0 2px $color-error-border;
+    &.leweb-input__error {
+        box-shadow: 0 0 0 2px $color-error-border;
+    }
+
+    &.leweb-input__disabled {
+        box-shadow: 0 0 0 1px $color-gray-text-disabled;
+        color: $color-gray-text-disabled;
+        &.leweb-input__error {
+            box-shadow: 0 0 0 2px $color-error-border;
+        }
     }
 }
 </style>

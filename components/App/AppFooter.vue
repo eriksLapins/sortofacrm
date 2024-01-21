@@ -1,7 +1,7 @@
 <template>
-  <footer class="flex h-32 w-full bg-primary mt-auto justify-between px-4 md:px-12">
+  <footer class="flex h-16 w-full bg-primary mt-auto justify-between px-4 md:px-12">
     <div class="flex flex-col gap-4 items-start justify-center">
-      <p class="copyrights text-sm md:text-base-plus text-white text-wrap self-center">
+      <p class="copyrights text-xs md:text-sm text-white text-wrap self-center">
         &copy; Ēriks Lapiņš. All rights reserved
       </p>
       <!-- <div class="flex flex-row gap-2">
@@ -9,7 +9,7 @@
         <a href="/policies/cookie" class="text-white hover:text-secondary text-sm">Cookie Policy</a>
       </div> -->
     </div>
-    <ul class="socials flex text-sm md:text-base-plus text-white flex-col md:flex-row md:gap-2 lg:gap-4 self-center md:justify-evenly">
+    <ul class="socials flex text-xs md:text-sm text-white flex-col md:flex-row md:gap-2 lg:gap-4 self-center md:justify-evenly">
       <li>
         <a
           class="text-white hover:text-gray-text"
@@ -56,7 +56,7 @@
 
 <script setup lang="ts">
 defineOptions({
-  name: 'AppFooter'
+    name: 'AppFooter'
 });
 
 </script>
