@@ -45,7 +45,7 @@
               {{ user.position }}
             </TableData>
             <TableData>
-              {{ user.departmentId }}
+              {{ findDepartmentName(user.departmentId) }}
             </TableData>
           </TableRow>
         </tbody>
@@ -58,6 +58,7 @@
 </template>
 
 <script setup lang="ts">
+import { useDepartmentStore } from '~/store/departmentStore';
 
 defineOptions({
     name: 'SettingsUsers'
@@ -76,8 +77,18 @@ const { data: users } = await useAsyncData(async () => {
     };
 });
 
+const departments = useDepartmentStore().departments;
+
+function findDepartmentName (id: number) {
+    return departments.find(department => department.id === id) || 'None';
+}
+
 const companyUsers = computed(() => {
     return users.value?.data;
+});
+
+onMounted(async () => {
+    await useDepartmentStore().fetchAvailableDepartments();
 });
 
 </script>

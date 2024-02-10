@@ -14,11 +14,9 @@ export const useUserStore = defineStore('users', () => {
     const defaultDataset = ref('tasks');
 
     const fetchUsers = async () => {
-        const data = await $fetch('/api/data/users');
+        const { data } = await $fetch('/api/data/users');
 
-        const jsonData = JSON.parse(JSON.stringify(data));
-
-        availableUsers.value = jsonData.data;
+        availableUsers.value = jsonParse(data);
     };
 
     const loginUser = async (token: string | null) => {
