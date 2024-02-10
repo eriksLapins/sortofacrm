@@ -25,14 +25,6 @@ export default defineNuxtConfig({
     },
     css: ['~/assets/css/main.css',
         '~/scss/style.scss'],
-    postcss: {
-        plugins: {
-            'postcss-import': {},
-            'tailwindcss/nesting': 'postcss-nesting',
-            tailwindcss: {},
-            autoprefixer: {}
-        }
-    },
     modules: [
         '@nuxtjs/tailwindcss',
         '@pinia/nuxt',
