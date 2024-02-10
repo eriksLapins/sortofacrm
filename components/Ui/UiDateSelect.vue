@@ -17,47 +17,47 @@ import { format } from 'date-fns';
 import type { PropType } from 'vue';
 
 defineOptions({
-  name: 'UIDateInput'
+    name: 'UIDateInput'
 });
 const emit = defineEmits(['update:modelValue']);
 
 const props = defineProps({
-  modelValue: {
-    type: String as PropType<string | null>,
-    default: null
-  },
-  name: {
-    type: String,
-    required: true
-  },
-  label: {
-    type: String,
-    default: undefined
-  }
+    modelValue: {
+        type: String as PropType<string | null>,
+        default: null
+    },
+    name: {
+        type: String,
+        required: true
+    },
+    label: {
+        type: String,
+        default: undefined
+    }
 });
 
 const value = ref<string | null>();
 
 function handleInput () {
-  if (value.value) {
-    emit('update:modelValue', new Date(value.value).toISOString());
-  } else {
-    emit('update:modelValue', null);
-  }
+    if (value.value) {
+        emit('update:modelValue', new Date(value.value).toISOString());
+    } else {
+        emit('update:modelValue', null);
+    }
 }
 
 onMounted(() => {
-  if (props.modelValue) {
-    value.value = format(new Date(props.modelValue), 'yyyy-MM-dd');
-  }
+    if (props.modelValue) {
+        value.value = format(new Date(props.modelValue), 'yyyy-MM-dd');
+    }
 });
 
 watch(() => props.modelValue, (newValue) => {
-  if (newValue) {
-    value.value = format(new Date(newValue), 'yyyy-MM-dd');
-  } else {
-    value.value = null;
-  }
+    if (newValue) {
+        value.value = format(new Date(newValue), 'yyyy-MM-dd');
+    } else {
+        value.value = null;
+    }
 });
 </script>
 

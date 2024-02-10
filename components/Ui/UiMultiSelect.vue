@@ -156,7 +156,7 @@ const props = defineProps({
     }
 });
 
-const currentArray = ref<string[]>(mapArrayKeyToValue(props.modelValue, props.items));
+const currentArray = ref<string[]>(mapArrayKeyToValue(props.modelValue, props.items) as string[]);
 
 const setValue = ref<string | null>(null);
 
@@ -320,7 +320,7 @@ function handleSaveClick () {
 watch(() => props.items, (newValue) => {
     if (!setValue.value) {
         options.value = newValue;
-        currentArray.value = mapArrayKeyToValue(props.modelValue, newValue) || null;
+        currentArray.value = mapArrayKeyToValue(props.modelValue, newValue) as string[] || null;
     }
 });
 

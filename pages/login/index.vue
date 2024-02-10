@@ -7,18 +7,18 @@
 import { useUserStore } from '~/store/userStore';
 
 defineOptions({
-  name: 'LoginIndex'
+    name: 'LoginIndex'
 });
 
 definePageMeta({
-  layout: 'clean'
+    layout: 'clean'
 });
 
 onBeforeMount(() => {
-  if (useUserStore().isLoggedIn) {
-    navigateTo('/datasets/tasks', {
-      replace: true
-    });
-  }
+    if (useUserStore().isLoggedIn) {
+        navigateTo('/datasets/tasks', {
+            replace: true
+        });
+    }
 });
 </script>

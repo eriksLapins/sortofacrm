@@ -17,7 +17,7 @@ export const mapKeyToValue = (value: string | number | null, items: MultiSelect[
     return items.find(item => item.key === value)?.title;
 };
 
-export const mapArrayValueToKey = (value: Array<string | number> | [], items: MultiSelect[]) => {
+export const mapArrayValueToKey = (value: (string | number)[] | [], items: MultiSelect[]) => {
     if (!value.length) {
         return [];
     }
@@ -31,7 +31,7 @@ export const mapArrayValueToKey = (value: Array<string | number> | [], items: Mu
     return filteredItems;
 };
 
-export const mapArrayKeyToValue = (value: Array<string | number> | [], items: MultiSelect[]) => {
+export const mapArrayKeyToValue = (value: (string | number)[] | [], items: MultiSelect[]) => {
     if (!value.length) {
         return [];
     }

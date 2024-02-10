@@ -16,7 +16,7 @@ export const fieldTemplate: ModuleFieldsAdjusted = {
         arrayValueType: undefined,
         passwordSafetyRegex: undefined,
         textPrepend: undefined,
-        multiselect: undefined,
+        multiselect: undefined
     }
 };
 
@@ -36,7 +36,7 @@ export const additionalsTypeMap: AdditionalsTypeMapType = {
             name: 'arrayValueType',
             helper: 'The type of the value to add (int for ids and most likely otherwise - string)',
             inputLabel: 'Array Value type'
-        },
+        }
     },
     number: {
         number: undefined,

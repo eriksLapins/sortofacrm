@@ -9,6 +9,7 @@
     "newline-per-chained-call": "error",
     "array-element-newline":"warn",
     "object-property-newline":"warn",
-    "no-duplicate-imports": "error"
+    "no-duplicate-imports": "error",
+    "import/no-named-as-default-member": 0
   }
 }

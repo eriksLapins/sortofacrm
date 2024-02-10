@@ -97,7 +97,6 @@ async function fetchTaskById () {
         task.value = jsonTask.tasks[0];
         loading.value = false;
     } catch (e) {
-        console.log(e);
         throw new Error('Sorry, something went wrong');
     }
 }
