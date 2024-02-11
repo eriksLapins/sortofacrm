@@ -22,11 +22,11 @@
 
 <script setup lang="ts">
 defineOptions({
-    name: 'KeyValuesSection'
+    name: 'SettingsSectionValues'
 });
 
 const props = defineProps<{
-    existingValues: {id: number, name: string}[],
+    existingValues?: {id: number, name: string}[],
     section: string
 }>();
 

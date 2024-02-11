@@ -5,7 +5,11 @@
         {{ section.name }}
       </a>
     </div>
-    <SettingsSection
+    <SettingsSectionCompany
+      v-if="!isSectionValues"
+    />
+    <SettingsSectionValues
+      v-else
       :existing-values="currentSectionData"
       :section="currentSection"
       class="w-2/3"
@@ -15,6 +19,7 @@
 </template>
 
 <script setup lang="ts">
+import { SettingsSectionCompany, SettingsSectionValues } from '#components';
 
 defineOptions({
     name: 'SettingsIndex'
@@ -33,6 +38,10 @@ const generalSections = [
         name: 'Company Details'
     }
 ];
+
+const isSectionValues = computed(() => {
+    return currentSection.value !== 'company';
+});
 
 const currentSection = ref(generalSections[0].key);
 const currentSectionData = ref<any[]>([]);
