@@ -38,6 +38,11 @@
     <div class="p-2">
       <div class="w-full flex gap-4 items-center">
         <AppModal v-model="openCompanyModal">
+          <template #header>
+            <p class="text-lg font-bold">
+              Company info
+            </p>
+          </template>
           <SettingsSectionCompanyForm />
         </AppModal>
         <UiButton

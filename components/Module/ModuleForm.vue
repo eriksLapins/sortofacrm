@@ -116,7 +116,6 @@ async function createModuleItem () {
 
             form.value = data as unknown as ModuleItemsAdjusted;
         } catch (e: any) {
-            console.log(e);
             errors.value = e.data.data.errors;
         }
     } else {

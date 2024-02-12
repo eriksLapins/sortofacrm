@@ -1,7 +1,13 @@
 <template>
   <dialog ref="dialog" class="max-h-[500px] overflow-y-scroll rounded-lg backdrop:opacity-50 backdrop:bg-black app-modal">
     <div class="bg-white p-4">
-      <slot />
+      <div v-if="$slots.header" class="h-12">
+        <slot name="header" />
+      </div>
+      <slot name="default" />
+      <div v-if="$slots.footer">
+        <slot name="footer" />
+      </div>
     </div>
   </dialog>
 </template>
