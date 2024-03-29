@@ -47,7 +47,9 @@ export default defineNuxtConfig({
         },
         optimizeDeps: {
             include: [
-                'date-fns'
+                'date-fns',
+                'date-fns/format',
+                '@vueuse/core'
             ],
             exclude: []
         }

@@ -1,0 +1,20 @@
+diff --git a/node_modules/nitropack/dist/runtime/routes/openapi.mjs b/node_modules/nitropack/dist/runtime/routes/openapi.mjs
+index 30bd8bc..0bec170 100644
+--- a/node_modules/nitropack/dist/runtime/routes/openapi.mjs
++++ b/node_modules/nitropack/dist/runtime/routes/openapi.mjs
+@@ -1,12 +1,13 @@
++import { useRuntimeConfig } from "#internal/nitro";
++import { handlersMeta } from "#internal/nitro/virtual/server-handlers";
+ import { eventHandler, getRequestURL } from "h3";
+ import { joinURL } from "ufo";
+-import { handlersMeta } from "#internal/nitro/virtual/server-handlers";
+-import { useRuntimeConfig } from "#internal/nitro";
+ export default eventHandler((event) => {
+   const base = useRuntimeConfig()?.app?.baseURL;
+   const url = joinURL(getRequestURL(event).origin, base);
+   return {
+     openapi: "3.1.0",
++    swagger: "2.0",
+     info: {
+       title: "Nitro Server Routes",
+       version: null
