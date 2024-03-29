@@ -33,6 +33,9 @@ defineOptions({
 definePageMeta({
     layout: 'settings'
 });
+
+const route = useRoute();
+
 const generalSections = [
     {
         key: 'department',
@@ -48,10 +51,15 @@ const isSectionValues = computed(() => {
     return currentSection.value !== 'company';
 });
 
-const currentSection = ref(generalSections[0].key);
+const currentSection = ref(route.query.section as string || generalSections[0].key);
 const currentSectionData = ref<any[]>([]);
 
 function setSection (key: string) {
+    navigateTo({
+        query: {
+            section: key
+        }
+    });
     currentSection.value = key;
 }
 
@@ -69,7 +77,3 @@ onMounted(async () => {
 });
 
 </script>
-
-<style scoped>
-
-</style>
