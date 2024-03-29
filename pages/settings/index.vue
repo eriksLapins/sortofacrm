@@ -1,9 +1,14 @@
 <template>
   <div class="flex gap-8 h-full">
     <div class="w-1/3 flex flex-col gap-2 border-r border-r-gray-text-disabled">
-      <a v-for="section in generalSections" :key="section.key" @click="setSection(section.key)">
+      <button
+        v-for="section in generalSections"
+        :key="section.key"
+        class="text-start border-b-transparent hover:border-b-primary border-b hover:border-solid"
+        @click="setSection(section.key)"
+      >
         {{ section.name }}
-      </a>
+      </button>
     </div>
     <SettingsSectionCompany
       v-if="!isSectionValues"

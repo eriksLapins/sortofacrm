@@ -1,5 +1,9 @@
 <template>
-  <dialog ref="dialog" class="max-h-[500px] overflow-y-scroll rounded-lg backdrop:opacity-50 backdrop:bg-black app-modal">
+  <dialog
+    ref="dialog"
+    class="max-h-[500px] overflow-y-scroll rounded-lg backdrop:opacity-50 backdrop:bg-black app-modal"
+    @keydown="(key) => key.key === 'Escape' ? modelValue = false : ''"
+  >
     <div class="bg-white p-4">
       <div v-if="$slots.header" class="h-12">
         <slot name="header" />
@@ -17,23 +21,19 @@ defineOptions({
     name: 'AppModal'
 });
 
-const props = defineProps<{
-    modelValue: boolean
-}>();
-
 const dialog = ref<HTMLDialogElement>();
-const dialogVisible = ref(false);
 
 function openCloseModal () {
-    if (dialogVisible.value) {
+    if (modelValue.value) {
         dialog.value?.showModal();
     } else {
         dialog.value?.close();
     }
 }
 
-watch(() => props.modelValue, (newValue) => {
-    dialogVisible.value = newValue;
+const modelValue = defineModel<boolean>({ default: false });
+
+watch(() => modelValue.value, () => {
     openCloseModal();
 });
 

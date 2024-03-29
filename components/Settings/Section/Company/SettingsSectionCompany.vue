@@ -39,9 +39,14 @@
       <div class="w-full flex gap-4 items-center">
         <AppModal v-model="openCompanyModal">
           <template #header>
-            <p class="text-lg font-bold">
-              Company info
-            </p>
+            <div class="flex justify-between">
+              <p class="text-lg font-bold">
+                Company info
+              </p>
+              <button @click="openCompanyModal = false">
+                <IClose class="size-4 text-primary" />
+              </button>
+            </div>
           </template>
           <SettingsSectionCompanyForm />
         </AppModal>
