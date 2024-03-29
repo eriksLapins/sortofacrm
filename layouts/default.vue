@@ -25,7 +25,7 @@ defineOptions({
 const NavItems = computed<NavItem[]>(() => [
     {
         name: 'Main',
-        path: '/'
+        path: '/dashboard'
     },
     {
         name: 'Data',

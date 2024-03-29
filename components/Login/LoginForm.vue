@@ -48,7 +48,7 @@ async function handleLogin () {
 
     if (response) {
         localStorage.setItem('auth-token', response.token);
-        navigateTo(config.public.base_url);
+        navigateTo(config.public.base_url + '/dashboard');
     }
 }
 
