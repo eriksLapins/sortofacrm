@@ -3,6 +3,16 @@ import bcrypt from 'bcryptjs';
 import { prisma } from '~db';
 
 export default defineCachedEventHandler(async (event) => {
+    const id = getRouterParam(event, 'id');
+    if (typeof id === 'undefined') {
+        throw createError({
+            status: 400,
+            statusMessage: 'Please provide a user',
+            data: {
+                user: { text: 'user id is missing' }
+            }
+        });
+    }
     const body: User = await readBody(event);
 
     const errors: Record<string, Record<string, string>> = {};
@@ -11,7 +21,7 @@ export default defineCachedEventHandler(async (event) => {
     try {
         currentUser = await prisma.user.findUnique({
             where: {
-                id: body.id
+                id: +id
             }
         });
     } catch (e) {
@@ -98,7 +108,7 @@ export default defineCachedEventHandler(async (event) => {
         try {
             const data = await prisma.user.update({
                 where: {
-                    id: body.id
+                    id: +id
                 },
                 data: {
                     ...body,

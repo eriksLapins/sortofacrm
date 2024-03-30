@@ -1,9 +1,9 @@
 import { prisma } from '~db';
 
 export default defineEventHandler(async (event) => {
-    const body = await readBody(event);
+    const id = getRouterParam(event, 'id');
 
-    if (!body.id) {
+    if (typeof id === 'undefined') {
         throw createError({
             status: 400,
             statusMessage: 'Please provide a user',
@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
     try {
         await prisma.user.delete({
             where: {
-                id: body.id
+                id: +id
             }
         });
     } catch (e) {
