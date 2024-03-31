@@ -13,10 +13,11 @@
       </div>
       <div class="flex gap-2 text-sm text-gray-text">
         <span>{{ user.email }}</span>
-        <span>{{ user.emailVerified ? format(new Date(user.emailVerified), 'yyyy-MM-dd') : 'Unverified' }}</span>
+        <span v-if="user.emailVerified" class="text-primary">{{ format(new Date(user.emailVerified), 'yyyy-MM-dd') }}</span>
+        <span v-else class="text-error-border bg-error-background rounded-lg px-1">Unverified</span>
       </div>
     </div>
-    <div class="separator" />
+    <hr>
     <div class="flex gap-4">
       <div class="rounded-full bg-cover size-20 overflow-hidden">
         <NuxtImg
@@ -29,7 +30,10 @@
         <p>Phone: {{ formattedPhone }}</p>
       </div>
     </div>
-    {{ user }}
+    <hr>
+    <div class="flex flex-col gap-4">
+      Company: {{ company }}
+    </div>
   </div>
   <div v-else class="pt-48 mx-auto">
     <LoadingAnimation large-size />
@@ -39,6 +43,7 @@
 <script setup lang="ts">
 import type { User } from '@prisma/client';
 import { format } from 'date-fns';
+import { useCompanyStore } from '~/store/companyStore';
 import { useDepartmentStore } from '~/store/departmentStore';
 
 defineOptions({
@@ -46,11 +51,11 @@ defineOptions({
 });
 
 const route = useRoute();
-const userId = route.params.id;
 const departmentStore = useDepartmentStore();
+const companyStore = useCompanyStore();
 
 const { data: user } = await useAsyncData(async () => {
-    const response = await $fetch(`/api/data/users/${userId}`);
+    const response = await $fetch(`/api/data/users/${route.params.id}`);
 
     const data = jsonParse(response.data) as Omit<User, 'password'> | undefined;
 
@@ -74,8 +79,16 @@ const department = computed(() => {
     }
 });
 
+const company = computed(() => {
+    const currentUser = user.value;
+    if (currentUser) {
+        return companyStore.companies.find(item => item.id === currentUser.clientCompanyId)?.legalName;
+    }
+});
+
 onMounted(() => {
     departmentStore.fetchAvailableDepartments();
+    companyStore.fetchAvailableCompanies();
 });
 
 </script>
