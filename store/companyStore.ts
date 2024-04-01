@@ -1,6 +1,6 @@
 import type { ClientCompany } from '@prisma/client';
 
-export const useCompanyStore = defineStore('company', () => {
+export const useClientCompanyStore = defineStore('clientCompany', () => {
     const companies = ref<ClientCompany[]>([]);
 
     async function fetchAvailableCompanies () {

@@ -43,7 +43,7 @@
 <script setup lang="ts">
 import type { User } from '@prisma/client';
 import { format } from 'date-fns';
-import { useCompanyStore } from '~/store/companyStore';
+import { useClientCompanyStore } from '~/store/companyStore';
 import { useDepartmentStore } from '~/store/departmentStore';
 
 defineOptions({
@@ -52,7 +52,7 @@ defineOptions({
 
 const route = useRoute();
 const departmentStore = useDepartmentStore();
-const companyStore = useCompanyStore();
+const companyStore = useClientCompanyStore();
 
 const { data: user } = await useAsyncData(async () => {
     const response = await $fetch(`/api/data/users/${route.params.id}`);
