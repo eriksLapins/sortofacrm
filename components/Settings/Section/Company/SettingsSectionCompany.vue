@@ -1,6 +1,6 @@
 <template>
   <div class="border w-full relative rounded-lg border-solid border-gray-text-disabled">
-    <table v-if="currentData?.length">
+    <table v-if="currentData?.length" class="w-full">
       <TableHead>
         <tr>
           <td class="text-center w-12">

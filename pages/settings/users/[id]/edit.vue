@@ -7,6 +7,9 @@
       class="max-w-12"
       disabled
     />
+    <UiUpload
+      v-model="form.image"
+    />
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <UiTextInput
         v-model="form.name"
