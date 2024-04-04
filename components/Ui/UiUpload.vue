@@ -26,17 +26,16 @@ onChange(async (files) => {
         return;
     }
     if (files.length) {
-        for (const file of files) {
-            const buffer = await file.arrayBuffer();
+        const formData = new FormData();
 
-            await $fetch('/api/files/upload', {
-                method: 'POST',
-                body: {
-                    buffer: { buffer },
-                    name: file.name
-                }
-            });
+        for (const file of files) {
+            formData.append(file.name, file);
         }
+
+        await $fetch('/api/files/upload', {
+            method: 'POST',
+            body: formData
+        });
     }
 });
 

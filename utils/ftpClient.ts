@@ -1,10 +1,9 @@
-import { writeFileSync } from 'fs';
+import { Dir, mkdirSync, opendirSync, rmSync, writeFileSync } from 'fs';
 import { Client } from 'basic-ftp';
 
 export async function ftpClient (localPath: string, remotePath: string) {
     const client = new Client();
     // client.ftp.verbose = true;
-
     try {
         await client.access({
             host: process.env.MY_HOST,
@@ -26,10 +25,11 @@ export async function ftpClient (localPath: string, remotePath: string) {
     return { success: true };
 }
 
-export async function ftpDirectClient (file: ArrayBuffer, fileName: string, remotePath: string) {
+export async function ftpDirectClient (files: FormData, remotePath: string) {
     const client = new Client();
     // client.ftp.verbose = true;
 
+    let dir;
     try {
         await client.access({
             host: process.env.MY_HOST,
@@ -37,14 +37,36 @@ export async function ftpDirectClient (file: ArrayBuffer, fileName: string, remo
             password: process.env.FTP_PASSWORD
         });
 
-        await client.ensureDir(remotePath);
-        const buffer = Buffer.from(new Uint8Array(file));
-        writeFileSync(`./temp/${fileName}`, buffer);
-        // await client.uploadFrom(result, remotePath);
-        // await client.cd('/');
+        try {
+            dir = opendirSync('./temp_files');
+        } catch {
+            dir = mkdirSync('./temp_files');
+        }
+
+        for (const file of files) {
+            const [
+                name,
+                entry
+            ] = file;
+
+            const buffer = await (entry as File).arrayBuffer();
+            const nodeBuffer = Buffer.from(buffer);
+            writeFileSync(`./temp_files/${name}`, nodeBuffer);
+            await client.ensureDir(remotePath);
+            await client.uploadFrom(`./temp_files/${name}`, remotePath + `/${name}`);
+        }
+
+        if (dir) {
+            (dir as Dir).close();
+        }
+        rmSync('./temp_files', { recursive: true, force: true });
     } catch (err) {
         console.log(err);
         client.close();
+        if (dir) {
+            (dir as Dir).close();
+        }
+        rmSync('./temp_files', { recursive: true, force: true });
 
         return { success: false };
     }
