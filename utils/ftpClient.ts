@@ -1,4 +1,5 @@
 import { Dir, mkdirSync, opendirSync, rmSync, writeFileSync } from 'fs';
+import { resolve } from 'path';
 import { Client } from 'basic-ftp';
 
 export async function ftpClient (localPath: string, remotePath: string) {
@@ -53,7 +54,10 @@ export async function ftpDirectClient (files: FormData, remotePath: string) {
             const nodeBuffer = Buffer.from(buffer);
             writeFileSync(`./temp_files/${name}`, nodeBuffer);
             await client.ensureDir(remotePath);
-            await client.uploadFrom(`./temp_files/${name}`, remotePath + `/${name}`);
+            const path = resolve('./temp_files');
+            client.ftp.verbose = true;
+
+            await client.uploadFromDir(path);
         }
 
         if (dir) {
