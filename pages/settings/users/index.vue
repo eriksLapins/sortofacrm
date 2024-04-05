@@ -28,23 +28,23 @@
           </tr>
         </TableHead>
         <tbody>
-          <TableRow v-for="user in companyUsers" :key="user.id">
-            <TableData class="text-center w-12" :to="`/settings/users/${user.id}`">
+          <TableRow v-for="user in companyUsers" :key="user.id" :link="`/settings/users/${user.id}`">
+            <TableData class="text-center w-12">
               {{ user.id }}
             </TableData>
             <TableData>
               <NuxtImg v-if="user.image" :src="user.image" width="50" height="50" class="bg-cover rounded-full mx-auto" />
             </TableData>
-            <TableData :to="`/settings/users/${user.id}`">
+            <TableData>
               {{ user.name }}
             </TableData>
-            <TableData :to="`/settings/users/${user.id}`">
+            <TableData>
               {{ user.lastname }}
             </TableData>
-            <TableData :to="`/settings/users/${user.id}`">
+            <TableData>
               {{ user.position }}
             </TableData>
-            <TableData :to="`/settings/users/${user.id}`">
+            <TableData>
               {{ findDepartmentName(user.departmentId) }}
             </TableData>
           </TableRow>
