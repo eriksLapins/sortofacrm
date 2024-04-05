@@ -3,17 +3,23 @@
     <UiButton
       @click.prevent="open"
     >
-      Change image
+      <slot />
     </UiButton>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useFileDialog } from '@vueuse/core';
+import { useUserStore } from '~/store/userStore';
+import type { FileReturnUser } from '~/types';
 
 defineOptions({
     name: 'UiUpload'
 });
+
+const userStore = useUserStore();
+
+const responseFiles = ref<FileReturnUser>();
 
 const { open, onChange } = useFileDialog({
     accept: 'image/*'
@@ -32,10 +38,16 @@ onChange(async (files) => {
             formData.append(file.name, file);
         }
 
-        await $fetch('/api/files/upload', {
+        const res = await $fetch(`/api/files/upload/${userStore.currentUserId}`, {
             method: 'POST',
-            body: formData
+            body: formData,
+            query: {
+                type: 'images'
+            }
         });
+
+        responseFiles.value = jsonParse(res.files)[0];
+        image.value = responseFiles.value.url;
     }
 });
 

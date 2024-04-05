@@ -7,9 +7,18 @@
       class="max-w-12"
       disabled
     />
-    <UiUpload
-      v-model="form.image"
-    />
+    <div class="flex gap-4 items-center">
+      <NuxtLink class="size-20 rounded-full overflow-hidden flex-shrink-0" :href="form.image || undefined" external target="_blank">
+        <img
+          :src="form.image || undefined"
+        >
+      </NuxtLink>
+      <UiUpload
+        v-model="form.image"
+      >
+        Change Image
+      </UiUpload>
+    </div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <UiTextInput
         v-model="form.name"

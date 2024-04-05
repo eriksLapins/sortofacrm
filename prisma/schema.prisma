@@ -224,6 +224,18 @@ model ModuleItems {
   @@index([module])
 }
 
+model Files {
+  id       Int    @id @default(autoincrement())
+  userId   Int
+  name     String
+  size     Float
+  type     String
+  fileType String
+  url      String
+
+  @@unique([name])
+}
+
 model Modules {
   id   Int    @id @default(autoincrement())
   key  String
