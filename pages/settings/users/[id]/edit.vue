@@ -2,8 +2,8 @@
   <div v-if="loading || !userStore" class="py-20">
     <LoadingAnimation large-size />
   </div>
-  <div v-else class="xl:container mx-auto px-4 flex flex-col gap-4 justify-between">
-    <form class="flex flex-col gap-4 py-20" @submit.prevent="onSubmit">
+  <div v-else class="lg:max-w-[700px] mx-auto px-4 flex flex-col gap-4 justify-between py-20">
+    <form class="flex flex-col gap-4" @submit.prevent="onSubmit">
       <div class="flex gap-4">
         <UiTextInput
           v-model="form.id"
