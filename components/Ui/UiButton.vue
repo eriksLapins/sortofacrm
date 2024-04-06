@@ -14,7 +14,8 @@
   </NuxtLink>
   <NuxtLink
     v-else-if="asLink"
-    :href="href"
+    :to="href"
+    :external
     class="font-semibold rounded hover:underline text-center"
     :class="{
       'text-primary' : secondary || !errorVariant,
@@ -63,6 +64,9 @@ defineProps({
     href: {
         type: String,
         default: undefined
+    },
+    external: {
+        type: Boolean
     }
 });
 </script>

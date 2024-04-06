@@ -14,11 +14,17 @@ export const useUserStore = defineStore('users', () => {
     const defaultDataset = ref('tasks');
 
     const fetchUsers = async () => {
-        const data = await $fetch('/api/data/users');
+        const { data } = await $fetch('/api/data/users');
 
-        const jsonData = JSON.parse(JSON.stringify(data));
+        availableUsers.value = jsonParse(data);
+    };
 
-        availableUsers.value = jsonData.data;
+    const fetchUser = async (id: number) => {
+        const { data } = await $fetch(`/api/data/users/${id}`);
+
+        const returnData = jsonParse(data) as Omit<User, 'password'> | undefined;
+
+        return returnData;
     };
 
     const loginUser = async (token: string | null) => {
@@ -40,11 +46,17 @@ export const useUserStore = defineStore('users', () => {
         } else {
             throw new Error('Invalid token, please log in again');
         }
+
+        const user = await fetchUser(currentUserId.value);
+
+        if (user) {
+            setUser(user);
+        }
     };
 
     const setUser = (user: Omit<User, 'password'>) => {
         currentUser.value = user;
-        isAdmin.value = currentUser.value.role === (ERole.ADMIN || ERole.SUPERADMIN);
+        isAdmin.value = currentUser.value.role === ERole.ADMIN || currentUser.value.role === ERole.SUPERADMIN;
         isSuperAdmin.value = currentUser.value.role === ERole.SUPERADMIN;
         isLoggedIn.value = true;
     };

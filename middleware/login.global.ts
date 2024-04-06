@@ -9,22 +9,22 @@ export default defineNuxtRouteMiddleware(async (to) => {
             try {
                 await useUserStore().loginUser(token.value);
 
-                if (to.path === '/login') {
-                    return navigateTo('/', {
+                if (to.path === '/') {
+                    return navigateTo('/dashboard', {
                         replace: true,
                         external: true
                     });
                 }
             } catch {
-                if (to.path !== '/login') {
-                    return navigateTo('/login?invalidToken', {
+                if (to.path !== '/') {
+                    return navigateTo('/?invalidToken', {
                         replace: true,
                         external: true
                     });
                 }
             }
-        } else if (to.path !== '/login') {
-            return navigateTo('/login', {
+        } else if (to.path !== '/') {
+            return navigateTo('/', {
                 replace: true,
                 external: true
             });

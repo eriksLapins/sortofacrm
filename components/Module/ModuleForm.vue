@@ -49,12 +49,12 @@
 
 <script setup lang="ts">
 import {
-UiCheckbox,
-UiDateSelect,
-UiMultiSelect,
-UiSelect,
-UiTextInput,
-UiTextInputArea
+    UiCheckbox,
+    UiDateSelect,
+    UiMultiSelect,
+    UiSelect,
+    UiTextInput,
+    UiTextInputArea
 } from '#components';
 import { useUserStore } from '~/store/userStore';
 import type { ModuleFieldsAdjusted, ModuleItemsAdjusted, MultiSelect } from '~/types';
@@ -116,7 +116,6 @@ async function createModuleItem () {
 
             form.value = data as unknown as ModuleItemsAdjusted;
         } catch (e: any) {
-            console.log(e);
             errors.value = e.data.data.errors;
         }
     } else {

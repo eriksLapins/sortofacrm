@@ -2,8 +2,25 @@ import { User } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { prisma } from '~db';
 
-export default defineCachedEventHandler(async (event) => {
-    const body: User = await readBody(event);
+export default defineEventHandler(async (event) => {
+    const id = getRouterParam(event, 'id');
+    if (typeof id === 'undefined') {
+        throw createError({
+            status: 400,
+            statusMessage: 'Please provide a user',
+            data: {
+                user: { text: 'user id is missing' }
+            }
+        });
+    }
+    const body: User | undefined = await readBody(event);
+    if (!body) {
+        throw createError({
+            status: 500,
+            statusText: 'Something went wrong, please try again later',
+            message: 'unhandled error at users update body'
+        });
+    }
 
     const errors: Record<string, Record<string, string>> = {};
 
@@ -11,7 +28,7 @@ export default defineCachedEventHandler(async (event) => {
     try {
         currentUser = await prisma.user.findUnique({
             where: {
-                id: body.id
+                id: +id
             }
         });
     } catch (e) {
@@ -80,7 +97,7 @@ export default defineCachedEventHandler(async (event) => {
         errors.phone = { text: 'Please enter a valid phone number' };
     }
 
-    if (errors) {
+    if (Object.keys(errors).length) {
         throw createError({
             status: 400,
             statusMessage: 'There were errors upon submission',
@@ -98,7 +115,7 @@ export default defineCachedEventHandler(async (event) => {
         try {
             const data = await prisma.user.update({
                 where: {
-                    id: body.id
+                    id: +id
                 },
                 data: {
                     ...body,
@@ -106,8 +123,14 @@ export default defineCachedEventHandler(async (event) => {
                 }
             });
 
+            const {
+                // eslint-disable-next-line
+                password,
+                ...returnData
+            } = data;
+
             return {
-                data
+                returnData
             };
         } catch (e) {
             throw createError({

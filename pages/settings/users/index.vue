@@ -28,12 +28,14 @@
           </tr>
         </TableHead>
         <tbody>
-          <TableRow v-for="user in companyUsers" :key="user.id">
+          <TableRow v-for="user in companyUsers" :key="user.id" :link="`/settings/users/${user.id}`">
             <TableData class="text-center w-12">
               {{ user.id }}
             </TableData>
             <TableData>
-              <NuxtImg v-if="user.image" :src="user.image" width="50" height="50" class="bg-cover rounded-full mx-auto" />
+              <div class="size-12 rounded-full mx-auto overflow-hidden">
+                <NuxtImg v-if="user.image" :src="user.image" width="50" height="50" class="object-cover h-full w-full" />
+              </div>
             </TableData>
             <TableData>
               {{ user.name }}
@@ -45,7 +47,7 @@
               {{ user.position }}
             </TableData>
             <TableData>
-              {{ user.departmentId }}
+              {{ findDepartmentName(user.departmentId) }}
             </TableData>
           </TableRow>
         </tbody>
@@ -58,6 +60,7 @@
 </template>
 
 <script setup lang="ts">
+import { useDepartmentStore } from '~/store/departmentStore';
 
 defineOptions({
     name: 'SettingsUsers'
@@ -76,8 +79,18 @@ const { data: users } = await useAsyncData(async () => {
     };
 });
 
+const departments = useDepartmentStore().departments;
+
+function findDepartmentName (id: number) {
+    return departments.find(department => department.id === id)?.name || 'None';
+}
+
 const companyUsers = computed(() => {
     return users.value?.data;
+});
+
+onMounted(async () => {
+    await useDepartmentStore().fetchAvailableDepartments();
 });
 
 </script>

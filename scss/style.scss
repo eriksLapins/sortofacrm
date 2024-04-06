@@ -1,1 +1,18 @@
 @use "theme/variables";
+@import "~/scss/theme/variables";
+
+.scrollbar-track {
+  &::-webkit-scrollbar {
+    width: 0.25rem;
+  }
+
+  &::-webkit-scrollbar-track {
+    width: 0.25rem;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    width: 0.25rem;
+    background-color: $color-gray-primary;
+    border-radius: 0.125rem;
+  }
+}

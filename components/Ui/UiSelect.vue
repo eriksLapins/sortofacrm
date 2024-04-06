@@ -117,11 +117,13 @@ watch(() => props.items, (newValue) => {
     if (!setValue.value) {
         setValue.value = mapKeyToValue(modelValue.value, newValue) || null;
     }
-});
+}, { deep: true });
 
 watch(() => modelValue.value, (newValue) => {
     error.value = undefined;
-    if (props.items.length === 1) {
+    if (newValue) {
+        setValue.value = mapKeyToValue(newValue, props.items) || null;
+    } else if (props.items.length === 1) {
         setValue.value = props.items[0].title;
     } else if (!newValue) {
         setValue.value = null;
