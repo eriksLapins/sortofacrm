@@ -33,7 +33,9 @@
               {{ user.id }}
             </TableData>
             <TableData>
-              <NuxtImg v-if="user.image" :src="user.image" width="50" height="50" class="bg-cover rounded-full mx-auto" />
+              <div class="size-12 rounded-full mx-auto overflow-hidden">
+                <NuxtImg v-if="user.image" :src="user.image" width="50" height="50" class="object-cover h-full w-full" />
+              </div>
             </TableData>
             <TableData>
               {{ user.name }}

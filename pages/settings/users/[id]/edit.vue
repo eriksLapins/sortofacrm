@@ -2,15 +2,26 @@
   <div v-if="loading || !userStore" class="py-20">
     <LoadingAnimation large-size />
   </div>
-  <div v-else class="h-[700px] xl:container mx-auto px-4 flex flex-col gap-4 justify-between">
+  <div v-else class="xl:container mx-auto px-4 flex flex-col gap-4 justify-between">
     <form class="flex flex-col gap-4 py-20" @submit.prevent="onSubmit">
-      <UiTextInput
-        v-model="form.id"
-        name="id"
-        label="ID"
-        class="max-w-12"
-        disabled
-      />
+      <div class="flex gap-4">
+        <UiTextInput
+          v-model="form.id"
+          name="id"
+          label="ID"
+          class="max-w-12"
+          disabled
+        />
+        <ClientOnly>
+          <UiSelect
+            v-if="userStore.isAdmin"
+            v-model="form.role"
+            name="role"
+            label="CRM Role"
+            :items="roleSelection"
+          />
+        </ClientOnly>
+      </div>
       <div class="flex gap-4 items-center">
         <NuxtLink
           class="size-20 rounded-full overflow-hidden flex justify-center items-center flex-shrink-0"
@@ -93,11 +104,10 @@
         label="Position"
       />
       <UiSelect
-        v-if="userStore.isAdmin"
-        v-model="form.role"
-        name="role"
-        label="CRM Role"
-        :items="roleSelection"
+        v-model="form.departmentId"
+        :items="availableDepartments"
+        label="Department"
+        name="department"
       />
     </form>
     <div class="flex justify-start gap-4">
@@ -120,6 +130,7 @@
 <script setup lang="ts">
 import { ERole, type Files, type User } from '@prisma/client';
 import UiFileWindow from '~/components/Ui/UiFileWindow.vue';
+import { useDepartmentStore } from '~/store/departmentStore';
 import { useUserStore } from '~/store/userStore';
 import type { MultiSelect } from '~/types';
 
@@ -132,20 +143,19 @@ const userStore = useUserStore();
 const loading = ref(false);
 const errors = ref<Record<string, any>>({});
 const showFileModal = ref(false);
+const departmentStore = useDepartmentStore();
 
-const { execute } = await useAsyncData(async () => {
-    const response = await $fetch(`/api/data/users/${route.params.id}`);
-
-    const data = jsonParse(response.data) as Omit<User, 'password'> | undefined;
-
-    if (data) {
-        form.value = {
-            ...data,
-            id: data.id.toString() as unknown as number
+const availableDepartments = computed(() => {
+    const deparmentsList: MultiSelect[] = departmentStore.departments.map((item, i) => {
+        return {
+            key: item.id,
+            title: item.name,
+            position: i,
+            visible: true
         };
-    }
+    });
 
-    return data;
+    return deparmentsList;
 });
 
 const form = ref<Omit<User, 'password'>>({
@@ -164,6 +174,21 @@ const form = ref<Omit<User, 'password'>>({
     role: ERole.USER,
     image: ''
 });
+
+const { data } = await useAsyncData(async () => {
+    const response = await $fetch(`/api/data/users/${route.params.id}`);
+
+    const data = jsonParse(response.data) as Omit<User, 'password'> | undefined;
+
+    return data;
+});
+
+if (data.value) {
+    form.value = {
+        ...data.value,
+        id: data.value.id.toString() as unknown as number
+    };
+}
 
 const profileImages = ref<Files[]>([]);
 
@@ -214,6 +239,7 @@ const onSubmit = async () => {
     loading.value = false;
 };
 
-onMounted(() => execute());
-
+onMounted(() => {
+    departmentStore.fetchAvailableDepartments();
+});
 </script>

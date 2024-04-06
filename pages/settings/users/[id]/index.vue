@@ -19,9 +19,10 @@
     </div>
     <hr>
     <div class="flex gap-4">
-      <div class="rounded-full bg-cover size-20 overflow-hidden">
+      <div class="rounded-full size-20 overflow-hidden">
         <NuxtImg
           :src="user.image || undefined"
+          class="w-full h-full object-cover"
         />
       </div>
       <div class="flex flex-col gap-1">
