@@ -20,8 +20,9 @@ async function checkExistsFile (userId: number, name: string) {
 async function generateName (id: number, name: string): Promise<string> {
     let run = true;
     let i = 1;
-    const fileName = name.split('.')[0];
-    const extension = name.split('.')[1];
+    const nameArray = name.split('.');
+    const fileName = nameArray.shift();
+    const extension = nameArray.join('.');
     let newName = name;
     while (run) {
         const exists = await checkExistsFile(id, newName);
@@ -73,7 +74,7 @@ export default defineEventHandler(async (event): Promise<{files: Files[]}> => {
                 for (const file of res.files) {
                     files.push({
                         name: file.name,
-                        fileType: query.type as 'image' | 'file',
+                        fileType: query.type as 'images' | 'files',
                         size: file.size,
                         type: file.type,
                         url: file.url,

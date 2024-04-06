@@ -22,6 +22,7 @@ const props = defineProps<{
   modelValue: Files[];
   userId?: number;
   multiple?: boolean;
+  acceptedFileTypes?: string;
 }>();
 
 const emit = defineEmits<{
@@ -32,7 +33,7 @@ const userStore = useUserStore();
 const loading = ref(false);
 
 const { open, onChange } = useFileDialog({
-    accept: 'image/*',
+    accept: props.acceptedFileTypes || 'image/*',
     multiple: props.multiple || false
 });
 
@@ -68,7 +69,6 @@ async function onSubmit (overwrite: boolean) {
                     overwrite: overwrite && true
                 }
             });
-
             syncedFiles.value = jsonParse(res.files);
         } catch (e) {
             console.log(e);

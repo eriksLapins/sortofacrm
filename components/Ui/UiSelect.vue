@@ -121,7 +121,9 @@ watch(() => props.items, (newValue) => {
 
 watch(() => modelValue.value, (newValue) => {
     error.value = undefined;
-    if (props.items.length === 1) {
+    if (newValue) {
+        setValue.value = newValue.toString();
+    } else if (props.items.length === 1) {
         setValue.value = props.items[0].title;
     } else if (!newValue) {
         setValue.value = null;

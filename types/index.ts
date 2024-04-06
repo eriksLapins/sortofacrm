@@ -1,6 +1,6 @@
 export * from './AdditionalsJson';
 export * from './Errors';
-export * from './FileReturn';
+export * from './FileTypes';
 export * from './MappedTasks';
 export * from './ModuleFields';
 export * from './ModuleItems';

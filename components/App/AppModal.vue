@@ -1,10 +1,10 @@
 <template>
   <dialog
     ref="dialog"
-    class="max-h-[500px] overflow-y-scroll rounded-lg backdrop:opacity-50 backdrop:bg-black app-modal"
+    class="rounded-lg backdrop:opacity-50 backdrop:bg-black overflow-hidden"
     @keydown="(key) => key.key === 'Escape' ? modelValue = false : ''"
   >
-    <div class="bg-white p-4">
+    <div class="bg-white p-4 flex flex-col">
       <div v-if="$slots.header" class="h-12">
         <slot name="header" />
       </div>
@@ -42,22 +42,3 @@ onMounted(() => {
 });
 
 </script>
-
-<style lang="scss">
-@import "~/scss/theme/variables";
-.app-modal {
-  &::-webkit-scrollbar {
-    width: 0.25rem;
-  }
-
-  &::-webkit-scrollbar-track {
-    width: 0.25rem;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    width: 0.25rem;
-    background-color: $color-gray-primary;
-    border-radius: 0.125rem;
-  }
-}
-</style>

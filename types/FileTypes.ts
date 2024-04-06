@@ -3,7 +3,7 @@ import type { Files } from '@prisma/client';
 export type FileReturn = {
     name: string,
     size: number,
-    fileType: 'image' | 'file',
+    fileType: 'images' | 'files',
     type: string,
     url: string,
 }
@@ -14,3 +14,10 @@ export type FileReturnUser = {
     files: Files[],
     existingFiles: Files[]
 };
+
+export type FileQuery = {
+        id?: number,
+        name?: string,
+        fileType?: 'images' | 'files',
+        userId?: number,
+}

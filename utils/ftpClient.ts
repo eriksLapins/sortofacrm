@@ -37,7 +37,7 @@ export async function ftpClient (files: FormData, remotePath: string): Promise<{
                 name,
                 size: entry.size,
                 type: entry.type,
-                fileType: entry.type.includes('image') ? 'image' : 'file',
+                fileType: entry.type.includes('images') ? 'images' : 'files',
                 url: process.env.NUXT_PUBLIC_IMAGE_PATH + remotePath.replace('/public_html', '') + `/${name}`
             });
         }
