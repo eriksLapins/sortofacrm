@@ -1,6 +1,8 @@
 <template>
   <div>
+    <LoadingAnimation v-if="loading" />
     <UiButton
+      v-else
       @click.prevent="open"
     >
       <slot />
@@ -9,46 +11,69 @@
 </template>
 
 <script setup lang="ts">
+import type { Files } from '@prisma/client';
 import { useFileDialog } from '@vueuse/core';
 import { useUserStore } from '~/store/userStore';
-import type { FileReturnUser } from '~/types';
 
 defineOptions({
     name: 'UiUpload'
 });
+const props = defineProps<{
+  modelValue: Files[];
+  userId?: number;
+  multiple?: boolean;
+}>();
+
+const emit = defineEmits<{
+  'update:modelValue': [files: Files[]]
+}>();
 
 const userStore = useUserStore();
-
-const responseFiles = ref<FileReturnUser>();
+const loading = ref(false);
 
 const { open, onChange } = useFileDialog({
-    accept: 'image/*'
+    accept: 'image/*',
+    multiple: props.multiple || false
 });
 
-const image = defineModel<string | null>();
+const syncedFiles = computed({
+    get: () => props.modelValue,
+    set: payload => emit('update:modelValue', payload)
+});
+const fileList = ref<FileList | null>(null);
 
 onChange(async (files) => {
-    if (!files) {
+    fileList.value = files;
+    await onSubmit(false);
+});
+
+async function onSubmit (overwrite: boolean) {
+    loading.value = true;
+    if (!fileList.value) {
         return;
     }
-    if (files.length) {
+    if (fileList.value.length) {
         const formData = new FormData();
 
-        for (const file of files) {
+        for (const file of fileList.value) {
             formData.append(file.name, file);
         }
 
-        const res = await $fetch(`/api/files/upload/${userStore.currentUserId}`, {
-            method: 'POST',
-            body: formData,
-            query: {
-                type: 'images'
-            }
-        });
+        try {
+            const res = await $fetch(`/api/files/upload/${props.userId || userStore.currentUserId}`, {
+                method: 'POST',
+                body: formData,
+                query: {
+                    type: 'images',
+                    overwrite: overwrite && true
+                }
+            });
 
-        responseFiles.value = jsonParse(res.files)[0];
-        image.value = responseFiles.value.url;
+            syncedFiles.value = jsonParse(res.files);
+        } catch (e) {
+            console.log(e);
+        }
     }
-});
-
+    loading.value = false;
+}
 </script>

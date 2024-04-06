@@ -233,7 +233,7 @@ model Files {
   fileType String
   url      String
 
-  @@unique([name])
+  @@unique([name, userId])
 }
 
 model Modules {

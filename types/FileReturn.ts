@@ -7,4 +7,10 @@ export type FileReturn = {
     type: string,
     url: string,
 }
-export type FileReturnUser = Omit<Files, 'id'>;
+
+export type FileCreate = Omit<Files, 'id'>;
+
+export type FileReturnUser = {
+    files: Files[],
+    existingFiles: Files[]
+};

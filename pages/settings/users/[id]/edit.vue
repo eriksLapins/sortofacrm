@@ -1,5 +1,6 @@
 <template>
-  <form class="xl:container mx-auto px-4 flex flex-col gap-4 py-20">
+  <LoadingAnimation v-if="loading" />
+  <form v-else class="xl:container mx-auto px-4 flex flex-col gap-4 py-20" @submit.prevent="onSubmit">
     <UiTextInput
       v-model="form.id"
       name="id"
@@ -8,13 +9,20 @@
       disabled
     />
     <div class="flex gap-4 items-center">
-      <NuxtLink class="size-20 rounded-full overflow-hidden flex-shrink-0" :href="form.image || undefined" external target="_blank">
+      <NuxtLink
+        class="size-20 rounded-full overflow-hidden flex justify-center items-center flex-shrink-0"
+        :href="form.image || undefined"
+        external
+        target="_blank"
+      >
         <img
           :src="form.image || undefined"
+          class="object-cover w-full h-full"
         >
       </NuxtLink>
       <UiUpload
-        v-model="form.image"
+        v-model="profileImages"
+        @update:model-value="(files) => form.image = files[0].url"
       >
         Change Image
       </UiUpload>
@@ -71,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-import { ERole, type User } from '@prisma/client';
+import { ERole, type Files, type User } from '@prisma/client';
 import { useUserStore } from '~/store/userStore';
 import type { MultiSelect } from '~/types';
 
@@ -115,6 +123,8 @@ const form = ref<Omit<User, 'password'>>({
     role: ERole.USER,
     image: ''
 });
+
+const profileImages = ref<Files[]>([]);
 
 const roleSelection = computed((): MultiSelect[] => {
     return [
