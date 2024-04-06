@@ -82,7 +82,7 @@ const { data: users } = await useAsyncData(async () => {
 const departments = useDepartmentStore().departments;
 
 function findDepartmentName (id: number) {
-    return departments.find(department => department.id === id) || 'None';
+    return departments.find(department => department.id === id)?.name || 'None';
 }
 
 const companyUsers = computed(() => {
