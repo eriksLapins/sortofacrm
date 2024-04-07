@@ -16,7 +16,7 @@
           <UiButton :href="`/datasets/${currentModule}/create`" as-link-button text="Create" />
         </div>
         <PageContent
-          :title="modules.find(item => item.key === currentModule)?.name"
+          :title="currentModule.toUpperCase()"
         >
           <div class="flex gap-4 flex-col md:flex-row justify-between">
             <UiMultiSelect
@@ -42,7 +42,7 @@
           <TablePreview
             v-if="tableItems.length"
             :data-json="tableItems"
-            module="tasks"
+            :module="currentModule"
           />
           <div v-else>
             No items matching the criteria
@@ -59,7 +59,8 @@
 <script setup lang="ts">
 import { type ModuleItems, type Modules } from '@prisma/client';
 import { useUserStore } from '~/store/userStore';
-import type { MultiSelect, TableItems } from '~/types';
+import type { MultiSelect, Preferences, TableItems } from '~/types';
+import { unwrapModuleData } from '~/types/unwrapModuleData';
 import jsonParse from '~/utils/jsonParse';
 const userStore = useUserStore();
 
@@ -73,7 +74,7 @@ const route = useRoute();
 const modules = ref<Modules[]>([]);
 
 const currentModule = computed(() => {
-    return route.params.module;
+    return route.params.module as string;
 });
 
 async function fetchModuleItems () {
@@ -124,16 +125,27 @@ const columnList = ref<MultiSelect[]>([]);
 
 const tableItems = computed(() => {
     if (moduleItems.value?.length) {
-        const newModuleItems = moduleItems.value?.map((task: Record<string, any>) => {
-            const id = task.id;
-            const object: TableItems[] = [];
-            columns.value.forEach((value) => {
-                object.push({
-                    ref_id: id,
-                    title: value,
-                    data: task[value],
-                    position: columnList.value.find(item => item.title === value)?.position
-                });
+        const newModuleItems = moduleItems.value?.map((item: ModuleItems) => {
+            const id = item.id;
+            let object: TableItems[] = [];
+            columns.value.forEach((value: string) => {
+                if (value === 'data') {
+                    const data = unwrapModuleData(item, columnList.value);
+                    if (data) {
+                        const tempObject = [...object];
+                        object = [
+                            ...tempObject,
+                            ...data
+                        ];
+                    }
+                } else {
+                    object.push({
+                        ref_id: id,
+                        title: value,
+                        data: item[value as keyof ModuleItems],
+                        position: columnList.value.find(item => item.title === value)?.position
+                    });
+                }
             });
 
             return object;
@@ -189,30 +201,30 @@ onBeforeMount(async () => {
     loading.value = true;
     await getAvailableModules();
     await fetchModuleItems();
-    // await userStore.fetchUserPreferences(currentModule.value as unknown as string);
-    // if (tasks.value) {
-    //   columns.value = Object.keys(tasks.value[0]);
-    //   if (tasks.value) {
-    //     const taskItems = Object.keys(tasks.value[0]);
+    await userStore.fetchUserPreferences(currentModule.value as unknown as string);
+    if (moduleItems.value) {
+        columns.value = Object.keys(moduleItems.value[0]);
+        if (moduleItems.value) {
+            const taskItems = Object.keys(moduleItems.value[0]);
 
-    //     columnList.value = taskItems.map((item) => {
-    //       const index = taskItems.findIndex(value => value === item);
+            columnList.value = taskItems.map((item) => {
+                const index = taskItems.findIndex(value => value === item);
 
-    //       return {
-    //         key: item,
-    //         title: item,
-    //         position: index,
-    //         visible: columns.value.includes(item)
-    //       };
-    //     });
-    //     initialColumns.value = columnList.value.map(item => item);
-    //   }
-    // }
-    // if (userStore.userPreferences.tasks?.Columns?.length) {
-    //   columnList.value = userStore.userPreferences.tasks.Columns;
-    //   columns.value = columnList.value.filter((item: Preferences) => item.visible).map(item => item.title);
-    //   initialColumns.value = columnList.value.map(item => item);
-    // }
+                return {
+                    key: item,
+                    title: item,
+                    position: index,
+                    visible: columns.value.includes(item)
+                };
+            });
+            initialColumns.value = columnList.value.map(item => item);
+        }
+    }
+    if (userStore.userPreferences.tasks?.Columns?.length) {
+        columnList.value = userStore.userPreferences.tasks.Columns;
+        columns.value = columnList.value.filter((item: Preferences) => item.visible).map(item => item.title);
+        initialColumns.value = columnList.value.map(item => item);
+    }
     loading.value = false;
 });
 

@@ -11,7 +11,7 @@ export default defineEventHandler(async (event): Promise<{data: ModuleItems} | E
         errors.form = { title: 'Title is required' };
     }
 
-    if (errors) {
+    if (Object.keys(errors).length) {
         throw createError({
             status: 400,
             data: {
