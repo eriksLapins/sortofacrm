@@ -83,7 +83,7 @@
               :hide-cross="!field.type || fieldValueTypeMap[field.type].length === 1"
               :errors="formErrors.data?.fields[field.key]?.valueType"
             />
-            <div v-if="getAdditionalFieldType(field.type, field.valueType)?.name === 'arrayValueType'">
+            <div v-if="getAdditionalFieldType(field.type, field.valueType)?.name === 'arrayValueType'" class="flex flex-col gap-2">
               <UiSelect
                 v-model="field.additional.arrayValueType"
                 :items="fieldValueItemsArrayType"
@@ -96,7 +96,26 @@
                 label="Multiselect?"
               />
             </div>
+            <div v-if="field.type === 'fileUpload' || field.type === 'imageUpload'" class="flex gap-4">
+              <UiTextInput
+                v-model="field.additional.maxFileSizeMb"
+                :name="`field-addditionals-${field.type}-${field.valueType}-max-size-${index}`"
+                :label="getAdditionalFieldType(field.type, field.valueType)?.inputLabel"
+                type="number"
+              />
+              <UiTextInput
+                v-model="field.additional.buttonTitle"
+                :name="`field-addditionals-${field.type}-${field.valueType}-button-title-${index}`"
+                label="Button title"
+              />
+              <UiCheckbox
+                v-model="field.additional.multipleFiles"
+                :name="`field-addditionals-${field.type}-${field.valueType}-multiple-${index}`"
+                label="Multiple?"
+              />
+            </div>
 
+            <!-- @vue-ignore -->
             <UiTextInput
               v-else-if="
                 getAdditionalFieldType(field.type, field.valueType)

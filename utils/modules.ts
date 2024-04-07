@@ -91,7 +91,7 @@ export const additionalsTypeMap: AdditionalsTypeMapType = {
         }
     },
     imageUpload: {
-        blob: {
+        file: {
             name: 'maxFileSizeMb',
             helper: 'Maximum allowed image size in MB',
             inputLabel: 'Max image size in MB'

@@ -8,4 +8,6 @@ export type AdditionalsJson = {
     textPrepend?: string,
     maxFileSizeMb?: number,
     multiselect?: boolean,
+    multipleFiles?: boolean,
+    buttonTitle?: string;
 }

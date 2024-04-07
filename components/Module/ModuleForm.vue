@@ -54,7 +54,8 @@ import {
     UiMultiSelect,
     UiSelect,
     UiTextInput,
-    UiTextInputArea
+    UiTextInputArea,
+    UiUpload
 } from '#components';
 import { useUserStore } from '~/store/userStore';
 import type { ModuleFieldsAdjusted, ModuleItemsAdjusted, MultiSelect } from '~/types';
@@ -193,6 +194,22 @@ function getFieldComponent (field: ModuleFieldsAdjusted) {
         props = {
             name: field.key,
             label: field.title
+        };
+    }
+    if (field.type === 'fileUpload') {
+        component = UiUpload;
+        props = {
+            name: field.key,
+            label: field.additional.buttonTitle,
+            multiple: field.additional.multipleFiles
+        };
+    }
+    if (field.type === 'imageUpload') {
+        component = UiUpload;
+        props = {
+            name: field.key,
+            label: field.additional.buttonTitle,
+            multiple: field.additional.multipleFiles
         };
     }
 

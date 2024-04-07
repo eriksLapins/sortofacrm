@@ -17,7 +17,7 @@ const fieldValueTypeMap: Record<EFieldType, EFieldValueType[]> = {
     email: ['string'],
     password: ['string'],
     fileUpload: ['file'],
-    imageUpload: ['blob']
+    imageUpload: ['file']
 };
 
 export default fieldValueTypeMap;

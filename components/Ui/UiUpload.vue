@@ -5,7 +5,10 @@
       v-else
       @click.prevent="open"
     >
-      <slot />
+      <span v-if="label">{{ label }}</span>
+      <div v-else>
+        <slot />
+      </div>
     </UiButton>
   </div>
 </template>
@@ -23,6 +26,8 @@ const props = defineProps<{
   userId?: number;
   multiple?: boolean;
   acceptedFileTypes?: string;
+  label?: string;
+
 }>();
 
 const emit = defineEmits<{
