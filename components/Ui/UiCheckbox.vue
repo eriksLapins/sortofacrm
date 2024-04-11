@@ -1,15 +1,22 @@
 <template>
-  <div class="flex gap-2 items-center">
+  <div
+    class="flex gap-2 items-center"
+    :class="{
+      'pointer-events-none': disabled
+    }"
+  >
     <input
       :id="name"
       v-model="value"
       type="checkbox"
       :name="name"
-      class="w-4 h-4 border-solid border-primary border-2 rounded-md checked:bg-primary hover:cursor-pointer hover:bg-primary hover:bg-opacity-30 text-white flex justify-center items-center text-base leading-none"
+      class="w-4 h-4 border-solid border-2 rounded-md text-white flex justify-center items-center text-base leading-none"
       :class="{
         'checkbox--checked' : symbol === 'check',
         'checkbox--question' : symbol === 'question',
         'checkbox--cross' : symbol === 'cross',
+        'border-primary checked:bg-primary hover:cursor-pointer hover:bg-primary hover:bg-opacity-30': !disabled,
+        'border-gray-text-disabled checked:bg-gray-text': disabled
       }"
     >
     <label :for="name">{{ label }}</label>
@@ -19,32 +26,29 @@
 <script setup lang="ts">
 
 defineOptions({
-  name: 'UICheckbox'
+    name: 'UICheckbox'
 });
 const emit = defineEmits(['update:modelValue']);
 
-const props = defineProps({
-  modelValue: {
-    type: Boolean,
-    default: false
-  },
-  name: {
-    type: String,
-    required: true
-  },
-  label: {
-    type: String,
-    default: undefined
-  },
-  symbol: {
-    type: String as PropType<'check' | 'cross' | 'question'>,
-    default: 'check'
-  }
-});
+const props = withDefaults(
+    defineProps<{
+      modelValue: boolean;
+      name: string;
+      label?: string;
+      symbol?: 'check' | 'cross' | 'question';
+      disabled?: boolean;
+    }>(),
+    {
+        modelValue: false,
+        label: undefined,
+        symbol: 'check',
+        disabled: false
+    }
+);
 
 const value = computed({
-  get: () => props.modelValue,
-  set: value => emit('update:modelValue', value)
+    get: () => props.modelValue,
+    set: value => emit('update:modelValue', value)
 });
 </script>
 

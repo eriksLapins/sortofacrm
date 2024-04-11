@@ -30,35 +30,25 @@ defineOptions({
 });
 const emit = defineEmits(['update:modelValue']);
 
-const props = defineProps({
-    modelValue: {
-        type: String as PropType<string | number | null | undefined>,
-        default: null
-    },
-    name: {
-        type: String,
-        required: true
-    },
-    label: {
-        type: String,
-        default: undefined
-    },
-    autocomplete: {
-        type: String,
-        default: undefined
-    },
-    type: {
-        type: String,
-        default: 'text'
-    },
-    errors: {
-        type: String,
-        default: undefined
-    },
-    disabled: {
-        type: Boolean
+const props = withDefaults(
+    defineProps<{
+        modelValue: string | number | null | undefined;
+        name: string;
+        label?: string;
+        autocomplete?: string;
+        type?: string;
+        errors?: string;
+        disabled?: boolean;
+    }>(),
+    {
+        modelValue: null,
+        label: undefined,
+        autocomplete: undefined,
+        type: 'text',
+        errors: undefined,
+        disabled: false
     }
-});
+);
 
 const error = ref(props.errors);
 

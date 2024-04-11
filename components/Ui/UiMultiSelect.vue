@@ -322,7 +322,7 @@ watch(() => props.items, (newValue) => {
         options.value = newValue;
         currentArray.value = mapArrayKeyToValue(props.modelValue, newValue) as string[] || null;
     }
-});
+}, { deep: true });
 
 </script>
 

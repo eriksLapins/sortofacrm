@@ -20,7 +20,7 @@
         >
           <div class="flex gap-4 flex-col md:flex-row justify-between">
             <UiMultiSelect
-              v-if="columns.length"
+              v-if="columnList.length"
               v-model="columns"
               :items="columnList"
               :initial-items="initialColumns"
@@ -47,6 +47,7 @@
           <div v-else>
             No items matching the criteria
           </div>
+          {{ columnList }}
         </PageContent>
       </div>
       <template #fallback>
@@ -59,12 +60,12 @@
 <script setup lang="ts">
 import { type ModuleItems, type Modules } from '@prisma/client';
 import { useUserStore } from '~/store/userStore';
-import type { MultiSelect, Preferences, TableItems } from '~/types';
-import { unwrapModuleData } from '~/types/unwrapModuleData';
+import type { ModuleFieldsAdjusted, MultiSelect, TableItems } from '~/types';
 import jsonParse from '~/utils/jsonParse';
 const userStore = useUserStore();
 
 const moduleItems = ref<ModuleItems[]>();
+const moduleFields = ref<ModuleFieldsAdjusted[]>();
 const loading = ref(false);
 const columnsSaving = ref(false);
 const initialColumns = ref<MultiSelect[]>([]);
@@ -119,6 +120,14 @@ async function getAvailableModules () {
     modules.value = jsonModules;
 }
 
+async function fetchModuleFields () {
+    const data = await $fetch(`/api/data/${currentModule.value}/field`);
+
+    const jsonModuleFields = jsonParse(data.data);
+
+    moduleFields.value = jsonModuleFields;
+}
+
 const columns = ref<string[]>([]);
 
 const columnList = ref<MultiSelect[]>([]);
@@ -127,26 +136,29 @@ const tableItems = computed(() => {
     if (moduleItems.value?.length) {
         const newModuleItems = moduleItems.value?.map((item: ModuleItems) => {
             const id = item.id;
-            let object: TableItems[] = [];
+            const object: TableItems[] = [];
             columns.value.forEach((value: string) => {
-                if (value === 'data') {
-                    const data = unwrapModuleData(item, columnList.value);
-                    if (data) {
-                        const tempObject = [...object];
-                        object = [
-                            ...tempObject,
-                            ...data
-                        ];
-                    }
-                } else {
-                    object.push({
-                        ref_id: id,
-                        title: value,
-                        data: item[value as keyof ModuleItems],
-                        position: columnList.value.find(item => item.title === value)?.position
-                    });
-                }
+                object.push({
+                    ref_id: id,
+                    title: value,
+                    data: item[value as keyof ModuleItems],
+                    position: columnList.value.find(item => item.key === value)?.position
+                });
             });
+
+            const itemData = item.data as Object;
+            if (itemData) {
+                columns.value.forEach((value: string) => {
+                    if (Object.keys(itemData).includes(value)) {
+                        object.push({
+                            ref_id: id,
+                            title: value,
+                            data: itemData[value as keyof typeof itemData],
+                            position: columnList.value.find(item => item.key === value)?.position
+                        });
+                    }
+                });
+            }
 
             return object;
         });
@@ -169,7 +181,7 @@ async function handleSaveColumns (items: MultiSelect[]) {
     initialColumns.value = [...items];
     columnList.value = [...items];
     const mappedItems = items.map((column) => {
-        if (columns.value.includes(column.title)) {
+        if (columns.value.includes(column.key as string)) {
             return {
                 ...column,
                 visible: true
@@ -201,28 +213,23 @@ onBeforeMount(async () => {
     loading.value = true;
     await getAvailableModules();
     await fetchModuleItems();
+    await fetchModuleFields();
     await userStore.fetchUserPreferences(currentModule.value as unknown as string);
-    if (moduleItems.value) {
-        columns.value = Object.keys(moduleItems.value[0]);
-        if (moduleItems.value) {
-            const taskItems = Object.keys(moduleItems.value[0]);
-
-            columnList.value = taskItems.map((item) => {
-                const index = taskItems.findIndex(value => value === item);
-
-                return {
-                    key: item,
-                    title: item,
-                    position: index,
-                    visible: columns.value.includes(item)
-                };
-            });
-            initialColumns.value = columnList.value.map(item => item);
-        }
+    if (moduleFields.value) {
+        columns.value = moduleFields.value.map(item => item.key);
+        columnList.value = moduleFields.value.map((item, i) => {
+            return {
+                key: item.key,
+                title: item.title,
+                position: i,
+                visible: columns.value.includes(item.key)
+            };
+        });
+        initialColumns.value = columnList.value.map(item => item);
     }
-    if (userStore.userPreferences.tasks?.Columns?.length) {
-        columnList.value = userStore.userPreferences.tasks.Columns;
-        columns.value = columnList.value.filter((item: Preferences) => item.visible).map(item => item.title);
+    if (userStore.userPreferences[currentModule.value]?.Columns?.length) {
+        columnList.value = userStore.userPreferences[currentModule.value].Columns;
+        columns.value = columnList.value.filter(value => value.visible).map(item => item.title);
         initialColumns.value = columnList.value.map(item => item);
     }
     loading.value = false;

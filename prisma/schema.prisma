@@ -218,8 +218,6 @@ model ModuleItems {
   updatedOn   DateTime @updatedAt
   module      String
   data        Json
-  title       String   @db.VarChar(100)
-  description String?  @db.Text
 
   @@index([module])
 }

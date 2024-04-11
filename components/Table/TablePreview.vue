@@ -65,11 +65,6 @@ const tableHeadOptions = computed(() => {
 
     return [];
 });
-
-watch(() => props.dataJson, (newData) => {
-    table.value = newData;
-});
-
 </script>
 
 <style lang="scss">
