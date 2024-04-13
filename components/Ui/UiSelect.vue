@@ -54,7 +54,7 @@ const emit = defineEmits([
 ]);
 
 const props = withDefaults(defineProps<{
-    modelValue?: string | number | null;
+    modelValue?: string | number | boolean | null;
     name: string;
     label?: string;
     type?: string;

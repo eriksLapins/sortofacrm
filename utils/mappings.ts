@@ -1,7 +1,7 @@
 import { useUserStore } from '~/store/userStore';
 import type { MultiSelect } from '~/types';
 
-export const mapValueToKey = (value: string | number | null, items: MultiSelect[]) => {
+export const mapValueToKey = (value: string | number | boolean | null, items: MultiSelect[]) => {
     if (!value) {
         return;
     }
@@ -9,7 +9,7 @@ export const mapValueToKey = (value: string | number | null, items: MultiSelect[
     return items.find(item => item.title === value)?.key;
 };
 
-export const mapKeyToValue = (value: string | number | null, items: MultiSelect[]) => {
+export const mapKeyToValue = (value: string | number | boolean | null, items: MultiSelect[]) => {
     if (!value) {
         return;
     }

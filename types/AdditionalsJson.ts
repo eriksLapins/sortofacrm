@@ -10,4 +10,5 @@ export type AdditionalsJson = {
     multiselect?: boolean,
     multipleFiles?: boolean,
     buttonTitle?: string;
+    defaultValue?: string | boolean | number,
 }

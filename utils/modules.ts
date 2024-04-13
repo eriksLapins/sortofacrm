@@ -16,7 +16,8 @@ export const fieldTemplate: ModuleFieldsAdjusted = {
         arrayValueType: undefined,
         passwordSafetyRegex: undefined,
         textPrepend: undefined,
-        multiselect: undefined
+        multiselect: undefined,
+        defaultValue: undefined
     }
 };
 
@@ -65,10 +66,18 @@ export const additionalsTypeMap: AdditionalsTypeMapType = {
         datetime: undefined
     },
     switch: {
-        boolean: undefined
+        boolean: {
+            name: 'defaultValue',
+            helper: 'Is on on new item creation?',
+            inputLabel: 'On by default?'
+        }
     },
     checkbox: {
-        boolean: undefined
+        boolean: {
+            name: 'defaultValue',
+            helper: 'Is checked on new item creation?',
+            inputLabel: 'Checked by default?'
+        }
     },
     phoneNumber: {
         number: undefined

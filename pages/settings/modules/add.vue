@@ -103,6 +103,26 @@
                 :disabled="index < 6"
               />
             </div>
+            <div
+              v-else-if="getAdditionalFieldType(field.type, field.valueType)?.name === 'defaultValue'"
+              class="flex flex-col gap-2"
+            >
+              <UiSelect
+                v-if="field.type === 'checkbox' || field.type === 'switch'"
+                v-model="field.additional.defaultValue"
+                :items="fieldValueItemsCheckboxDefaults"
+                :name="`field-addditionals-${field.type}-${field.valueType}-${index}`"
+                :label="getAdditionalFieldType(field.type, field.valueType)?.inputLabel"
+                :disabled="index < 6"
+              />
+              <UiTextInput
+                v-else
+                v-model="(field.additional.defaultValue as string | number | undefined)"
+                :name="`field-addditionals-${field.type}-${field.valueType}-multiselect-${index}`"
+                :label="getAdditionalFieldType(field.type, field.valueType)?.inputLabel"
+                :disabled="index < 6"
+              />
+            </div>
             <div v-else-if="field.type === 'fileUpload' || field.type === 'imageUpload'" class="flex gap-4">
               <UiTextInput
                 v-model="field.additional.maxFileSizeMb"
@@ -198,6 +218,21 @@ const fieldValueItemsArrayType = [
     {
         key: 'number',
         title: 'NUMBER',
+        position: 1,
+        visible: true
+    }
+];
+
+const fieldValueItemsCheckboxDefaults = [
+    {
+        key: true,
+        title: 'Yes',
+        position: 0,
+        visible: true
+    },
+    {
+        key: false,
+        title: 'No',
         position: 1,
         visible: true
     }
