@@ -47,7 +47,6 @@
           <div v-else>
             No items matching the criteria
           </div>
-          {{ columnList }}
         </PageContent>
       </div>
       <template #fallback>
@@ -138,12 +137,15 @@ const tableItems = computed(() => {
             const id = item.id;
             const object: TableItems[] = [];
             columns.value.forEach((value: string) => {
-                object.push({
-                    ref_id: id,
-                    title: value,
-                    data: item[value as keyof ModuleItems],
-                    position: columnList.value.find(item => item.key === value)?.position
-                });
+                if (!Object.keys(item.data as Object).includes(value)) {
+                    object.push({
+                        ref_id: id,
+                        key: value,
+                        title: columnList.value.find(field => field.key === value)!.title,
+                        data: item[value as keyof ModuleItems],
+                        position: columnList.value.find(field => field.key === value)?.position
+                    });
+                }
             });
 
             const itemData = item.data as Object;
@@ -152,9 +154,10 @@ const tableItems = computed(() => {
                     if (Object.keys(itemData).includes(value)) {
                         object.push({
                             ref_id: id,
-                            title: value,
+                            key: value,
+                            title: columnList.value.find(field => field.key === value)!.title,
                             data: itemData[value as keyof typeof itemData],
-                            position: columnList.value.find(item => item.key === value)?.position
+                            position: columnList.value.find(field => field.key === value)?.position
                         });
                     }
                 });
@@ -229,14 +232,10 @@ onBeforeMount(async () => {
     }
     if (userStore.userPreferences[currentModule.value]?.Columns?.length) {
         columnList.value = userStore.userPreferences[currentModule.value].Columns;
-        columns.value = columnList.value.filter(value => value.visible).map(item => item.title);
+        columns.value = columnList.value.filter(value => value.visible).map(item => item.key as string);
         initialColumns.value = columnList.value.map(item => item);
     }
     loading.value = false;
 });
 
 </script>
-
-<style scoped>
-
-</style>

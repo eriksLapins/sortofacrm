@@ -1,8 +1,12 @@
 <template>
-  <div class="table-preview w-full overflow-x-scroll">
+  <div class="table-preview w-full overflow-x-auto">
     <table>
       <thead>
-        <td v-for="(title, i) in tableHeadOptions" :key="i" class="font-semibold p-2">
+        <td
+          v-for="title in tableHeadOptions"
+          :key="title"
+          class="font-semibold p-2 text-nowrap border-b-2 border-t border-solid border-y-primary"
+        >
           {{ title }}
         </td>
       </thead>
@@ -33,18 +37,18 @@ defineOptions({
     name: 'TablePreview'
 });
 
-const props = defineProps({
-    dataJson: {
-        type: Array as PropType<TableItems[][]>,
-        required: true
-    },
-    module: {
-        type: String,
-        required: true
-    }
-});
+const props = defineProps<{
+  dataJson: TableItems[][];
+  module: string;
+}>();
+const emit = defineEmits<{
+  'update:dataJson': [data: TableItems[][]]
+}>();
 
-const table = ref(props.dataJson);
+const table = computed({
+    get: () => props.dataJson,
+    set: payload => emit('update:dataJson', payload)
+});
 
 const tableHeadOptions = computed(() => {
     if (table.value) {
@@ -57,7 +61,6 @@ const tableHeadOptions = computed(() => {
                 return a.position - b.position;
             });
         });
-
         const headOptions = table.value[0].map(item => item.title);
 
         return headOptions;
