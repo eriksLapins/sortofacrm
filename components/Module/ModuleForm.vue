@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full flex flex-col justify-center items-center p-4">
+  <div class="w-full flex flex-col gap-4 justify-center items-center p-4">
     <form ref="taskForm" class="grid gap-6 items-start w-full" @submit.prevent="createModuleItem">
       <div class="grid gap-6">
         <div class="grid gap-4 grid-cols-12 md:grid-cols-6">
@@ -7,31 +7,17 @@
             v-model="form.createdById"
             :items="userOptions"
             name="created-by"
+            class="col-span-6 md:col-span-2"
           />
           <UiSelect
             v-model="form.updatedById"
             :items="userOptions"
             disabled
             name="updated-by"
-          />
-        </div>
-        <div class="w-full md:w-2/3 flex flex-col gap-6">
-          <UiTextInput
-            v-model:model-value="form.title"
-            name="title"
-            label="Title"
-            :errors="errors.form.title"
-          />
-          <UiTextInputArea
-            :model-value="(form.description as string || undefined)"
-            name="description"
-            label="Description"
-            class="h-[300px]"
-            @update:model-value="value => form.description = value"
+            class="col-span-6 md:col-span-2"
           />
         </div>
       </div>
-      <UiButton text="Save" class="w-full md:max-w-[350px]" @click.prevent="createModuleItem" />
       <UiButton
         v-if="props.itemId"
         text="Back"
@@ -44,6 +30,7 @@
         <component :is="getFieldComponent(field)?.component" v-bind="getFieldComponent(field)?.props" v-model="form.data[field.key]" />
       </div>
     </form>
+    <UiButton text="Save" class="w-full md:max-w-[350px]" @click.prevent="createModuleItem" />
   </div>
 </template>
 
@@ -91,8 +78,6 @@ const form = ref<ModuleItemsAdjusted>({
     updatedOn: new Date(),
     createdById: 0,
     updatedById: 0,
-    title: '',
-    description: '',
     module: props.module,
     data: {} as Record<string, ModuleFieldsAdjusted>
 });
@@ -109,15 +94,13 @@ async function createModuleItem () {
                     id: props.itemId,
                     updatedById: userStore.currentUserId,
                     updatedOn: new Date().toISOString(),
-                    title: form.value.title,
-                    description: form.value.description,
                     module: props.module
                 }
             });
 
             form.value = data as unknown as ModuleItemsAdjusted;
         } catch (e: any) {
-            errors.value = e.data.data.errors;
+            errors.value = { ...e.data.data.errors };
         }
     } else {
         try {

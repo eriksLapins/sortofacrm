@@ -21,6 +21,9 @@
           'absolute mt-9': asButton
         }"
       >
+        <div v-if="!hideLabel" class="text-black text-sm font-semibold mb-1">
+          {{ label }}
+        </div>
         <div class="leweb-input h-8 py-1 px-2 rounded-lg w-full md:w-40">
           <input
             :id="name"
@@ -38,10 +41,10 @@
         </div>
         <ol
           v-show="showItems"
-          class="bg-white border-primary border-2 border-solid rounded-lg top-7 mt-2 p-2 grid gap-2 w-full md:w-max md:min-w-[175px] z-10 max-h-80 overflow-y-scroll"
-          :class="{
-            absolute: !asButton
-          }"
+          class="bg-white border-primary border-2 border-solid rounded-lg mt-2 p-2 grid gap-2 w-full md:w-max md:min-w-[175px] z-10 max-h-80 overflow-y-scroll"
+          :class="[hideLabel ? 'top-7' : 'top-14', {
+            absolute: !asButton,
+          }]"
           @dragover.prevent="!!sortingMode"
         >
           <li v-if="options.length" class="flex justify-between border-b border-b-primary">
@@ -102,7 +105,6 @@
 
 <script setup lang="ts">
 import { onClickOutside } from '@vueuse/core';
-import type { PropType } from 'vue';
 import type { MultiSelect } from '~/types/MultiSelect';
 
 defineOptions({
@@ -116,45 +118,27 @@ const emit = defineEmits([
     'reset'
 ]);
 
-const props = defineProps({
-    modelValue: {
-        type: Array as PropType<string[]>,
-        default: () => []
-    },
-    name: {
-        type: String,
-        required: true
-    },
-    label: {
-        type: String,
-        default: undefined
-    },
-    type: {
-        type: String,
-        default: 'text'
-    },
-    items: {
-        type: Array as PropType<MultiSelect[]>,
-        required: true
-    },
-    initialItems: {
-        type: Array as PropType<MultiSelect[]>,
-        required: true
-    },
-    prependIcon: {
-        type: String,
-        default: undefined
-    },
-    asButton: {
-        type: Boolean
-    },
-    draggable: {
-        type: Boolean
-    },
-    disabled: {
-        type: Boolean
+const props = withDefaults(
+    defineProps<{
+    modelValue: string[] | undefined;
+    name: string;
+    label?: string;
+    type?: string;
+    items: MultiSelect[];
+    initialItems: MultiSelect[];
+    prependIcon?: string;
+    asButton?: boolean;
+    draggable?: boolean;
+    disabled?: boolean;
+    hideLabel?: boolean;
+  }>(),
+    {
+        modelValue: () => [],
+        label: undefined,
+        type: 'text',
+        prependIcon: undefined
     }
-});
+);
 
 const currentArray = ref<string[]>(mapArrayKeyToValue(props.modelValue, props.items) as string[]);
 

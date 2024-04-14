@@ -1,14 +1,16 @@
 <template>
-  <label class="flex flex-col md:flex-row gap-2 items-start">
+  <label class="flex flex-col md:flex-row gap-2 items-start w-full">
     <p class="md:w-1/3">{{ label }}</p>
-    <input
-      :id="name"
-      v-model="value"
-      type="date"
-      :name="name"
-      class="leweb-input h-6 py-1 px-2 rounded-lg md:w-2/3 flex items-center"
-      @input="handleInput"
-    >
+    <div class="leweb-input h-8 py-1 px-2 w-full rounded-lg md:w-2/3 flex items-center">
+      <input
+        :id="name"
+        v-model="value"
+        type="date"
+        :name="name"
+        class="w-full"
+        @input="handleInput"
+      >
+    </div>
   </label>
 </template>
 
@@ -68,6 +70,9 @@ watch(() => props.modelValue, (newValue) => {
     box-shadow: 0 0 0 1px $color-primary;
     &:focus {
         box-shadow: 0 0 0 2px $color-primary;
+    }
+    &::-webkit-datetime-edit-wrapper {
+        width: 100%;
     }
 }
 </style>

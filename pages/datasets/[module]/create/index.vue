@@ -8,9 +8,4 @@
 defineOptions({
     name: 'CreateModuleIndex'
 });
-
 </script>
-
-<style scoped>
-
-</style>

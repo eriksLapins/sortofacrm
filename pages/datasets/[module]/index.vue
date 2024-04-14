@@ -28,6 +28,7 @@
               :name="`${currentModule}-columns`"
               :disabled="columnsSaving"
               draggable
+              hide-label
               @update:column-order="handleColumnOrderUpdate"
               @update:save-columns="handleSaveColumns"
             />
@@ -36,6 +37,7 @@
               name="search-text-field"
               label="Search by title/description"
               class="md:max-w-xs"
+              hide-label
               @update:model-value="fetchModuleItemsByText"
             />
           </div>

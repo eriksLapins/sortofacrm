@@ -4,6 +4,9 @@
     class="relative flex flex-col"
     @click="checkClickOutside"
   >
+    <div v-if="!hideLabel" class="text-black text-sm font-semibold mb-1">
+      {{ label }}
+    </div>
     <input
       :id="name"
       v-model="setValue"
@@ -22,7 +25,11 @@
     <div v-if="error" class="text-error-border">
       {{ error }}
     </div>
-    <div v-if="setValue && !hideCross && !disabled" class=" absolute hover:cursor-pointer text-primary flex justify-center items-center h-6 right-0 mr-4 top-0 my-1" @click="clearItem">
+    <div
+      v-if="setValue && !hideCross && !disabled"
+      class="bottom-0 absolute hover:cursor-pointer text-primary flex justify-center items-center h-6 right-0 mr-4 my-1"
+      @click="clearItem"
+    >
       X
     </div>
     <ul v-show="showItems" class="absolute bg-white border-primary border-2 border-solid rounded-lg top-7 mt-2 p-2 grid gap-2 w-full z-10">
@@ -64,6 +71,7 @@ const props = withDefaults(defineProps<{
     hideCross?: boolean;
     filterOptions?: boolean;
     errors?: string;
+    hideLabel?: boolean;
 }>(),
 {
     modelValue: null,

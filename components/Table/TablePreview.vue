@@ -15,7 +15,7 @@
           v-for="(item, i) in table"
           :key="i"
           class="py-2 hover:bg-gray-background hover:cursor-pointer"
-          @click.prevent="navigateTo(`/${module}/${item[0].ref_id}/view`)"
+          @click.prevent="navigateTo(`/datasets/${module}/${item[0].ref_id}/view`)"
         >
           <td
             v-for="(key, z) in item"

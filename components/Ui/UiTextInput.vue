@@ -1,20 +1,25 @@
 <template>
   <div class="flex flex-col gap-4 w-full">
     <div class="flex flex-col gap-2">
-      <input
-        :id="name"
-        v-model="value"
-        :type="actualType || type"
-        :name="name"
-        :autocomplete="autocomplete"
-        class="h-6 py-1 px-2 rounded-lg leweb-input"
-        :class="{
-          'leweb-input__error': !!error,
-          'leweb-input__disabled' : disabled
-        }"
-        :placeholder="label"
-        :disabled="disabled"
-      >
+      <div class="flex flex-col">
+        <div v-if="!hideLabel" class="text-black text-sm font-semibold mb-1">
+          {{ label }}
+        </div>
+        <input
+          :id="name"
+          v-model="value"
+          :type="actualType || type"
+          :name="name"
+          :autocomplete="autocomplete"
+          class="h-6 py-1 px-2 rounded-lg leweb-input"
+          :class="{
+            'leweb-input__error': !!error,
+            'leweb-input__disabled' : disabled
+          }"
+          :placeholder="label"
+          :disabled="disabled"
+        >
+      </div>
       <div v-if="error" class="text-error-border">
         {{ error }}
       </div>
@@ -39,14 +44,14 @@ const props = withDefaults(
         type?: string;
         errors?: string;
         disabled?: boolean;
+        hideLabel?: boolean;
     }>(),
     {
         modelValue: null,
         label: undefined,
         autocomplete: undefined,
         type: 'text',
-        errors: undefined,
-        disabled: false
+        errors: undefined
     }
 );
 
