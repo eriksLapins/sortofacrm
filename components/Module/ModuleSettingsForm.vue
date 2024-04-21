@@ -47,6 +47,12 @@
         </div>
         <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
           <UiTextInput
+            v-model="field.position"
+            label="Position"
+            :name="`field-position-${index}`"
+            disabled
+          />
+          <UiTextInput
             v-model="field.title"
             label="Field name"
             :name="`field-name-${index}`"
@@ -264,7 +270,10 @@ function setModuleKey () {
 }
 
 function addField () {
-    form.value.fields.push({ ...fieldTemplate });
+    form.value.fields.push({
+        ...fieldTemplate,
+        position: form.value.fields.length
+    });
 }
 
 function setFieldKey (index: number) {

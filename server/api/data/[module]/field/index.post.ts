@@ -129,7 +129,8 @@ export default defineEventHandler(async (event): Promise<{success: boolean} | Er
             type: field.type,
             required: field.required,
             valueType: field.valueType,
-            additional: field.additional
+            additional: field.additional,
+            position: field.position
         };
     });
     try {

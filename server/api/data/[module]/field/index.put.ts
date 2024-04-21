@@ -66,6 +66,7 @@ export default defineEventHandler(async (event): Promise<{success: boolean} | Er
                     title: body.title || currentField.title,
                     type: bodyType,
                     valueType: bodyValueType,
+                    position: body.position || currentField.position,
                     additional: body.additional || currentField.additional
                 }
             });

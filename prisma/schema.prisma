@@ -252,6 +252,7 @@ model ModuleFields {
   type       EFieldType
   additional Json? // options, text-length, mask, etc.
   required   Boolean
+  position   Int
 
   @@unique([module, key])
   @@unique([module, title])

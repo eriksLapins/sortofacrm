@@ -1,6 +1,6 @@
 <template>
   <div class="table-preview w-full overflow-x-auto">
-    <table>
+    <table class="w-full">
       <thead>
         <td
           v-for="title in tableHeadOptions"

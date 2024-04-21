@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-between gap-6 w-full items-center">
+  <div class=" max-md:flex-col max-md:items-start flex justify-between gap-6 w-full items-center">
     <div class="flex flex-col gap-2">
       <div class="flex gap-2">
         <p class="text-gray-text">
@@ -10,9 +10,14 @@
         </p>
       </div>
 
-      <p class="text-gray-text">
-        last updated on: {{ format(new Date(item.updatedOn), 'yyyy-MM-dd') }}
-      </p>
+      <div class="flex max-md:flex-col gap-4">
+        <p class="text-gray-text">
+          last updated on: {{ format(new Date(item.updatedOn), 'yyyy-MM-dd') }}
+        </p>
+        <p class="text-gray-text">
+          created on: {{ format(new Date(item.createdOn), 'yyyy-MM-dd') }}
+        </p>
+      </div>
     </div>
     <div class="flex justify-end gap-6 items-center my-4">
       <UiButton

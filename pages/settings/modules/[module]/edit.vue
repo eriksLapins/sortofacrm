@@ -13,7 +13,7 @@
         :general-error="generalError"
       />
       <div class="separator" />
-      <div v-if="!loading" class="flex justify-between">
+      <div v-if="!loading" class="flex justify-between max-lg:flex-col max-lg:gap-4">
         <UiButton
           class="self-center w-full md:w-[300px]"
           secondary
@@ -75,23 +75,31 @@ const generalError = ref<{
 const loading = ref(false);
 
 async function getModuleWithFields () {
-    const { data } = await $fetch('/api/data/modules/getOne', {
+    const response = await $fetch('/api/data/modules/getOne', {
         query: {
             module: route.params.module
         }
     });
 
-    if (data) {
+    const jsonResponse = jsonParse(response);
+
+    if ('data' in jsonResponse && jsonResponse.data) {
+        const { data } = jsonResponse;
         oldKey.value = data.key;
         oldName.value = data.name;
         form.value.key = data.key;
         form.value.name = data.name;
 
-        const { data: response } = await $fetch(`/api/data/${data.key}/field`);
+        const responseFields = await $fetch(`/api/data/${data.key}/field`);
+        const jsonResponseFields = jsonParse(responseFields);
 
-        const jsonResponse = jsonParse(response);
-        oldFields.value = jsonParse(jsonResponse) as ModuleFieldsAdjusted[];
-        form.value.fields = jsonResponse;
+        if (jsonResponseFields && 'data' in jsonResponseFields) {
+            oldFields.value = [];
+            for (const field of jsonResponseFields.data) {
+                oldFields.value.push({ ...field });
+            }
+            form.value.fields = [...jsonResponseFields.data];
+        }
     }
 }
 
@@ -159,7 +167,9 @@ async function submit () {
                 }
             });
 
-            if (response.success) {
+            const jsonResponse = jsonParse(response);
+
+            if ('success' in jsonResponse && jsonResponse.success) {
                 oldName.value = form.value.name;
                 oldKey.value = form.value.key;
             }
@@ -179,10 +189,10 @@ async function submit () {
         }
     }
 
-    const deletedFields = oldFields.value.filter(field => !form.value.fields
+    const deletedFields = oldFields.value.filter(field => !(form.value.fields
         .filter(item => !!item.id)
         .map(item => item.id)
-        .includes(field.id)
+        .includes(field.id))
     );
 
     const newFields = form.value.fields.filter(field => !field.id);
@@ -213,7 +223,8 @@ async function submit () {
                         title: field.title,
                         type: field.type,
                         valueType: field.valueType,
-                        additional: field.additional
+                        additional: field.additional,
+                        position: +field.position
                     }
                 });
             } catch (e: any) {
@@ -320,6 +331,7 @@ async function deleteModule () {
 
 onMounted(async () => {
     await getModuleWithFields();
+    form.value.fields.sort((a, b) => a.position - b.position);
 });
 
 </script>

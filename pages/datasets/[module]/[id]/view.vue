@@ -11,14 +11,14 @@
         :item="item"
       />
       <PageBlockStatic class="flex flex-col gap-4 lg:w-1/2 lg:border border-solid border-primary p-4">
-        {{ item }}
+        {{ moduleFields }}
       </PageBlockStatic>
     </PageContent>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { ModuleItemsAdjusted } from '~/types';
+import type { ModuleFieldsAdjusted, ModuleItemsAdjusted } from '~/types';
 
 defineOptions({
     name: 'ModuleItemsIdViewIndex'
@@ -29,31 +29,46 @@ const id = route.params.id;
 const module = route.params.module;
 
 const item = ref<ModuleItemsAdjusted>();
+const moduleFields = ref<ModuleFieldsAdjusted[]>([]);
 const loading = ref(true);
 
 async function fetchItemById () {
     try {
-        const { data } = await $fetch(`/api/data/${module}/items`, {
+        const response = await $fetch(`/api/data/${module}/items`, {
             query: {
                 id
             }
         });
 
-        const jsonData = jsonParse(data);
-
-        item.value = jsonData[0] as unknown as ModuleItemsAdjusted;
-        loading.value = false;
+        const jsonResponse = jsonParse(response);
+        let jsonData;
+        if ('data' in jsonResponse) {
+            jsonData = jsonParse(jsonResponse.data);
+        }
+        if (jsonData) {
+            item.value = jsonData[0] as unknown as ModuleItemsAdjusted;
+        }
     } catch (e) {
         throw new Error('Sorry, something went wrong');
     }
 }
 
+async function fetchModuleFields () {
+    const data = await $fetch(`/api/data/${module}/field`);
+
+    const jsonResponse = jsonParse(data);
+    if (!jsonResponse || !('data' in jsonResponse)) {
+        return;
+    }
+
+    moduleFields.value = jsonResponse.data.filter(field => !(field.key in defaultFieldsList));
+}
+
 onBeforeMount(async () => {
     await fetchItemById();
+    await fetchModuleFields();
+
+    loading.value = false;
 });
 
 </script>
-
-<style scoped>
-
-</style>

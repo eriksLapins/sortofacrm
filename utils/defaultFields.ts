@@ -19,7 +19,8 @@ export function createDefaultFields (): ModuleFieldsAdjusted[] {
             required: true,
             title: 'ID',
             type: 'number',
-            valueType: 'autoincrement'
+            valueType: 'autoincrement',
+            position: 1
         },
         {
             key: 'createdById',
@@ -28,7 +29,8 @@ export function createDefaultFields (): ModuleFieldsAdjusted[] {
             required: true,
             title: 'Created By ID',
             type: 'number',
-            valueType: 'number'
+            valueType: 'number',
+            position: 2
         },
         {
             key: 'createdOn',
@@ -37,7 +39,8 @@ export function createDefaultFields (): ModuleFieldsAdjusted[] {
             required: true,
             title: 'Created On',
             type: 'datepicker',
-            valueType: 'datetime'
+            valueType: 'datetime',
+            position: 3
         },
         {
             key: 'updatedById',
@@ -46,7 +49,8 @@ export function createDefaultFields (): ModuleFieldsAdjusted[] {
             required: true,
             title: 'Updated By ID',
             type: 'number',
-            valueType: 'number'
+            valueType: 'number',
+            position: 4
         },
         {
             key: 'updatedOn',
@@ -55,7 +59,8 @@ export function createDefaultFields (): ModuleFieldsAdjusted[] {
             required: true,
             title: 'Updated On',
             type: 'datepicker',
-            valueType: 'datetime'
+            valueType: 'datetime',
+            position: 5
         },
         {
             key: 'module',
@@ -64,7 +69,8 @@ export function createDefaultFields (): ModuleFieldsAdjusted[] {
             required: true,
             title: 'Module',
             type: 'text',
-            valueType: 'string'
+            valueType: 'string',
+            position: 6
         }
     ];
 }

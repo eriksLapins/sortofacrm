@@ -83,7 +83,8 @@ async function submit () {
             }
         });
 
-        if (response.success) {
+        const jsonResponse = jsonParse(response);
+        if ('success' in jsonResponse && jsonResponse.success) {
             loading.value = false;
             navigateTo('/settings/modules', {
                 external: true
@@ -100,5 +101,4 @@ async function submit () {
     }
     loading.value = false;
 }
-
 </script>

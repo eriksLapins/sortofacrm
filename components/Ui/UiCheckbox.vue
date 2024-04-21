@@ -4,6 +4,7 @@
     :class="{
       'pointer-events-none': disabled
     }"
+    :tabindex="disabled ? '-1': '0'"
   >
     <input
       :id="name"
