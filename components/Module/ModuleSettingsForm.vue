@@ -29,156 +29,161 @@
       class="grid gap-4 border-solid border-primary rounded-lg"
       :class="{'border p-4': form.fields.length}"
     >
-      <li v-for="(field, index) in form.fields" :key="index" class="grid gap-4">
-        <div class="flex gap-4 w-full">
-          <UiButton
-            class="w-max text-sm"
-            :class="{
-              hidden: index < 6
-            }"
-            error-variant
-            @click.prevent="deleteField(index)"
-          >
-            Remove field
-          </UiButton>
-          <div v-if="generalError && field.key === ''" class="text-error-border text-left">
-            {{ generalError.field }}
-          </div>
-        </div>
-        <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-          <UiTextInput
-            v-model="field.position"
-            label="Position"
-            :name="`field-position-${index}`"
-            disabled
-          />
-          <UiTextInput
-            v-model="field.title"
-            label="Field name"
-            :name="`field-name-${index}`"
-            :errors="assertKeyInErrors(field.key) && formErrors.data?.fields[field.key]?.title"
-            :disabled="index < 6"
-            @update:model-value="setFieldKey(index)"
-          />
-          <UiTextInput
-            v-model="field.key"
-            label="Field key"
-            :name="`module-key-${index}`"
-            :errors="assertKeyInErrors(field.key) && formErrors.data?.fields[field.key]?.key"
-            disabled
-          />
-          <!-- @vue-ignore -->
-          <UiSelect
-            v-model="field.type"
-            :items="fieldTypeItems"
-            :name="`field-type-${index}`"
-            label="Field type"
-            :errors="assertKeyInErrors(field.key) && formErrors.data?.fields[field.key]?.type"
-            :disabled="index < 6"
-            @update:model-value="field.valueType = undefined; form.fields[index].additional = {}; getFieldValueItems(field.type, index)"
-          />
-          <UiSelect
-            :ref="`fieldValue${index}`"
-            v-model="field.valueType"
-            :items="getFieldValueItems(field.type, index)"
-            :name="`field-value-type-${index}`"
-            label="Field value type"
-            :disabled="index < 6 || !field.type || fieldValueTypeMap[field.type].length === 1"
-            :hide-cross="!field.type || fieldValueTypeMap[field.type].length === 1"
-            :errors="assertKeyInErrors(field.key) && formErrors.data?.fields[field.key]?.valueType"
-          />
-          <div v-if="getAdditionalFieldType(field.type, field.valueType)?.name === 'arrayValueType'" class="flex flex-col gap-2">
-            <UiSelect
-              v-model="field.additional.arrayValueType"
-              :items="fieldValueItemsArrayType"
-              :name="`field-addditionals-${field.type}-${field.valueType}-${index}`"
-              :label="getAdditionalFieldType(field.type, field.valueType)?.inputLabel"
-              :disabled="index < 6"
-            />
-            <UiCheckbox
-              v-model="field.additional.multiselect"
-              :name="`field-addditionals-${field.type}-${field.valueType}-multiselect-${index}`"
-              label="Multiselect?"
-              :disabled="index < 6"
-            />
-          </div>
-          <div
-            v-else-if="getAdditionalFieldType(field.type, field.valueType)?.name === 'defaultValue'"
-            class="flex flex-col gap-2"
-          >
-            <UiSelect
-              v-if="field.type === 'checkbox' || field.type === 'switch'"
-              v-model="field.additional.defaultValue"
-              :items="fieldValueItemsCheckboxDefaults"
-              :name="`field-addditionals-${field.type}-${field.valueType}-${index}`"
-              :label="getAdditionalFieldType(field.type, field.valueType)?.inputLabel"
-              :disabled="index < 6"
-            />
-            <UiTextInput
-              v-else
-              v-model="(field.additional.defaultValue as string | number | undefined)"
-              :name="`field-addditionals-${field.type}-${field.valueType}-multiselect-${index}`"
-              :label="getAdditionalFieldType(field.type, field.valueType)?.inputLabel"
-              :disabled="index < 6"
-            />
-          </div>
-          <div v-else-if="field.type === 'fileUpload' || field.type === 'imageUpload'" class="flex gap-4">
-            <UiTextInput
-              v-model="field.additional.maxFileSizeMb"
-              :name="`field-addditionals-${field.type}-${field.valueType}-max-size-${index}`"
-              :label="getAdditionalFieldType(field.type, field.valueType)?.inputLabel"
-              type="number"
-              :disabled="index < 6"
-            />
-            <UiTextInput
-              v-model="field.additional.buttonTitle"
-              :name="`field-addditionals-${field.type}-${field.valueType}-button-title-${index}`"
-              label="Button title"
-              :disabled="index < 6"
-            />
-            <UiCheckbox
-              v-model="field.additional.multipleFiles"
-              :name="`field-addditionals-${field.type}-${field.valueType}-multiple-${index}`"
-              label="Multiple?"
-              :disabled="index < 6"
-            />
-          </div>
+      <draggable v-model="form.fields" item-key="position">
+        <template #item="{ element, index }">
+          <li class="grid gap-4 pt-4">
+            <div class="flex gap-4 w-full">
+              <UiButton
+                class="w-max text-sm"
+                :class="{
+                  hidden: defaultFieldsList.includes(element.key)
+                }"
+                error-variant
+                @click.prevent="deleteField(index)"
+              >
+                Remove field
+              </UiButton>
+              <div v-if="generalError && element.key === ''" class="text-error-border text-left">
+                {{ generalError.field }}
+              </div>
+            </div>
+            <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+              <UiTextInput
+                v-model="element.position"
+                label="Position"
+                :name="`field-position-${index}`"
+                disabled
+              />
+              <UiTextInput
+                v-model="element.title"
+                label="Field name"
+                :name="`field-name-${index}`"
+                :errors="assertKeyInErrors(element.key) && formErrors.data?.fields[element.key]?.title"
+                :disabled="defaultFieldsList.includes(element.key)"
+                @update:model-value="setFieldKey(index)"
+              />
+              <UiTextInput
+                v-model="element.key"
+                label="Field key"
+                :name="`module-key-${index}`"
+                :errors="assertKeyInErrors(element.key) && formErrors.data?.fields[element.key]?.key"
+                disabled
+              />
+              <!-- @vue-ignore -->
+              <UiSelect
+                v-model="element.type"
+                :items="fieldTypeItems"
+                :name="`field-type-${index}`"
+                label="Field type"
+                :errors="assertKeyInErrors(element.key) && formErrors.data?.fields[element.key]?.type"
+                :disabled="defaultFieldsList.includes(element.key)"
+                @update:model-value="element.valueType = undefined; form.fields[index].additional = {}; getFieldValueItems(element.type, index)"
+              />
+              <UiSelect
+                :ref="`fieldValue${index}`"
+                v-model="element.valueType"
+                :items="getFieldValueItems(element.type, index)"
+                :name="`field-value-type-${index}`"
+                label="Field value type"
+                :disabled="defaultFieldsList.includes(element.key) || !element.type || fieldValueTypeMap[element.type as EFieldType].length === 1"
+                :hide-cross="!element.type || fieldValueTypeMap[element.type as EFieldType].length === 1"
+                :errors="assertKeyInErrors(element.key) && formErrors.data?.fields[element.key]?.valueType"
+              />
+              <div v-if="getAdditionalFieldType(element.type, element.valueType)?.name === 'arrayValueType'" class="flex flex-col gap-2">
+                <UiSelect
+                  v-model="element.additional.arrayValueType"
+                  :items="fieldValueItemsArrayType"
+                  :name="`field-addditionals-${element.type}-${element.valueType}-${index}`"
+                  :label="getAdditionalFieldType(element.type, element.valueType)?.inputLabel"
+                  :disabled="defaultFieldsList.includes(element.key)"
+                />
+                <UiCheckbox
+                  v-model="element.additional.multiselect"
+                  :name="`field-addditionals-${element.type}-${element.valueType}-multiselect-${index}`"
+                  label="Multiselect?"
+                  :disabled="defaultFieldsList.includes(element.key)"
+                />
+              </div>
+              <div
+                v-else-if="getAdditionalFieldType(element.type, element.valueType)?.name === 'defaultValue'"
+                class="flex flex-col gap-2"
+              >
+                <UiSelect
+                  v-if="element.type === 'checkbox' || element.type === 'switch'"
+                  v-model="element.additional.defaultValue"
+                  :items="fieldValueItemsCheckboxDefaults"
+                  :name="`field-addditionals-${element.type}-${element.valueType}-${index}`"
+                  :label="getAdditionalFieldType(element.type, element.valueType)?.inputLabel"
+                  :disabled="defaultFieldsList.includes(element.key)"
+                />
+                <UiTextInput
+                  v-else
+                  v-model="(element.additional.defaultValue as string | number | undefined)"
+                  :name="`field-addditionals-${element.type}-${element.valueType}-multiselect-${index}`"
+                  :label="getAdditionalFieldType(element.type, element.valueType)?.inputLabel"
+                  :disabled="defaultFieldsList.includes(element.key)"
+                />
+              </div>
+              <div v-else-if="element.type === 'fileUpload' || element.type === 'imageUpload'" class="flex gap-4">
+                <UiTextInput
+                  v-model="element.additional.maxFileSizeMb"
+                  :name="`field-addditionals-${element.type}-${element.valueType}-max-size-${index}`"
+                  :label="getAdditionalFieldType(element.type, element.valueType)?.inputLabel"
+                  type="number"
+                  :disabled="defaultFieldsList.includes(element.key)"
+                />
+                <UiTextInput
+                  v-model="element.additional.buttonTitle"
+                  :name="`field-addditionals-${element.type}-${element.valueType}-button-title-${index}`"
+                  label="Button title"
+                  :disabled="defaultFieldsList.includes(element.key)"
+                />
+                <UiCheckbox
+                  v-model="element.additional.multipleFiles"
+                  :name="`field-addditionals-${element.type}-${element.valueType}-multiple-${index}`"
+                  label="Multiple?"
+                  :disabled="defaultFieldsList.includes(element.key)"
+                />
+              </div>
 
-          <!-- @vue-ignore -->
-          <UiTextInput
-            v-else-if="
-              getAdditionalFieldType(field.type, field.valueType)
-                &&
-                getAdditionalFieldType(field.type, field.valueType)!.name !== 'multiselect'
-            "
-            v-model="field.additional[getAdditionalFieldType(field.type, field.valueType)!.name]"
-            :name="`field-addditionals-${field.type}-${field.valueType}-${index}`"
-            :label="getAdditionalFieldType(field.type, field.valueType)?.inputLabel"
-            :disabled="index < 6"
-          />
-          <UiTextInput
-            v-else-if="getAdditionalFieldType(field.type, field.valueType)"
-            v-model="(field.additional[getAdditionalFieldType(field.type, field.valueType)!.name] as string | number | undefined | null)"
-            :name="`field-addditionals-${field.type}-${field.valueType}-${index}`"
-            :label="getAdditionalFieldType(field.type, field.valueType)?.inputLabel"
-            :disabled="index < 6"
-          />
-        </div>
-        <UiCheckbox
-          v-model="field.required"
-          label="Required"
-          :name="`field-required-${index}`"
-          :disabled="index < 6"
-        />
-        <div class="separator" />
-      </li>
+              <!-- @vue-ignore -->
+              <UiTextInput
+                v-else-if="
+                  getAdditionalFieldType(element.type, element.valueType)
+                    &&
+                    getAdditionalFieldType(element.type, element.valueType)!.name !== 'multiselect'
+                "
+                v-model="element.additional[getAdditionalFieldType(element.type, element.valueType)!.name]"
+                :name="`field-addditionals-${element.type}-${element.valueType}-${index}`"
+                :label="getAdditionalFieldType(element.type, element.valueType)?.inputLabel"
+                :disabled="defaultFieldsList.includes(element.key)"
+              />
+              <UiTextInput
+                v-else-if="getAdditionalFieldType(element.type, element.valueType)"
+                v-model="(element.additional[getAdditionalFieldType(element.type, element.valueType)!.name] as string | number | undefined | null)"
+                :name="`field-addditionals-${element.type}-${element.valueType}-${index}`"
+                :label="getAdditionalFieldType(element.type, element.valueType)?.inputLabel"
+                :disabled="defaultFieldsList.includes(element.key)"
+              />
+            </div>
+            <UiCheckbox
+              v-model="element.required"
+              label="Required"
+              :name="`field-required-${index}`"
+              :disabled="defaultFieldsList.includes(element.key)"
+            />
+            <div class="separator" />
+          </li>
+        </template>
+      </draggable>
     </ul>
-    <UiButton text="Add field" secondary class="w-full md:w-[300px]" @click="addField" />
+    <UiButton :loading text="Add field" secondary class="w-full md:w-[300px]" @click="addField" />
   </div>
 </template>
 
 <script setup lang="ts">
 import type { EFieldType } from '@prisma/client';
+import draggable from 'vuedraggable';
 import type { ModuleFieldsAdjusted, MultiSelect, ResponseError } from '~/types';
 
 defineOptions({
@@ -192,12 +197,13 @@ type ModuleSettingsForm = {
     };
 
 const props = defineProps<{
-    modelValue: ModuleSettingsForm,
-    errors: ResponseError,
+    modelValue: ModuleSettingsForm;
+    errors: ResponseError;
     generalError?: {
         main: string,
         field: string,
-    },
+    };
+    loading?: boolean;
 }>();
 const emit = defineEmits<{
     'update:modelValue': [ModuleSettingsForm],
@@ -287,6 +293,11 @@ function assertKeyInErrors (key: string) {
 }
 
 function deleteField (index: number) {
-    form.value.fields.splice(index, 1);
+    const [splicedField] = form.value.fields.splice(index, 1);
+    for (const field of form.value.fields) {
+        if (field.position > splicedField.position) {
+            field.position -= 1;
+        }
+    }
 }
 </script>

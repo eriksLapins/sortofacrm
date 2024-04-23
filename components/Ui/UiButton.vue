@@ -9,7 +9,8 @@
       'border-primary text-primary hover:bg-primary hover:bg-opacity-30 focus-within:bg-primary focus-within:bg-opacity-30 hover:text-white focus-within:text-white' : secondary,
     }"
   >
-    <span v-if="text">{{ text }}</span>
+    <span v-if="loading">loading</span>
+    <span v-else-if="text">{{ text }}</span>
     <slot v-else />
   </NuxtLink>
   <NuxtLink
@@ -22,7 +23,8 @@
       'text-error-border': errorVariant
     }"
   >
-    <span v-if="text">{{ text }}</span>
+    <span v-if="loading">loading</span>
+    <span v-else-if="text">{{ text }}</span>
     <slot v-else />
   </NuxtLink>
   <button
@@ -34,7 +36,8 @@
       'border-primary text-primary hover:bg-primary hover:bg-opacity-30 focus-within:bg-primary focus-within:bg-opacity-30 hover:text-white focus-within:text-white' : secondary,
     }"
   >
-    <span v-if="text">{{ text }}</span>
+    <span v-if="loading">loading</span>
+    <span v-else-if="text">{{ text }}</span>
     <slot v-else />
   </button>
 </template>
@@ -66,6 +69,9 @@ defineProps({
         default: undefined
     },
     external: {
+        type: Boolean
+    },
+    loading: {
         type: Boolean
     }
 });

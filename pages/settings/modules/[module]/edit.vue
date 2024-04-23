@@ -11,6 +11,7 @@
         v-model="form"
         :errors="formErrors"
         :general-error="generalError"
+        :loading
       />
       <div class="separator" />
       <div v-if="!loading" class="flex justify-between max-lg:flex-col max-lg:gap-4">
@@ -99,6 +100,7 @@ async function getModuleWithFields () {
                 oldFields.value.push({ ...field });
             }
             form.value.fields = [...jsonResponseFields.data];
+            form.value.fields.sort((a, b) => a.position - b.position);
         }
     }
 }
@@ -331,7 +333,6 @@ async function deleteModule () {
 
 onMounted(async () => {
     await getModuleWithFields();
-    form.value.fields.sort((a, b) => a.position - b.position);
 });
 
 </script>

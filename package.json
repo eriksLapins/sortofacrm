@@ -37,7 +37,8 @@
     "patch-package": "^8.0.0",
     "prisma": "^5.9.1",
     "sass": "^1.72.0",
-    "typescript": "^5.4.3"
+    "typescript": "^5.4.3",
+    "vuedraggable": "^4.1.0"
   },
   "resolutions": {
     "wide-align": "1.1.5"

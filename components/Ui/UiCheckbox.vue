@@ -4,21 +4,21 @@
     :class="{
       'pointer-events-none': disabled
     }"
-    :tabindex="disabled ? '-1': '0'"
   >
     <input
       :id="name"
       v-model="value"
       type="checkbox"
       :name="name"
-      class="w-4 h-4 border-solid border-2 rounded-md text-white flex justify-center items-center text-base leading-none"
+      class="w-4 h-4 border-solid border-2 rounded-md text-white flex justify-center items-center focus:border-primary text-base leading-none"
       :class="{
         'checkbox--checked' : symbol === 'check',
         'checkbox--question' : symbol === 'question',
         'checkbox--cross' : symbol === 'cross',
-        'border-primary checked:bg-primary hover:cursor-pointer hover:bg-primary hover:bg-opacity-30': !disabled,
+        'border-primary checked:bg-primary hover:cursor-pointer hover:bg-primary hover:bg-opacity-30 focus:bg-primary focus:bg-opacity-50': !disabled,
         'border-gray-text-disabled checked:bg-gray-text': disabled
       }"
+      :disabled
     >
     <label :for="name">{{ label }}</label>
   </div>

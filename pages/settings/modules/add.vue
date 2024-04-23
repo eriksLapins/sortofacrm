@@ -11,6 +11,7 @@
         v-model="form"
         :errors="formErrors"
         :general-error="generalError"
+        :loading
       />
       <div class="separator" />
       <UiButton
