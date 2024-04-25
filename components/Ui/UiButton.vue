@@ -36,7 +36,10 @@
       'border-primary text-primary hover:bg-primary hover:bg-opacity-30 focus-within:bg-primary focus-within:bg-opacity-30 hover:text-white focus-within:text-white' : secondary,
     }"
   >
-    <span v-if="loading">loading</span>
+    <div
+      v-if="loading"
+      class="size-6 border-y-2 rounded-[50%] animate-spin border-primary justify-self-center"
+    />
     <span v-else-if="text">{{ text }}</span>
     <slot v-else />
   </button>
@@ -47,32 +50,14 @@ defineOptions({
     name: 'UIButton'
 });
 
-defineProps({
-    text: {
-        type: String,
-        default: undefined
-    },
-    secondary: {
-        type: Boolean
-    },
-    errorVariant: {
-        type: Boolean
-    },
-    asLinkButton: {
-        type: Boolean
-    },
-    asLink: {
-        type: Boolean
-    },
-    href: {
-        type: String,
-        default: undefined
-    },
-    external: {
-        type: Boolean
-    },
-    loading: {
-        type: Boolean
-    }
-});
+defineProps<{
+  text?: string;
+  secondary?: boolean;
+  errorVariant?: boolean;
+  asLinkButton?: boolean;
+  asLink?: boolean;
+  href?: string;
+  external?: boolean;
+  loading?: boolean;
+}>();
 </script>

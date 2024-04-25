@@ -11,20 +11,21 @@
         v-model="form"
         :errors="formErrors"
         :general-error="generalError"
-        :loading
+        :initial-fields="form.fields"
+        disable-key-update
       />
       <div class="separator" />
-      <div v-if="!loading" class="flex justify-between max-lg:flex-col max-lg:gap-4">
+      <div class="flex justify-between max-lg:flex-col max-lg:gap-4">
         <UiButton
-          class="self-center w-full md:w-[300px]"
+          :loading
+          class="self-center w-full md:w-[300px] flex justify-center items-center"
           secondary
           @click="submit"
         >
           <span>Save</span>
         </UiButton>
-        <UiButton popovertarget="before-delete" text="Delete Module" :error-variant="true" />
+        <UiButton popovertarget="before-delete" text="Delete Module" error-variant />
       </div>
-      <LoadingAnimation v-else />
     </div>
     <div id="before-delete" popover class="border-2 border-primary border-solid w-[500px] p-6 backdrop:bg-[#00000099]">
       <div class="grid gap-4 items-center justify-center">
@@ -43,6 +44,9 @@
         </div>
       </div>
     </div>
+    <AppModal v-if="success" v-model="success">
+      Success
+    </AppModal>
   </div>
 </template>
 
@@ -74,6 +78,7 @@ const generalError = ref<{
   field: string
 }>();
 const loading = ref(false);
+const success = ref(false);
 
 async function getModuleWithFields () {
     const response = await $fetch('/api/data/modules/getOne', {
@@ -315,6 +320,7 @@ async function submit () {
     }
 
     loading.value = false;
+    success.value = true;
     // otherwise prisma is being lazy and takes from the cache and no values change
 
     await getModuleWithFields();

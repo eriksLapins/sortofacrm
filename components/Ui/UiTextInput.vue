@@ -18,6 +18,7 @@
           }"
           :placeholder="label"
           :disabled="disabled"
+          @focusout="emit('focusout')"
         >
       </div>
       <div v-if="error" class="text-error-border">
@@ -33,7 +34,10 @@
 defineOptions({
     name: 'UITextInput'
 });
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits<{
+  'update:modelValue': [value: string | number | null | undefined];
+  'focusout': [];
+}>();
 
 const props = withDefaults(
     defineProps<{

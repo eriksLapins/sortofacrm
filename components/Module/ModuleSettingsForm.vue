@@ -29,7 +29,7 @@
       class="grid gap-4 border-solid border-primary rounded-lg"
       :class="{'border p-4': form.fields.length}"
     >
-      <draggable v-model="form.fields" item-key="position">
+      <draggable v-model="form.fields" item-key="position" @update="reorder">
         <template #item="{ element, index }">
           <li class="grid gap-4 pt-4">
             <div class="flex gap-4 w-full">
@@ -53,6 +53,7 @@
                 label="Position"
                 :name="`field-position-${index}`"
                 disabled
+                class="hidden"
               />
               <UiTextInput
                 v-model="element.title"
@@ -60,7 +61,7 @@
                 :name="`field-name-${index}`"
                 :errors="assertKeyInErrors(element.key) && formErrors.data?.fields[element.key]?.title"
                 :disabled="defaultFieldsList.includes(element.key)"
-                @update:model-value="setFieldKey(index)"
+                @focusout="setFieldKey(index)"
               />
               <UiTextInput
                 v-model="element.key"
@@ -177,7 +178,7 @@
         </template>
       </draggable>
     </ul>
-    <UiButton :loading text="Add field" secondary class="w-full md:w-[300px]" @click="addField" />
+    <UiButton text="Add field" secondary class="w-full md:w-[300px]" @click="addField" />
   </div>
 </template>
 
@@ -203,12 +204,14 @@ const props = defineProps<{
         main: string,
         field: string,
     };
-    loading?: boolean;
+    disableKeyUpdate?: boolean;
 }>();
+
 const emit = defineEmits<{
     'update:modelValue': [ModuleSettingsForm],
     'update:errors': [ResponseError]
 }>();
+
 const form = computed({
     get: () => props.modelValue,
     set: payload => emit('update:modelValue', payload)
@@ -218,6 +221,12 @@ const formErrors = computed({
     get: () => props.errors,
     set: payload => emit('update:errors', payload)
 });
+
+function reorder () {
+    form.value.fields.forEach((field, index) => {
+        field.position = index + 1;
+    });
+}
 
 const fieldValueItemsArrayType = [
     {
@@ -272,18 +281,22 @@ function getFieldValueItems (fieldType: EFieldType, index: number): MultiSelect[
 }
 
 function setModuleKey () {
-    form.value.key = sanitizeTitleToKey(form.value.name);
+    if (!props.disableKeyUpdate) {
+        form.value.key = sanitizeTitleToKey(form.value.name);
+    }
 }
 
 function addField () {
     form.value.fields.push({
         ...fieldTemplate,
-        position: form.value.fields.length
+        position: form.value.fields.length + 1
     });
 }
 
 function setFieldKey (index: number) {
-    form.value.fields[index].key = sanitizeTitleToKey(form.value.fields[index].title);
+    if (!(props.disableKeyUpdate && form.value.fields[index].id)) {
+        form.value.fields[index].key = sanitizeTitleToKey(form.value.fields[index].title);
+    }
 }
 
 function assertKeyInErrors (key: string) {
