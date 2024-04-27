@@ -11,6 +11,7 @@ export const fieldTemplate: ModuleFieldsAdjusted = {
     // @ts-ignore
     valueType: undefined,
     position: 0,
+    width: 'full',
     additional: {
         maxTextLength: undefined,
         maxFileCount: undefined,

@@ -10,8 +10,27 @@
         :module-name="($route.params.module as string)"
         :item="item"
       />
-      <PageBlockStatic class="flex flex-col gap-4 lg:w-1/2 lg:border border-solid border-primary p-4">
-        {{ moduleFields }}
+      <PageBlockStatic class="max-w-[100vw] grid grid-cols-12 gap-4 lg:w-1/2 lg:border border-solid border-primary p-4">
+        <template v-for="field in moduleFields" :key="field.position">
+          <div
+            class="flex gap-4 items-end"
+            :class="{
+              'col-span-12': field.width === 'full',
+              'col-span-6': field.width === 'half',
+              'col-span-4': field.width === 'third',
+              'col-span-3': field.width === 'fourth',
+            }"
+          >
+            <span
+              class="font-semibold"
+            >
+              {{ field.title }}
+            </span>
+            <span>
+              {{ item.data[field.key] }}
+            </span>
+          </div>
+        </template>
       </PageBlockStatic>
     </PageContent>
   </div>
@@ -28,7 +47,7 @@ const route = useRoute();
 const id = route.params.id;
 const module = route.params.module;
 
-const item = ref<ModuleItemsAdjusted>();
+const item = ref<Prettify<ModuleItemsAdjusted>>();
 const moduleFields = ref<ModuleFieldsAdjusted[]>([]);
 const loading = ref(true);
 
@@ -54,7 +73,9 @@ async function fetchModuleFields () {
 
     const jsonResponse = jsonParse<ModuleFieldsAdjusted[] | undefined>(data);
     if (jsonResponse) {
-        moduleFields.value = jsonResponse.filter(field => !(defaultFieldsList.includes(field.key as any)));
+        moduleFields.value = jsonResponse.filter(
+            field => !(defaultFieldsList.includes(field.key as any))
+        ).sort((a, b) => a.position - b.position);
     }
 }
 

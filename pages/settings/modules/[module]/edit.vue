@@ -230,7 +230,8 @@ async function submit () {
                         type: field.type,
                         valueType: field.valueType,
                         additional: field.additional,
-                        position: +field.position
+                        position: +field.position,
+                        width: field.width
                     }
                 });
             } catch (e: any) {

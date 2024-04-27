@@ -253,6 +253,7 @@ model ModuleFields {
   additional Json? // options, text-length, mask, etc.
   required   Boolean
   position   Int
+  width      EFieldWidth     @default(full)
 
   @@unique([module, key])
   @@unique([module, title])
@@ -331,4 +332,11 @@ enum EFieldType {
   password
   fileUpload
   imageUpload
+}
+
+enum EFieldWidth {
+  full
+  half
+  third
+  fourth
 }

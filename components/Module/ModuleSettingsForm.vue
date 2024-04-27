@@ -90,6 +90,16 @@
                 :hide-cross="!element.type || fieldValueTypeMap[element.type as EFieldType].length === 1"
                 :errors="assertKeyInErrors(element.key) && formErrors.data?.fields[element.key]?.valueType"
               />
+              <UiSelect
+                :ref="`fielWidth${index}`"
+                v-model="element.width"
+                :items="fieldWidthArray"
+                :name="`field-width-${index}`"
+                label="Field width"
+                :disabled="defaultFieldsList.includes(element.key)"
+                :hide-cross="!element.type || fieldValueTypeMap[element.type as EFieldType].length === 1"
+                :errors="assertKeyInErrors(element.key) && formErrors.data?.fields[element.key]?.width"
+              />
               <div v-if="getAdditionalFieldType(element.type, element.valueType)?.name === 'arrayValueType'" class="flex flex-col gap-2">
                 <UiSelect
                   v-model="element.additional.arrayValueType"
@@ -183,7 +193,7 @@
 </template>
 
 <script setup lang="ts">
-import type { EFieldType } from '@prisma/client';
+import { EFieldWidth, type EFieldType } from '@prisma/client';
 import draggable from 'vuedraggable';
 import type { ModuleFieldsAdjusted, MultiSelect, ResponseError } from '~/types';
 
@@ -239,6 +249,33 @@ const fieldValueItemsArrayType = [
         key: 'number',
         title: 'NUMBER',
         position: 1,
+        visible: true
+    }
+];
+
+const fieldWidthArray: {key: keyof typeof EFieldWidth, position: number, title: string, visible: boolean}[] = [
+    {
+        key: 'full',
+        title: 'FULL',
+        position: 0,
+        visible: true
+    },
+    {
+        key: 'half',
+        title: 'HALF',
+        position: 1,
+        visible: true
+    },
+    {
+        key: 'third',
+        title: 'THIRD',
+        position: 2,
+        visible: true
+    },
+    {
+        key: 'fourth',
+        title: 'HALF',
+        position: 3,
         visible: true
     }
 ];

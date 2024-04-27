@@ -67,7 +67,8 @@ export default defineEventHandler(async (event): Promise<{success: boolean} | Er
                     type: bodyType,
                     valueType: bodyValueType,
                     position: body.position || currentField.position,
-                    additional: body.additional || currentField.additional
+                    additional: body.additional || currentField.additional,
+                    width: body.width || currentField.width
                 }
             });
         } catch (e) {
