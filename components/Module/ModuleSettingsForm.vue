@@ -1,5 +1,6 @@
 <template>
-  <div class="flex flex-col gap-4 w-full">
+  <LoadingAnimation v-if="loading" large-size />
+  <div v-else class="flex flex-col gap-4 w-full">
     <div class="separator" />
     <h2 class="font-bold text-base-plus">
       Module
@@ -70,7 +71,6 @@
                 :errors="assertKeyInErrors(element.key) && formErrors.data?.fields[element.key]?.key"
                 disabled
               />
-              <!-- @vue-ignore -->
               <UiSelect
                 v-model="element.type"
                 :items="fieldTypeItems"
@@ -78,7 +78,21 @@
                 label="Field type"
                 :errors="assertKeyInErrors(element.key) && formErrors.data?.fields[element.key]?.type"
                 :disabled="defaultFieldsList.includes(element.key)"
-                @update:model-value="element.valueType = undefined; form.fields[index].additional = {}; getFieldValueItems(element.type, index)"
+                @update:model-value="(value) => {
+                  element.valueType = undefined;
+                  form.fields[index].additional = {};
+                  getFieldValueItems(element.type, index)
+                  if (value === 'dropdown') {
+                    form.fields[index].additional = {
+                      arrayValuesFrom: {
+                        module: '',
+                        keyField: '',
+                        titleField: ''
+                      }
+                    }
+                  }
+                }
+                "
               />
               <UiSelect
                 :ref="`fieldValue${index}`"
@@ -100,82 +114,141 @@
                 :hide-cross="!element.type || fieldValueTypeMap[element.type as EFieldType].length === 1"
                 :errors="assertKeyInErrors(element.key) && formErrors.data?.fields[element.key]?.width"
               />
-              <div v-if="getAdditionalFieldType(element.type, element.valueType)?.name === 'arrayValueType'" class="flex flex-col gap-2">
-                <UiSelect
-                  v-model="element.additional.arrayValueType"
-                  :items="fieldValueItemsArrayType"
-                  :name="`field-addditionals-${element.type}-${element.valueType}-${index}`"
-                  :label="getAdditionalFieldType(element.type, element.valueType)?.inputLabel"
-                  :disabled="defaultFieldsList.includes(element.key)"
-                />
-                <UiCheckbox
-                  v-model="element.additional.multiselect"
-                  :name="`field-addditionals-${element.type}-${element.valueType}-multiselect-${index}`"
-                  label="Multiselect?"
-                  :disabled="defaultFieldsList.includes(element.key)"
-                />
-              </div>
-              <div
-                v-else-if="getAdditionalFieldType(element.type, element.valueType)?.name === 'defaultValue'"
-                class="flex flex-col gap-2"
-              >
-                <UiSelect
-                  v-if="element.type === 'checkbox' || element.type === 'switch'"
-                  v-model="element.additional.defaultValue"
-                  :items="fieldValueItemsCheckboxDefaults"
-                  :name="`field-addditionals-${element.type}-${element.valueType}-${index}`"
-                  :label="getAdditionalFieldType(element.type, element.valueType)?.inputLabel"
-                  :disabled="defaultFieldsList.includes(element.key)"
-                />
-                <UiTextInput
-                  v-else
-                  v-model="(element.additional.defaultValue as string | number | undefined)"
-                  :name="`field-addditionals-${element.type}-${element.valueType}-multiselect-${index}`"
-                  :label="getAdditionalFieldType(element.type, element.valueType)?.inputLabel"
-                  :disabled="defaultFieldsList.includes(element.key)"
-                />
-              </div>
-              <div v-else-if="element.type === 'fileUpload' || element.type === 'imageUpload'" class="flex gap-4">
-                <UiTextInput
-                  v-model="element.additional.maxFileSizeMb"
-                  :name="`field-addditionals-${element.type}-${element.valueType}-max-size-${index}`"
-                  :label="getAdditionalFieldType(element.type, element.valueType)?.inputLabel"
-                  type="number"
-                  :disabled="defaultFieldsList.includes(element.key)"
-                />
-                <UiTextInput
-                  v-model="element.additional.buttonTitle"
-                  :name="`field-addditionals-${element.type}-${element.valueType}-button-title-${index}`"
-                  label="Button title"
-                  :disabled="defaultFieldsList.includes(element.key)"
-                />
-                <UiCheckbox
-                  v-model="element.additional.multipleFiles"
-                  :name="`field-addditionals-${element.type}-${element.valueType}-multiple-${index}`"
-                  label="Multiple?"
-                  :disabled="defaultFieldsList.includes(element.key)"
-                />
-              </div>
+              <div class="flex flex-col gap-4">
+                <div v-if="getAdditionalFieldType(element.type, element.valueType)?.name === 'arrayValueType'" class="flex flex-col gap-2">
+                  <UiSelect
+                    v-model="element.additional.arrayValueType"
+                    :items="fieldValueItemsArrayType"
+                    :name="`field-addditionals-${element.type}-${element.valueType}-${index}`"
+                    :label="getAdditionalFieldType(element.type, element.valueType)?.inputLabel"
+                    :disabled="defaultFieldsList.includes(element.key)"
+                  />
+                  <UiCheckbox
+                    v-model="element.additional.multiselect"
+                    :name="`field-addditionals-${element.type}-${element.valueType}-multiselect-${index}`"
+                    label="Multiselect?"
+                    :disabled="defaultFieldsList.includes(element.key)"
+                  />
+                </div>
+                <div
+                  v-if="getAdditionalFieldType(element.type, element.valueType)?.name === 'arrayValuesFrom'"
+                  class="flex flex-col gap-2"
+                >
+                  <p class="font-semibold">
+                    {{ getAdditionalFieldType(element.type, element.valueType)?.inputLabel }}
+                  </p>
+                  <template v-if="element.additional.arrayValuesFrom">
+                    <UiSelect
+                      v-model="element.additional.arrayValuesFrom.module"
+                      :items="modulesList"
+                      :name="`field-addditionals-array-values-from-module-${index}`"
+                      label="Module"
+                      :disabled="defaultFieldsList.includes(element.key)"
+                      @update:model-value="(value) => {
+                        if (['companies', 'users', 'departments'].includes(value)) {
+                          element.additional.arrayValuesFrom.keyField = 'id';
+                        }
+                        if (value === 'companies') {
+                          element.additional.arrayValuesFrom.titleField = 'shortname';
+                        } else if (value === 'users') {
+                          element.additional.arrayValuesFrom.titleField = 'initials';
+                        } else if (value === 'departments') {
+                          element.additional.arrayValuesFrom.titleField = 'name';
+                        } else {
+                          getAvailableModuleFields(value);
+                          element.additional.arrayValuesFrom.keyField = '';
+                          element.additional.arrayValuesFrom.titleField = '';
+                        }
+                      }"
+                    />
+                    <template
+                      v-if="!['companies', 'users', 'departments'].includes(element.additional.arrayValuesFrom.module)"
+                    >
+                      <UiSelect
+                        v-model="element.additional.arrayValuesFrom.keyField"
+                        :items="availableModuleFields.find(item => item.module === element.additional.arrayValuesFrom.module)?.data || []"
+                        :name="`field-addditionals-array-values-from-key-field-${index}`"
+                        label="Key field"
+                        :disabled="defaultFieldsList.includes(element.key)"
+                      />
+                      <UiSelect
+                        v-model="element.additional.arrayValuesFrom.titleField"
+                        :items="availableModuleFields.find(item => item.module === element.additional.arrayValuesFrom.module)?.data || []"
+                        :name="`field-addditionals-array-values-from-title-field-${index}`"
+                        label="Title field"
+                        :disabled="defaultFieldsList.includes(element.key)"
+                      />
+                    </template>
+                    <UiCheckbox
+                      v-model="element.additional.multiselect"
+                      :name="`field-addditionals-${element.type}-${element.valueType}-multiselect-${index}`"
+                      label="Multiselect?"
+                      :disabled="defaultFieldsList.includes(element.key)"
+                    />
+                  </template>
+                </div>
+                <div
+                  v-else-if="getAdditionalFieldType(element.type, element.valueType)?.name === 'defaultValue'"
+                  class="flex flex-col gap-2"
+                >
+                  <UiSelect
+                    v-if="element.type === 'checkbox' || element.type === 'switch'"
+                    v-model="element.additional.defaultValue"
+                    :items="fieldValueItemsCheckboxDefaults"
+                    :name="`field-addditionals-${element.type}-${element.valueType}-${index}`"
+                    :label="getAdditionalFieldType(element.type, element.valueType)?.inputLabel"
+                    :disabled="defaultFieldsList.includes(element.key)"
+                  />
+                  <UiTextInput
+                    v-else
+                    v-model="(element.additional.defaultValue as string | number | undefined)"
+                    :name="`field-addditionals-${element.type}-${element.valueType}-multiselect-${index}`"
+                    :label="getAdditionalFieldType(element.type, element.valueType)?.inputLabel"
+                    :disabled="defaultFieldsList.includes(element.key)"
+                  />
+                </div>
+                <div v-else-if="element.type === 'fileUpload' || element.type === 'imageUpload'" class="flex gap-4">
+                  <UiTextInput
+                    v-model="element.additional.maxFileSizeMb"
+                    :name="`field-addditionals-${element.type}-${element.valueType}-max-size-${index}`"
+                    :label="getAdditionalFieldType(element.type, element.valueType)?.inputLabel"
+                    type="number"
+                    :disabled="defaultFieldsList.includes(element.key)"
+                  />
+                  <UiTextInput
+                    v-model="element.additional.buttonTitle"
+                    :name="`field-addditionals-${element.type}-${element.valueType}-button-title-${index}`"
+                    label="Button title"
+                    :disabled="defaultFieldsList.includes(element.key)"
+                  />
+                  <UiCheckbox
+                    v-model="element.additional.multipleFiles"
+                    :name="`field-addditionals-${element.type}-${element.valueType}-multiple-${index}`"
+                    label="Multiple?"
+                    :disabled="defaultFieldsList.includes(element.key)"
+                  />
+                </div>
 
-              <!-- @vue-ignore -->
-              <UiTextInput
-                v-else-if="
-                  getAdditionalFieldType(element.type, element.valueType)
-                    &&
-                    getAdditionalFieldType(element.type, element.valueType)!.name !== 'multiselect'
-                "
-                v-model="element.additional[getAdditionalFieldType(element.type, element.valueType)!.name]"
-                :name="`field-addditionals-${element.type}-${element.valueType}-${index}`"
-                :label="getAdditionalFieldType(element.type, element.valueType)?.inputLabel"
-                :disabled="defaultFieldsList.includes(element.key)"
-              />
-              <UiTextInput
-                v-else-if="getAdditionalFieldType(element.type, element.valueType)"
-                v-model="(element.additional[getAdditionalFieldType(element.type, element.valueType)!.name] as string | number | undefined | null)"
-                :name="`field-addditionals-${element.type}-${element.valueType}-${index}`"
-                :label="getAdditionalFieldType(element.type, element.valueType)?.inputLabel"
-                :disabled="defaultFieldsList.includes(element.key)"
-              />
+                <!-- @vue-ignore -->
+                <UiTextInput
+                  v-else-if="
+                    getAdditionalFieldType(element.type, element.valueType)
+                      &&
+                      getAdditionalFieldType(element.type, element.valueType)!.name !== 'multiselect'
+                  "
+                  v-model="element.additional[getAdditionalFieldType(element.type, element.valueType)!.name]"
+                  :name="`field-addditionals-${element.type}-${element.valueType}-${index}`"
+                  :label="getAdditionalFieldType(element.type, element.valueType)?.inputLabel"
+                  :disabled="defaultFieldsList.includes(element.key)"
+                />
+                <UiTextInput
+                  v-else-if="getAdditionalFieldType(element.type, element.valueType)"
+                  v-model="(element.additional[getAdditionalFieldType(element.type, element.valueType)!.name] as string | number | undefined | null)"
+                  :name="`field-addditionals-${element.type}-${element.valueType}-${index}`"
+                  :label="getAdditionalFieldType(element.type, element.valueType)?.inputLabel"
+                  :disabled="defaultFieldsList.includes(element.key)"
+                />
+              </div>
             </div>
             <UiCheckbox
               v-model="element.required"
@@ -193,7 +266,7 @@
 </template>
 
 <script setup lang="ts">
-import { EFieldWidth, type EFieldType } from '@prisma/client';
+import { EFieldWidth, type EFieldType, type Modules } from '@prisma/client';
 import draggable from 'vuedraggable';
 import type { ModuleFieldsAdjusted, MultiSelect, ResponseError } from '~/types';
 
@@ -237,6 +310,63 @@ function reorder () {
         field.position = index + 1;
     });
 }
+
+const loading = ref(true);
+
+const availableModules = ref<Modules[]>([]);
+const availableModuleFields = ref<{module: string; data: MultiSelect[]}[]>([
+    {
+        module: 'users',
+        data: [
+            {
+                key: 'id',
+                title: 'ID',
+                position: 0,
+                visible: true
+            },
+            {
+                key: 'initials',
+                title: 'Initials',
+                position: 1,
+                visible: true
+            }
+        ]
+    },
+    {
+        module: 'departments',
+        data: [
+            {
+                key: 'id',
+                title: 'ID',
+                position: 0,
+                visible: true
+            },
+            {
+                key: 'department',
+                title: 'Name',
+                position: 1,
+                visible: true
+            }
+        ]
+    },
+    {
+        module: 'companies',
+        data: [
+            {
+                key: 'id',
+                title: 'ID',
+                position: 0,
+                visible: true
+            },
+            {
+                key: 'shortname',
+                title: 'Shortname',
+                position: 1,
+                visible: true
+            }
+        ]
+    }
+]);
 
 const fieldValueItemsArrayType = [
     {
@@ -317,6 +447,67 @@ function getFieldValueItems (fieldType: EFieldType, index: number): MultiSelect[
     });
 }
 
+async function getAvailableModules () {
+    const modules = await $fetch('/api/data/modules');
+
+    availableModules.value = jsonParse<Modules[]>(modules);
+}
+
+async function getAvailableModuleFields (module: string) {
+    const exists = availableModuleFields.value.find(item => item.module === module);
+    if (!exists) {
+        const data = await $fetch(`/api/data/${module}/field`);
+        const moduleFields = jsonParse<ModuleFieldsAdjusted[]>(data);
+
+        const newData = moduleFields.map((item) => {
+            return {
+                key: item.key,
+                title: item.title,
+                position: item.position,
+                visible: true
+            };
+        });
+
+        availableModuleFields.value.push({
+            module,
+            data: newData
+        });
+    }
+}
+
+const modulesList = computed(() => {
+    const modules: MultiSelect[] = availableModules.value.map((item, index) => {
+        return {
+            key: item.key,
+            title: item.name,
+            position: index + 2,
+            visible: true
+        };
+    }) || [];
+
+    return [
+        {
+            key: 'users',
+            title: 'Users',
+            position: 0,
+            visible: true
+        },
+        {
+            key: 'departments',
+            title: 'Departments',
+            position: 1,
+            visible: true
+        },
+        {
+            key: 'companies',
+            title: 'Companies',
+            position: 1,
+            visible: true
+        },
+        ...modules
+    ];
+});
+
 function setModuleKey () {
     if (!props.disableKeyUpdate) {
         form.value.key = sanitizeTitleToKey(form.value.name);
@@ -350,4 +541,15 @@ function deleteField (index: number) {
         }
     }
 }
+
+onMounted(async () => {
+    await getAvailableModules();
+    const dropdownFields = form.value.fields.filter(item => item.type === 'dropdown');
+    if (dropdownFields.length) {
+        for (const dropdown of dropdownFields) {
+            await getAvailableModuleFields(dropdown.additional.arrayValuesFrom!.module);
+        }
+    }
+    loading.value = false;
+});
 </script>

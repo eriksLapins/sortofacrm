@@ -1,5 +1,5 @@
 import { EFieldType, EFieldValueType } from '@prisma/client';
-import type { AdditionalsJson, ModuleFieldsAdjusted } from '~/types';
+import type { AdditionalsJson, ModuleFieldsAdjusted, MultiSelect } from '~/types';
 
 export const fieldTemplate: ModuleFieldsAdjusted = {
     key: '',
@@ -19,7 +19,11 @@ export const fieldTemplate: ModuleFieldsAdjusted = {
         passwordSafetyRegex: undefined,
         textPrepend: undefined,
         multiselect: undefined,
-        defaultValue: undefined
+        defaultValue: undefined,
+        buttonTitle: undefined,
+        arrayValuesFrom: undefined,
+        maxFileSizeMb: undefined,
+        multipleFiles: undefined
     }
 };
 
@@ -36,9 +40,9 @@ export type AdditionalsTypeMapType = {
 export const additionalsTypeMap: AdditionalsTypeMapType = {
     dropdown: {
         array: {
-            name: 'arrayValueType',
-            helper: 'The type of the value to add (int for ids and most likely otherwise - string)',
-            inputLabel: 'Array Value type'
+            name: 'arrayValuesFrom',
+            helper: 'Field in another module or from users the we want to match on',
+            inputLabel: 'Array values from'
         }
     },
     number: {
@@ -110,8 +114,10 @@ export const additionalsTypeMap: AdditionalsTypeMapType = {
     }
 };
 
-export const fieldTypeItems = Object.keys(fieldValueTypeMap).map((value) => {
+export const fieldTypeItems: MultiSelect[] = Object.keys(fieldValueTypeMap).map((value, index) => {
     return {
+        position: index,
+        visible: true,
         key: value,
         title: value.toUpperCase()
     };

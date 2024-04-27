@@ -10,7 +10,7 @@
         :module-name="($route.params.module as string)"
         :item="item"
       />
-      <PageBlockStatic class="max-w-[100vw] grid grid-cols-12 gap-4 lg:w-1/2 lg:border border-solid border-primary p-4">
+      <PageBlockStatic class="grid grid-cols-12 gap-4 lg:border border-solid border-primary p-4">
         <template v-for="field in moduleFields" :key="field.position">
           <div
             class="flex gap-4 items-end"

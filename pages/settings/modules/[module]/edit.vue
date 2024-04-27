@@ -8,6 +8,7 @@
     </div>
     <div class="flex flex-col gap-4 w-full">
       <ModuleSettingsForm
+        v-if="form.fields.length"
         v-model="form"
         :errors="formErrors"
         :general-error="generalError"
