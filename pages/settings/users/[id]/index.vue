@@ -58,7 +58,7 @@ const companyStore = useClientCompanyStore();
 const { data: user } = await useAsyncData(async () => {
     const response = await $fetch(`/api/data/users/${route.params.id}`);
 
-    const data = jsonParse(response.data) as Omit<User, 'password'> | undefined;
+    const data = jsonParse<Omit<User, 'password'> | undefined>(response);
 
     return data;
 });

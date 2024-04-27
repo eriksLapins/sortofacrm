@@ -1,13 +1,11 @@
-import { Modules } from '@prisma/client';
+import type { Modules } from '@prisma/client';
 import { prisma } from '~db';
 
-export default defineEventHandler(async (): Promise<{data: Modules[]} | Error> => {
+export default defineEventHandler(async (): Promise<Modules[] | Error> => {
     try {
         const modules = await prisma.modules.findMany();
 
-        return {
-            data: modules
-        };
+        return modules;
     } catch (e) {
         console.log(e);
         throw createError({

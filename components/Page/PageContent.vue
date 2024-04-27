@@ -24,25 +24,25 @@
 <script setup lang="ts">
 
 defineOptions({
-  name: 'PageContent'
+    name: 'PageContent'
 });
 defineProps({
-  title: {
-    type: String,
-    default: undefined
-  },
-  subtitle: {
-    type: String,
-    default: undefined
-  },
-  titleAppend: {
-    type: String,
-    default: undefined
-  },
-  appendOption: {
-    type: String as PropType<'error' | 'success' | 'pending'>,
-    default: 'success'
-  }
+    title: {
+        type: String,
+        default: undefined
+    },
+    subtitle: {
+        type: String,
+        default: undefined
+    },
+    titleAppend: {
+        type: String,
+        default: undefined
+    },
+    appendOption: {
+        type: String as PropType<'error' | 'success' | 'pending'>,
+        default: 'success'
+    }
 });
 </script>
 

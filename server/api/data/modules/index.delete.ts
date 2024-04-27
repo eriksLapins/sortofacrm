@@ -2,7 +2,7 @@ import { FieldPermissions, ItemPermissions, ModuleFields, ModuleItems, Modules, 
 import { ResponseError } from '~/types';
 import { prisma } from '~db';
 
-export default defineEventHandler(async (event): Promise<{data: {
+export default defineEventHandler(async (event): Promise<{
     module: Modules,
     fields: ModuleFields[],
     items: ModuleItems,
@@ -11,7 +11,7 @@ export default defineEventHandler(async (event): Promise<{data: {
     fieldPermissions: FieldPermissions[],
     preferences: UserPreferences[]
 
-}}> => {
+}> => {
     const { module } = await readBody(event);
     const errors: ResponseError = {};
 
@@ -104,21 +104,19 @@ export default defineEventHandler(async (event): Promise<{data: {
     }
 
     return {
-        data: {
-            // TODO Prisma.BatchPayload -> Actual Types
-            module: moduleData,
-            // @ts-ignore
-            fields,
-            // @ts-ignore
-            items,
-            // @ts-ignore
-            permissions,
-            // @ts-ignore
-            itemPermissions,
-            // @ts-ignore
-            fieldPermissions,
-            // @ts-ignore
-            preferences
-        }
+        // TODO Prisma.BatchPayload -> Actual Types
+        module: moduleData,
+        // @ts-ignore
+        fields,
+        // @ts-ignore
+        items,
+        // @ts-ignore
+        permissions,
+        // @ts-ignore
+        itemPermissions,
+        // @ts-ignore
+        fieldPermissions,
+        // @ts-ignore
+        preferences
     };
 });

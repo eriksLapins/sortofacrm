@@ -40,13 +40,9 @@ async function fetchItemById () {
             }
         });
 
-        const jsonResponse = jsonParse(response);
-        let jsonData;
-        if ('data' in jsonResponse) {
-            jsonData = jsonParse(jsonResponse.data);
-        }
-        if (jsonData) {
-            item.value = jsonData[0] as unknown as ModuleItemsAdjusted;
+        const jsonResponse = jsonParse<ModuleItemsAdjusted[]>(response);
+        if (jsonResponse) {
+            item.value = jsonResponse[0] as unknown as ModuleItemsAdjusted;
         }
     } catch (e) {
         throw new Error('Sorry, something went wrong');
@@ -56,12 +52,10 @@ async function fetchItemById () {
 async function fetchModuleFields () {
     const data = await $fetch(`/api/data/${module}/field`);
 
-    const jsonResponse = jsonParse(data);
-    if (!jsonResponse || !('data' in jsonResponse)) {
-        return;
+    const jsonResponse = jsonParse<ModuleFieldsAdjusted[] | undefined>(data);
+    if (jsonResponse) {
+        moduleFields.value = jsonResponse.filter(field => !(field.key in defaultFieldsList));
     }
-
-    moduleFields.value = jsonResponse.data.filter(field => !(field.key in defaultFieldsList));
 }
 
 onBeforeMount(async () => {

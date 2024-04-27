@@ -84,8 +84,7 @@ async function submit () {
             }
         });
 
-        const jsonResponse = jsonParse(response);
-        if ('success' in jsonResponse && jsonResponse.success) {
+        if ('success' in response && response.success) {
             loading.value = false;
             navigateTo('/settings/modules', {
                 external: true

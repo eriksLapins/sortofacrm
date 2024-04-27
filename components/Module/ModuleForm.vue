@@ -87,7 +87,7 @@ const userOptions = ref<MultiSelect[]>([]);
 async function createModuleItem () {
     if (props.itemId) {
         try {
-            const { data } = await $fetch(`/api/data/${props.module}/items`, {
+            const data = await $fetch(`/api/data/${props.module}/items`, {
                 method: 'PUT',
                 body: {
                     ...form.value,
@@ -122,7 +122,7 @@ async function createModuleItem () {
 async function getModuleFields (module: string) {
     const data = await $fetch(`/api/data/${module}/field`);
 
-    const jsonFields = jsonParse(data.data);
+    const jsonFields = jsonParse<ModuleFieldsAdjusted[]>(data);
 
     moduleFields.value = jsonFields;
 }

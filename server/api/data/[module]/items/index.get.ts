@@ -1,7 +1,7 @@
 import { ModuleItems } from '@prisma/client';
 import { prisma } from '~db';
 
-export default defineEventHandler(async (event): Promise<{data: ModuleItems[]} | Error> => {
+export default defineEventHandler(async (event): Promise<ModuleItems[] | Error> => {
     const module = getRouterParam(event, 'module');
     const query = getQuery(event);
 
@@ -14,9 +14,7 @@ export default defineEventHandler(async (event): Promise<{data: ModuleItems[]} |
             }
         });
 
-        return {
-            data: moduleItems
-        };
+        return moduleItems;
     } catch (e) {
         throw createError({
             status: 500,

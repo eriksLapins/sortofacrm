@@ -60,6 +60,7 @@
 </template>
 
 <script setup lang="ts">
+import type { User } from '@prisma/client';
 import { useDepartmentStore } from '~/store/departmentStore';
 
 defineOptions({
@@ -72,7 +73,7 @@ definePageMeta({
 const { data: users } = await useAsyncData(async () => {
     const response = await $fetch('/api/data/users');
 
-    const data = jsonParse(response.data);
+    const data = jsonParse<User[] | undefined>(response);
 
     return {
         data

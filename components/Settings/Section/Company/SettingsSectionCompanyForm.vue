@@ -192,8 +192,8 @@ const form = ref<Omit<ClientCompany, 'id'>>({
 });
 
 async function getCompanyData () {
-    const { data } = await $fetch('/api/data/settings/company');
-    currentData.value = jsonParse(data);
+    const data = await $fetch('/api/data/settings/company');
+    currentData.value = data;
 }
 
 async function addCompany () {

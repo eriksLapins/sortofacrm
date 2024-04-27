@@ -2,7 +2,7 @@ import { ModuleFields } from '@prisma/client';
 // import type { EventHandlerRequest } from 'h3';
 import { prisma } from '~db';
 
-type Response = Promise<{data: ModuleFields} | Error>;
+type Response = Promise<ModuleFields | Error>;
 
 export default defineEventHandler(async (event): Response => {
     const body: {key: string} = await readBody(event);
@@ -26,7 +26,7 @@ export default defineEventHandler(async (event): Response => {
             }
         });
 
-        return { data: field };
+        return field;
     } catch (e) {
         console.log(e);
         throw createError({

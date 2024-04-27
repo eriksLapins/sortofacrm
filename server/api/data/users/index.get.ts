@@ -15,7 +15,7 @@ export default defineEventHandler(async () => {
             }
         });
 
-        return { data: userData };
+        return userData;
     } catch (e) {
         error500('unhandled error at users get');
     }

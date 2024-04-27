@@ -1,7 +1,7 @@
 import { Modules } from '@prisma/client';
 import { prisma } from '~db';
 
-export default defineEventHandler(async (event): Promise<{data: Modules | null} | Error> => {
+export default defineEventHandler(async (event): Promise<Modules | null | Error> => {
     const query = getQuery(event);
     try {
         const modules = await prisma.modules.findFirst({
@@ -10,9 +10,7 @@ export default defineEventHandler(async (event): Promise<{data: Modules | null} 
             }
         });
 
-        return {
-            data: modules
-        };
+        return modules;
     } catch (e) {
         console.log(e);
         throw createError({

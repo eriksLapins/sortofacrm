@@ -97,9 +97,7 @@ export default defineEventHandler(async (event) => {
                 }
             });
 
-            return {
-                data: data.email
-            };
+            return data.email;
         } catch (e) {
             throw createError({
                 status: 500,

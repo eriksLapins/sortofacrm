@@ -74,8 +74,8 @@ const currentData = ref<ClientCompany[]>();
 const openCompanyModal = ref(false);
 
 async function getCompanyData () {
-    const { data } = await $fetch('/api/data/settings/company');
-    currentData.value = jsonParse(data);
+    const data = await $fetch('/api/data/settings/company');
+    currentData.value = data;
 }
 
 onMounted(async () => {

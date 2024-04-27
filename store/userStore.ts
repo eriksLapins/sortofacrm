@@ -14,15 +14,15 @@ export const useUserStore = defineStore('users', () => {
     const defaultDataset = ref('tasks');
 
     const fetchUsers = async () => {
-        const { data } = await $fetch('/api/data/users');
+        const data = await $fetch('/api/data/users');
 
-        availableUsers.value = jsonParse(data);
+        availableUsers.value = jsonParse<UserData[]>(data);
     };
 
     const fetchUser = async (id: number) => {
-        const { data } = await $fetch(`/api/data/users/${id}`);
+        const data = await $fetch(`/api/data/users/${id}`);
 
-        const returnData = jsonParse(data) as Omit<User, 'password'> | undefined;
+        const returnData = jsonParse<Omit<User, 'password'> | undefined>(data);
 
         return returnData;
     };
@@ -81,7 +81,7 @@ export const useUserStore = defineStore('users', () => {
                     }
                 });
 
-                const jsonData = JSON.parse(JSON.stringify(data.data)) as UserPreferences[];
+                const jsonData = jsonParse<UserPreferences[]>(data);
 
                 const fullPreferences: PreferenceWrapper = {} as PreferenceWrapper;
 

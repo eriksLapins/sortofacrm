@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-
+import type { Modules } from '@prisma/client';
 defineOptions({
     name: 'SettingsModules'
 });
@@ -55,17 +55,15 @@ definePageMeta({
 });
 
 const { data } = useAsyncData(async () => {
-    const { data } = await $fetch('/api/data/modules');
+    const data = await $fetch('/api/data/modules');
 
-    const jsonResponse = jsonParse(data);
+    const jsonResponse = jsonParse<Modules[]>(data);
 
-    return {
-        jsonResponse
-    };
+    return jsonResponse;
 });
 
 const availableModules = computed(() => {
-    return data.value?.jsonResponse || [];
+    return data.value || [];
 });
 </script>
 

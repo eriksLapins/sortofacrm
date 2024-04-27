@@ -1,7 +1,7 @@
 import { ModuleItems } from '@prisma/client';
 import { prisma } from '~db';
 
-export default defineEventHandler(async (event): Promise<{data: ModuleItems[]} | Error> => {
+export default defineEventHandler(async (event): Promise<ModuleItems[] | Error> => {
     const body = await readBody(event);
     const module = getRouterParam(event, 'module');
 
@@ -15,5 +15,5 @@ export default defineEventHandler(async (event): Promise<{data: ModuleItems[]} |
         }
     });
 
-    return { data: moduleItems };
+    return moduleItems;
 });

@@ -74,7 +74,7 @@ async function onSubmit (overwrite: boolean) {
                     overwrite: overwrite && true
                 }
             });
-            syncedFiles.value = jsonParse(res.files);
+            syncedFiles.value = res.files;
         } catch (e) {
             console.log(e);
         }

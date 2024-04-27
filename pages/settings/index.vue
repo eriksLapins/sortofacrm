@@ -64,7 +64,7 @@ function setSection (key: string) {
 }
 
 async function getCurrentSectionValues (sectionName: string) {
-    const { data } = await $fetch(`/api/data/settings/${sectionName}`);
+    const data = await $fetch(`/api/data/settings/${sectionName}`);
     currentSectionData.value = jsonParse(data);
 }
 

@@ -2,7 +2,7 @@ import { ModuleFieldsAdjusted, ResponseError } from '~/types';
 import { error400, error500 } from '~/utils/errorThrows';
 import { prisma } from '~db';
 
-export default defineEventHandler(async (event): Promise<{data: ModuleFieldsAdjusted[]} | Error | undefined> => {
+export default defineEventHandler(async (event): Promise<ModuleFieldsAdjusted[] | Error | undefined> => {
     const module = getRouterParam(event, 'module');
     const errors: ResponseError = {
         data: {}
@@ -19,9 +19,7 @@ export default defineEventHandler(async (event): Promise<{data: ModuleFieldsAdju
             }
         });
 
-        return {
-            data: moduleFields as ModuleFieldsAdjusted[]
-        };
+        return moduleFields as ModuleFieldsAdjusted[];
     } catch (e) {
         console.log(e);
         error500('could not get module\'s fields');

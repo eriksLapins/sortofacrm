@@ -2,7 +2,7 @@ import { User } from '@prisma/client';
 import { error500 } from '~/utils/errorThrows';
 import { prisma } from '~db';
 
-export default defineEventHandler(async (event): Promise<{data: Omit<User, 'password'> | undefined} | undefined> => {
+export default defineEventHandler(async (event): Promise<Omit<User, 'password'> | undefined> => {
     const id = getRouterParam(event, 'id');
     if (typeof id === 'undefined') {
         throw createError({
@@ -36,7 +36,7 @@ export default defineEventHandler(async (event): Promise<{data: Omit<User, 'pass
             }
         });
 
-        return { data: user || undefined };
+        return user || undefined;
     } catch (e) {
         error500('unhandled error at user id get');
     }

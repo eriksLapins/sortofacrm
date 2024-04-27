@@ -62,7 +62,7 @@ const { data } = await useLazyAsyncData(async () => {
         query: props.query
     });
 
-    const returnFiles = jsonParse(files.files);
+    const returnFiles = files.files;
     loading.value = false;
 
     return returnFiles;

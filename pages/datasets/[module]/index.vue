@@ -38,7 +38,7 @@
               label="Search by title/description"
               class="md:max-w-xs"
               hide-label
-              @update:model-value="fetchModuleItemsByText"
+              @update:model-value="(value) => fetchModuleItemsByText(value as string)"
             />
           </div>
           <TablePreview
@@ -80,13 +80,13 @@ const currentModule = computed(() => {
 });
 
 async function fetchModuleItems () {
-    const { data } = await $fetch(`/api/data/${currentModule.value}/items`, {
+    const data = await $fetch(`/api/data/${currentModule.value}/items`, {
         query: {
             createdById: userStore.currentUserId
         }
     });
 
-    const jsonData = jsonParse(data);
+    const jsonData = jsonParse<ModuleItems[]>(data);
 
     moduleItems.value = jsonData;
 }
@@ -102,13 +102,13 @@ async function fetchModuleItemsByText (searchQuery: string) {
 
     previousQuery.value = searchQuery;
 
-    const { data } = await $fetch(`/api/data/${currentModule.value}/search/text`, {
+    const data = await $fetch(`/api/data/${currentModule.value}/search/text`, {
         params: {
             searchQuery
         }
     });
 
-    const jsonData = jsonParse(data);
+    const jsonData = jsonParse<ModuleItems[]>(data);
 
     moduleItems.value = jsonData;
 }
@@ -116,7 +116,7 @@ async function fetchModuleItemsByText (searchQuery: string) {
 async function getAvailableModules () {
     const data = await $fetch('/api/data/modules');
 
-    const jsonModules = jsonParse(data.data);
+    const jsonModules = jsonParse<Modules[]>(data);
 
     modules.value = jsonModules;
 }
@@ -124,7 +124,7 @@ async function getAvailableModules () {
 async function fetchModuleFields () {
     const data = await $fetch(`/api/data/${currentModule.value}/field`);
 
-    const jsonModuleFields = jsonParse(data.data);
+    const jsonModuleFields = jsonParse<ModuleFieldsAdjusted[]>(data);
 
     moduleFields.value = jsonModuleFields;
 }

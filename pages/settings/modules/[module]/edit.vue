@@ -51,6 +51,7 @@
 </template>
 
 <script setup lang="ts">
+import type { Modules } from '@prisma/client';
 import type { ModuleFieldsAdjusted, ResponseError } from '~/types';
 
 defineOptions({
@@ -87,24 +88,24 @@ async function getModuleWithFields () {
         }
     });
 
-    const jsonResponse = jsonParse(response);
+    const jsonResponse = jsonParse<Modules | null>(response);
 
-    if ('data' in jsonResponse && jsonResponse.data) {
-        const { data } = jsonResponse;
+    if (jsonResponse) {
+        const data = jsonResponse;
         oldKey.value = data.key;
         oldName.value = data.name;
         form.value.key = data.key;
         form.value.name = data.name;
 
         const responseFields = await $fetch(`/api/data/${data.key}/field`);
-        const jsonResponseFields = jsonParse(responseFields);
+        const jsonResponseFields = jsonParse<ModuleFieldsAdjusted[] | undefined>(responseFields);
 
-        if (jsonResponseFields && 'data' in jsonResponseFields) {
+        if (jsonResponseFields) {
             oldFields.value = [];
-            for (const field of jsonResponseFields.data) {
+            for (const field of jsonResponseFields) {
                 oldFields.value.push({ ...field });
             }
-            form.value.fields = [...jsonResponseFields.data];
+            form.value.fields = [...jsonResponseFields];
             form.value.fields.sort((a, b) => a.position - b.position);
         }
     }
@@ -174,9 +175,7 @@ async function submit () {
                 }
             });
 
-            const jsonResponse = jsonParse(response);
-
-            if ('success' in jsonResponse && jsonResponse.success) {
+            if ('success' in response && response.success) {
                 oldName.value = form.value.name;
                 oldKey.value = form.value.key;
             }
