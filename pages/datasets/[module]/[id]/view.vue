@@ -54,7 +54,7 @@ async function fetchModuleFields () {
 
     const jsonResponse = jsonParse<ModuleFieldsAdjusted[] | undefined>(data);
     if (jsonResponse) {
-        moduleFields.value = jsonResponse.filter(field => !(field.key in defaultFieldsList));
+        moduleFields.value = jsonResponse.filter(field => !(defaultFieldsList.includes(field.key as any)));
     }
 }
 

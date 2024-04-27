@@ -21,8 +21,8 @@
     </div>
     <div class="flex justify-end gap-6 items-center my-4">
       <UiButton
-        :href="`/datasets/${moduleName}/${item.id}/update`"
-        text="Update"
+        :href="`/datasets/${moduleName}/${item.id}/edit`"
+        text="Edit"
         as-link-button
       />
       <UiButton

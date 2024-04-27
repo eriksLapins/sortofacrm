@@ -1,40 +1,64 @@
 <template>
   <div class="w-full flex flex-col gap-4 justify-center items-center p-4">
-    <form ref="taskForm" class="grid gap-6 items-start w-full" @submit.prevent="createModuleItem">
+    <form
+      ref="taskForm"
+      class="grid gap-6 items-start w-full"
+      @submit.prevent="createModuleItem"
+    >
       <div class="grid gap-6">
-        <div class="grid gap-4 grid-cols-12 md:grid-cols-6">
-          <UiSelect
-            v-model="form.createdById"
-            :items="userOptions"
-            name="created-by"
-            class="col-span-6 md:col-span-2"
-          />
-          <UiSelect
-            v-model="form.updatedById"
-            :items="userOptions"
-            disabled
-            name="updated-by"
-            class="col-span-6 md:col-span-2"
-          />
+        <div v-if="form.id" class="flex flex-col gap-4">
+          <div class="flex gap-4 justify-between max-md:flex-col">
+            <div class="flex gap-4 order-2 md:order-1 max-sm:flex-col">
+              <div class="flex gap-4">
+                <div class="text-gray-text-disabled">
+                  ID: {{ form.id }}
+                </div>
+                <div class="text-gray-text-disabled">
+                  Created by: {{ matchUserById(form.createdById) }}
+                </div>
+              </div>
+              <div class="text-gray-text-disabled">
+                Created on: {{ format(new Date(form.createdOn), 'yyyy-MM-dd HH:MM') }}
+              </div>
+            </div>
+            <UiButton
+              v-if="props.itemId"
+              text="Back"
+              class="w-full max-w-[200px] h-max order-1 md:order-2 max-md:self-end"
+              as-link-button
+              secondary
+              :href="`/datasets/tasks/${props.itemId}/view`"
+            />
+          </div>
+          <div class="flex gap-4 max-sm:flex-col">
+            <div class="text-gray-text-disabled">
+              Last updated by: {{ matchUserById(form.updatedById) }}
+            </div>
+            <div class="text-gray-text-disabled">
+              Last updated on: {{ format(new Date(form.updatedOn), 'yyyy-MM-dd HH:MM') }}
+            </div>
+          </div>
         </div>
       </div>
-      <UiButton
-        v-if="props.itemId"
-        text="Back"
-        class="w-full md:max-w-[350px]"
-        as-link-button
-        secondary
-        :href="`/datasets/tasks/${props.itemId}/view`"
-      />
-      <div v-for="field in moduleFields" :key="field.key">
-        <component :is="getFieldComponent(field)?.component" v-bind="getFieldComponent(field)?.props" v-model="form.data[field.key]" />
-      </div>
+      <template v-for="field in moduleFields" :key="field.key">
+        <div
+          v-if="!(defaultFieldsList.includes(field.key as any))"
+        >
+          <component
+            :is="getFieldComponent(field)?.component"
+            v-bind="getFieldComponent(field)?.props"
+            v-model="form.data[field.key]"
+          />
+        </div>
+      </template>
     </form>
     <UiButton text="Save" class="w-full md:max-w-[350px]" @click.prevent="createModuleItem" />
   </div>
 </template>
 
 <script setup lang="ts">
+import format from 'date-fns/format';
+
 import {
     UiCheckbox,
     UiDateSelect,
@@ -51,20 +75,11 @@ defineOptions({
     name: 'ModuleForm'
 });
 
-const props = defineProps({
-    itemId: {
-        type: String,
-        default: undefined
-    },
-    itemDetails: {
-        type: Object as PropType<ModuleItemsAdjusted>,
-        default: undefined
-    },
-    module: {
-        type: String,
-        required: true
-    }
-});
+const props = defineProps<{
+    itemId?: string;
+    itemDetails?: ModuleItemsAdjusted;
+    module: string;
+}>();
 
 const errors = ref<Record<string, any>>({
     form: {}
@@ -100,7 +115,9 @@ async function createModuleItem () {
 
             form.value = data as unknown as ModuleItemsAdjusted;
         } catch (e: any) {
-            errors.value = { ...e.data.data.errors };
+            if (e.data) {
+                errors.value = e.data.data.errors;
+            }
         }
     } else {
         try {
@@ -123,6 +140,7 @@ async function getModuleFields (module: string) {
     const data = await $fetch(`/api/data/${module}/field`);
 
     const jsonFields = jsonParse<ModuleFieldsAdjusted[]>(data);
+    jsonFields.sort((a, b) => a.position - b.position);
 
     moduleFields.value = jsonFields;
 }

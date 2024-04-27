@@ -27,10 +27,11 @@ export default defineEventHandler(async (event): Promise<ModuleItems | Error> =>
         const moduleItem = await prisma.moduleItems.update({
             where: {
                 module,
-                id: body.id
+                id: +body.id
             },
             data: {
-                ...body
+                ...body,
+                id: +body.id
             }
         });
 

@@ -19,6 +19,9 @@
               ID
             </td>
             <td>
+              Position
+            </td>
+            <td>
               Title
             </td>
             <td>
@@ -39,6 +42,9 @@
           <TableRow v-for="item in availableFields" :key="item.key">
             <TableData class="text-center w-12">
               {{ item.id }}
+            </TableData>
+            <TableData class="text-center w-12">
+              {{ item.position }}
             </TableData>
             <TableData>
               {{ item.title }}
@@ -87,17 +93,15 @@ const { data } = useAsyncData(async () => {
 
     const jsonResponse = jsonParse<ModuleFieldsAdjusted[] | undefined>(data);
 
-    return {
-        jsonResponse
-    };
+    return jsonResponse;
 });
 
 const availableFields = computed(() => {
-    return data.value?.jsonResponse || [];
+    if (data.value) {
+        data.value.sort((a, b) => a.position - b.position);
+    }
+
+    return data.value || [];
 });
 
 </script>
-
-<style scoped>
-
-</style>
